@@ -7,27 +7,26 @@ using UnityEngine;
 using PhamCham.Extension;
 
 public class AStarPathfinding : MonoBehaviour {
-    [SerializeField] private AStarGrid aStarGrid;
 
     public void FindPath(PathRequest request, Action<PathResult> callback) {
         Stopwatch sw = new Stopwatch();
         sw.Start();
 
         Vector2[] waypoints = new Vector2[0];
-        bool pathSuccess = false;
+        PathResultType pathSuccess = PathResultType.NotFound;
 
-        AStarNode startNode = aStarGrid.NodeFromWorldPoint(request.pathStart);
-        AStarNode targetNode = aStarGrid.NodeFromWorldPoint(request.pathEnd);
+        AStarNode startNode = AStarGrid.current.NodeFromWorldPoint(request.pathStart);
+        AStarNode targetNode = AStarGrid.current.NodeFromWorldPoint(request.pathEnd);
 
         if (startNode == null || targetNode == null) {
-            callback(new PathResult(waypoints, false, request.callback));
+            callback(new PathResult(waypoints, PathResultType.NotFound, request.callback));
             return;
         }
 
         startNode.parent = startNode;
 
         if (startNode.walkable && targetNode.walkable) {
-            Heap<AStarNode> openSet = new Heap<AStarNode>(aStarGrid.MaxSize);
+            Heap<AStarNode> openSet = new Heap<AStarNode>(AStarGrid.current.MaxSize);
             HashSet<AStarNode> closedSet = new HashSet<AStarNode>();
             openSet.Add(startNode);
 
@@ -38,18 +37,19 @@ public class AStarPathfinding : MonoBehaviour {
                 if (currentNode == targetNode) {
                     sw.Stop();
                     //MonoBehaviour.print("Path found: " + sw.ElapsedMilliseconds + " ms");
-                    pathSuccess = true;
+                    pathSuccess = PathResultType.Found;
                     break;
                 }
 
-                List<AStarNode> adjs = aStarGrid.GetNeighbours(currentNode);
+                List<AStarNode> adjs = AStarGrid.current.GetNeighbours(currentNode);
                 adjs.Shuffer();
                 foreach (AStarNode neighbour in adjs) {
                     if (!neighbour.walkable || closedSet.Contains(neighbour)) {
                         continue;
                     }
 
-                    int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour) + neighbour.movementPenalty;
+                    // TODO: need fix hard code: neighbour.tempObstacleUnit * 10
+                    int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour) + neighbour.movementPenalty + neighbour.tempObstacleUnit * 10;
                     if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour)) {
                         neighbour.gCost = newMovementCostToNeighbour;
                         neighbour.hCost = GetDistance(neighbour, targetNode);
@@ -63,14 +63,29 @@ public class AStarPathfinding : MonoBehaviour {
                 }
             }
         }
-        if (pathSuccess) {
-            waypoints = RetracePath(startNode, targetNode);
-            pathSuccess = waypoints.Length > 0;
+        
+
+        if (pathSuccess == PathResultType.Found) {
+            List<AStarNode> retrace = RetracePath(startNode, targetNode);
+            // kiem tra con duong nay co unit nao tren con duong minh dang di khong
+            List<AStarNode> checkRetrace = new List<AStarNode>();
+            foreach (AStarNode node in retrace) {
+                if (node.tempObstacleUnit > 0) {
+                    pathSuccess = PathResultType.NotEnough;
+                    break;
+                }
+                else {
+                    checkRetrace.Add(node);
+                }
+            }
+            //
+            waypoints = SimplifyPath(checkRetrace);
+            if (waypoints.Length == 0) pathSuccess = PathResultType.NotFound;
         }
         callback(new PathResult(waypoints, pathSuccess, request.callback));
     }
 
-    private Vector2[] RetracePath(AStarNode startNode, AStarNode endNode) {
+    private List<AStarNode> RetracePath(AStarNode startNode, AStarNode endNode) {
         List<AStarNode> path = new List<AStarNode>();
         AStarNode currentNode = endNode;
 
@@ -78,28 +93,26 @@ public class AStarPathfinding : MonoBehaviour {
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
-        List<AStarNode> simplify = SimplifyPath(path);
-        Vector2[] waypoints = simplify.Select(s => (Vector2)s.worldPosition).ToArray();
-        System.Array.Reverse(waypoints);
-        return waypoints;
+        path.Reverse();
+        return path;
     }
-    private List<AStarNode> SimplifyPath(List<AStarNode> path) {
-        List<AStarNode> waypoints = new List<AStarNode>();
+    private Vector2[] SimplifyPath(List<AStarNode> path) {
+        List<Vector2> waypoints = new List<Vector2>();
 
-        if (path.Count > 0) waypoints.Add(path.First());
+        if (path.Count > 0) waypoints.Add(path.First().worldPosition);
 
         for (int i = 1; i < path.Count - 1; i++) {
-            Vector2 directionLeft = path[i - 1].grid - path[i].grid;
-            Vector2 directionRight = path[i + 1].grid - path[i].grid;
+            Vector2 directionLeft = path[i - 1].gridIndex - path[i].gridIndex;
+            Vector2 directionRight = path[i + 1].gridIndex - path[i].gridIndex;
 
             if (directionLeft.x * directionRight.y != directionLeft.y * directionRight.x) {
-                waypoints.Add(path[i]);
+                waypoints.Add(path[i].worldPosition);
             }
         }
 
-        if (path.Count > 1) waypoints.Add(path.Last());
+        if (path.Count > 1) waypoints.Add(path.Last().worldPosition);
 
-        return waypoints;
+        return waypoints.ToArray();
     }
 
     /*private Vector2[] SimplifyPath(List<AStarNode> path) {
@@ -119,17 +132,17 @@ public class AStarPathfinding : MonoBehaviour {
     }*/
 
     private int GetDistance(AStarNode nodeA, AStarNode nodeB) {
-        int dstX = Mathf.Abs(nodeA.grid.x - nodeB.grid.x);
-        int dstY = Mathf.Abs(nodeA.grid.y - nodeB.grid.y);
+        int dstX = Mathf.Abs(nodeA.gridIndex.x - nodeB.gridIndex.x);
+        int dstY = Mathf.Abs(nodeA.gridIndex.y - nodeB.gridIndex.y);
 
         int diagonalCost = 14;
         int straightCost = 10;
 
         if (dstX == 1 && dstY == 1){
-            Vector2Int crossA = new Vector2Int(nodeA.grid.x, nodeB.grid.y);
-            Vector2Int crossB = new Vector2Int(nodeB.grid.x, nodeA.grid.y);
+            Vector2Int crossA = new Vector2Int(nodeA.gridIndex.x, nodeB.gridIndex.y);
+            Vector2Int crossB = new Vector2Int(nodeB.gridIndex.x, nodeA.gridIndex.y);
             // truong hop 2 cai la khong the vi lam sao ma di qua duoc, fix o neighbour roi ma!
-            if (aStarGrid.NodeFromGridPoint(crossA)?.walkable == false || aStarGrid.NodeFromGridPoint(crossB)?.walkable == false){
+            if (AStarGrid.current.NodeFromGridPoint(crossA)?.walkable == false || AStarGrid.current.NodeFromGridPoint(crossB)?.walkable == false){
                 diagonalCost = 28;
             }
         }

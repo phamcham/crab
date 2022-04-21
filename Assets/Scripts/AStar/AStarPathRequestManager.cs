@@ -21,7 +21,7 @@ public class AStarPathRequestManager : MonoBehaviour {
             lock (results) {
                 for (int i = 0; i < itemsInQueue; i++) {
                     PathResult result = results.Dequeue();
-                    result.callback(result.path, result.success);
+                    result.callback(result.path, result.result);
                 }
             }
         }
@@ -43,12 +43,12 @@ public class AStarPathRequestManager : MonoBehaviour {
 
 public struct PathResult {
     public Vector2[] path;
-    public bool success;
-    public Action<Vector2[], bool> callback;
+    public PathResultType result;
+    public Action<Vector2[], PathResultType> callback;
 
-    public PathResult(Vector2[] path, bool success, Action<Vector2[], bool> callback) {
+    public PathResult(Vector2[] path, PathResultType success, Action<Vector2[], PathResultType> callback) {
         this.path = path;
-        this.success = success;
+        this.result = success;
         this.callback = callback;
     }
 }
@@ -56,11 +56,17 @@ public struct PathResult {
 public struct PathRequest {
     public Vector2 pathStart;
     public Vector2 pathEnd;
-    public Action<Vector2[], bool> callback;
+    public Action<Vector2[], PathResultType> callback;
 
-    public PathRequest(Vector2 _start, Vector2 _end, Action<Vector2[], bool> _callback) {
+    public PathRequest(Vector2 _start, Vector2 _end, Action<Vector2[], PathResultType> _callback) {
         pathStart = _start;
         pathEnd = _end;
         callback = _callback;
     }
+}
+
+public enum PathResultType{
+    Found,
+    NotEnough,
+    NotFound,
 }

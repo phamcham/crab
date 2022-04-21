@@ -5,8 +5,9 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class AStarGrid : MonoBehaviour {
+    public static AStarGrid current { get; private set; }
     public AStarNode[,] nodes;
-    [SerializeField] Tilemap groundTilemap;
+    Tilemap mainTilemap;
     public bool displayGridGizmos;
     public int obstacleProximityPenalty = 30;
     private Vector2Int gridWorldSize;
@@ -16,10 +17,7 @@ public class AStarGrid : MonoBehaviour {
     private int penaltyMax = int.MinValue;
 
     private void Awake() {
-        gridWorldSize = (Vector2Int)groundTilemap.cellBounds.size;
-        gridBottomLeftPosition = (Vector2Int)groundTilemap.cellBounds.min;
-
-        CreateGrid();
+        current = this;
     }
 
     public int MaxSize {
@@ -28,7 +26,10 @@ public class AStarGrid : MonoBehaviour {
         }
     }
 
-    private void CreateGrid() {
+    public void UpdateGrid(Tilemap mainTilemap) {
+        this.mainTilemap = mainTilemap;
+        gridWorldSize = (Vector2Int)mainTilemap.cellBounds.size;
+        gridBottomLeftPosition = (Vector2Int)mainTilemap.cellBounds.min;
         nodes = new AStarNode[gridWorldSize.x, gridWorldSize.y];
 
         for (int x = 0; x < gridWorldSize.x; x++) {
@@ -97,11 +98,11 @@ public class AStarGrid : MonoBehaviour {
                 if (x == 0 && y == 0)
                     continue;
 
-                Vector2Int check = new Vector2Int(node.grid.x + x, node.grid.y + y);
+                Vector2Int check = new Vector2Int(node.gridIndex.x + x, node.gridIndex.y + y);
 
                 if (IsGridPointValid(check)) {
                     if (Mathf.Abs(x) == Mathf.Abs(y)) {
-                        bool isCross = (nodes[check.x, node.grid.y].walkable == false && nodes[node.grid.x, check.y].walkable == false);
+                        bool isCross = (nodes[check.x, node.gridIndex.y].walkable == false && nodes[node.gridIndex.x, check.y].walkable == false);
                         if (!isCross) {
                             neighbours.Add(nodes[check.x, check.y]);
                         }
@@ -120,7 +121,7 @@ public class AStarGrid : MonoBehaviour {
     }
 
     public AStarNode NodeFromWorldPoint(Vector3 worldPosition) {
-        Vector2Int index = (Vector2Int)groundTilemap.WorldToCell((Vector2)worldPosition - gridBottomLeftPosition);
+        Vector2Int index = (Vector2Int)mainTilemap.WorldToCell((Vector2)worldPosition - gridBottomLeftPosition);
         if (!IsGridPointValid(index)) return null;
         return nodes[index.x, index.y];
     }
@@ -147,32 +148,55 @@ public class AStarGrid : MonoBehaviour {
         }
 
         // debug nay rat nang
-        /*
+        
         UnityEditor.Handles.color = Color.white;
         for (int i = 0; i < gridWorldSize.x; i++) {
             for (int j = 0; j < gridWorldSize.y; j++) {
-                int penaty = nodes[i, j].movementPenalty;
-                Vector3Int cell = new Vector3Int(i + gridBottomLeftPosition.x, j + gridBottomLeftPosition.y, 1);
-                Vector3 pos = (Vector2)groundTilemap.CellToWorld(cell);
+                int penaty = nodes[i, j].movementPenalty + 10 * nodes[i, j].tempObstacleUnit;
+                Vector2Int cellIndex = new Vector2Int(i, j);
+                Vector3Int cellPosition = (Vector3Int)IndexToPosition(cellIndex);
+                Vector3 pos = (Vector2)mainTilemap.CellToWorld(cellPosition);
                 UnityEditor.Handles.Label(pos + Vector3.one / 2, penaty + "", new GUIStyle { fontSize = 9, alignment = TextAnchor.MiddleCenter });
             }
         }
-        */
+        
     }
 
-    public void UpdateGridNode(Vector2Int cellPosition) {
-        if (IsGridPointValid(cellPosition)) {
+    // cellIndex from (0, 0)
+    public void UpdateGridNode(Vector2Int cellIndex) {
+        if (IsGridPointValid(cellIndex)) {
             int movementPenalty = 0;
-            Vector3Int realCellPos = (Vector3Int)(cellPosition + gridBottomLeftPosition);
-            TileBase tile = groundTilemap.GetTile(realCellPos);
+            Vector3Int cellPosition = (Vector3Int)IndexToPosition(cellIndex);
+            TileBase tile = mainTilemap.GetTile(cellPosition);
+            //bool walkable = tile != null && !GridBuildingSystem.current.IsBuilding(tile);
             bool walkable = tile != null;
 
             if (!walkable) {
                 movementPenalty += obstacleProximityPenalty;
             }
-            Vector3 worldPos = groundTilemap.CellToWorld(realCellPos) + Vector3.one / 2;
+
+            Vector3 worldPos = mainTilemap.CellToWorld(cellPosition) + Vector3.one / 2;
             worldPos.z = 0;
-            nodes[cellPosition.x, cellPosition.y] = new AStarNode(walkable, worldPos, cellPosition, movementPenalty);
+            int temp = nodes[cellIndex.x, cellIndex.y]?.tempObstacleUnit ?? 0;
+            nodes[cellIndex.x, cellIndex.y] = new AStarNode(walkable, worldPos, cellIndex, movementPenalty, temp);
         }
+    }
+
+    public void AddTempObstacle(Vector2Int cellIndex){
+        if (IsGridPointValid(cellIndex)){
+            nodes[cellIndex.x, cellIndex.y].tempObstacleUnit++;
+        }
+    }
+    public void DeleteTempObstacle(Vector2Int cellIndex){
+        if (IsGridPointValid(cellIndex)){
+            nodes[cellIndex.x, cellIndex.y].tempObstacleUnit--;
+        }
+    }
+
+    public Vector2Int IndexToPosition(Vector2Int index){
+        return index + gridBottomLeftPosition;
+    }
+    public Vector2Int PositionToIndex(Vector2Int position){
+        return position - gridBottomLeftPosition;
     }
 }

@@ -5,9 +5,10 @@ using UnityEngine;
 public class AStarNode : IHeapItem<AStarNode> {
     public Vector3 worldPosition;
     public bool walkable;
-    public Vector2Int grid;
+    public Vector2Int gridIndex;
     public AStarNode parent;
     public int movementPenalty;
+    public int tempObstacleUnit;
 
     public int gCost;
     public int hCost;
@@ -29,11 +30,12 @@ public class AStarNode : IHeapItem<AStarNode> {
         }
     }
 
-    public AStarNode(bool _walkable, Vector3 _worldPos, Vector2Int _grid, int _penalty) {
+    public AStarNode(bool _walkable, Vector3 _worldPos, Vector2Int _gridIndex, int _penalty, int _tempObstacleUnit = 0) {
         walkable = _walkable;
         worldPosition = _worldPos;
-        grid = _grid;
+        gridIndex = _gridIndex;
         movementPenalty = _penalty;
+        tempObstacleUnit = _tempObstacleUnit;
     }
 
     public int CompareTo(AStarNode nodeToCompare) {

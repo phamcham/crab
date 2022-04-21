@@ -35,6 +35,7 @@ public class GridBuildingSystem : MonoBehaviour {
         FillTiles(tileArray, TileType.White);
 
         mainTilemap.SetTiles(positionList.ToArray(), tileArray);
+        AStarGrid.current.UpdateGrid(mainTilemap);
     }
     public void InitializeWithBuilding(GameObject buildingObj){
         temp = Instantiate(buildingObj, Vector3.zero, Quaternion.identity).GetComponent<Building>();
@@ -73,7 +74,22 @@ public class GridBuildingSystem : MonoBehaviour {
     public void TakeArea(BoundsInt area){
         SetTileBlock(area, TileType.Empty, tempTilemap);
         SetTileBlock(area, TileType.Green, mainTilemap);
+
+        for (int i = 0; i < area.size.x; i++){
+            for (int j = 0; j < area.size.y; j++){
+                Vector2Int curPosition = new Vector2Int(i, j);
+                Vector2Int cellIndex = AStarGrid.current.PositionToIndex(curPosition + (Vector2Int)area.position);
+                Debug.Log(cellIndex);
+                AStarGrid.current.AddTempObstacle(cellIndex);
+                AStarGrid.current.UpdateGridNode(cellIndex);
+            }
+        }
     }
+    public bool IsBuilding(TileBase tile){
+        print("Check: " + (tile == tileBases[TileType.Green]));
+        return tile == tileBases[TileType.Green];
+    }
+
     public BoundsInt CalculateAreaFromWorldPosition(BoundsInt area, Vector2 worldPosition){
         Vector3Int posInt = gridLayout.WorldToCell(worldPosition);
         BoundsInt areaTemp = area;

@@ -4,15 +4,16 @@ using DG.Tweening;
 using System;
 
 public abstract class Unit : MonoBehaviour, IMoveable {
+    public BoundsInt area = new BoundsInt(Vector3Int.zero, Vector3Int.one);
     protected Vector2 TargetPosition { get; set; }
+    protected UnitProperties Properties { get; set; }
     private Vector2[] path;
     private int targetIndex;
     private Rigidbody2D rb;
     private const float requestPathInterval = 0.5f;
     private float time = 0;
     private bool isPathFound = false;
-
-    protected UnitProperties Properties { get; set; }
+    private Vector2Int? prevIndex = null;
 
     protected virtual void Awake() {
         rb = GetComponent<Rigidbody2D>();
@@ -26,16 +27,36 @@ public abstract class Unit : MonoBehaviour, IMoveable {
         } else {
             time -= Time.deltaTime;
         }
+
+        // TODO: thay vi transform.positon, chuyen thanh y dinh can di chuyen chu kp vi tri hien tai
+        AStarNode currentNode = AStarGrid.current.NodeFromWorldPoint(transform.position);
+        Vector2Int currentGridIndex = currentNode.gridIndex;
+
+        if (prevIndex == null){
+            prevIndex = currentGridIndex;
+        }
+        else{
+            if (prevIndex != currentGridIndex){
+                // xoa previndex obstacle
+                AStarGrid.current.DeleteTempObstacle(prevIndex.Value);
+                // them gridindex obstacle
+                AStarGrid.current.AddTempObstacle(currentGridIndex);
+                prevIndex = currentGridIndex;
+            }
+        }
     }
 
-    public void OnPathFound(Vector2[] newPath, bool pathSuccessful) {
+    public void OnPathFound(Vector2[] newPath, PathResultType pathSuccessful) {
         time = requestPathInterval;
         isPathFound = false;
-        if (pathSuccessful) {
+        StopCoroutine(nameof(FollowPath));
+        if (pathSuccessful != PathResultType.NotFound) {
             path = newPath;
             targetIndex = 0;
-            StopCoroutine(nameof(FollowPath));
             StartCoroutine(nameof(FollowPath));
+        }
+        else{
+            path = null;
         }
     }
 
@@ -60,17 +81,24 @@ public abstract class Unit : MonoBehaviour, IMoveable {
     }
 
     protected virtual void OnDrawGizmos() {
-        if (path != null) {
-            for (int i = targetIndex; i < path.Length; i++) {
-                Gizmos.color = Color.black;
-                Gizmos.DrawSphere(path[i], 0.3f);
+        if (Application.isPlaying){
+            if (path != null) {
+                for (int i = targetIndex; i < path.Length; i++) {
+                    Gizmos.color = Color.black;
+                    Gizmos.DrawSphere(path[i], 0.3f);
 
-                if (i == targetIndex) {
-                    Gizmos.DrawLine(transform.position, path[i]);
-                } else {
-                    Gizmos.DrawLine(path[i - 1], path[i]);
+                    if (i == targetIndex) {
+                        Gizmos.DrawLine(transform.position, path[i]);
+                    } else {
+                        Gizmos.DrawLine(path[i - 1], path[i]);
+                    }
                 }
+                
             }
+            AStarNode currentNode = AStarGrid.current.NodeFromWorldPoint(transform.position);
+            Vector2 position = currentNode.worldPosition;
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireCube(position, Vector3.one);
         }
     }
 
@@ -81,11 +109,13 @@ public abstract class Unit : MonoBehaviour, IMoveable {
 }
 
 public class UnitProperties{
+    public Team team;
     public int healthPoint;
     public float moveSpeed;
     public int damage;
 
-    public UnitProperties(int healthPoint, int damage, float moveSpeed){
+    public UnitProperties(Team team, int healthPoint, int damage, float moveSpeed){
+        this.team = team;
         this.healthPoint = healthPoint;
         this.damage = damage;
         this.moveSpeed = moveSpeed;

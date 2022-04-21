@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4557125660147175341}
   - component: {fileID: 4557125660147175340}
   m_Layer: 0
-  m_Name: Headquarter
+  m_Name: Headquarter Building
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4557125660147175342}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c38d905d548d3542b35d48d547a64f2, type: 3}
+  m_Script: {fileID: 11500000, guid: eba569588bce44d42b0e4933d86e171f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   area:
