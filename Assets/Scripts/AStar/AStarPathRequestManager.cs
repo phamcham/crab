@@ -21,7 +21,7 @@ public class AStarPathRequestManager : MonoBehaviour {
             lock (results) {
                 for (int i = 0; i < itemsInQueue; i++) {
                     PathResult result = results.Dequeue();
-                    result.callback(result.path, result.result);
+                    result.callback?.Invoke(result.fullPath, result.simplifyPath, result.result);
                 }
             }
         }
@@ -42,12 +42,14 @@ public class AStarPathRequestManager : MonoBehaviour {
 }
 
 public struct PathResult {
-    public Vector2[] path;
+    public Vector2[] fullPath;
+    public Vector2[] simplifyPath;
     public PathResultType result;
-    public Action<Vector2[], PathResultType> callback;
+    public PathRequest.Callback callback;
 
-    public PathResult(Vector2[] path, PathResultType success, Action<Vector2[], PathResultType> callback) {
-        this.path = path;
+    public PathResult(Vector2[] fullPath, Vector2[] simplifyPath, PathResultType success, PathRequest.Callback callback) {
+        this.fullPath = fullPath;
+        this.simplifyPath = simplifyPath;
         this.result = success;
         this.callback = callback;
     }
@@ -56,17 +58,20 @@ public struct PathResult {
 public struct PathRequest {
     public Vector2 pathStart;
     public Vector2 pathEnd;
-    public Action<Vector2[], PathResultType> callback;
+    public Callback callback; // simplify path, full path
 
-    public PathRequest(Vector2 _start, Vector2 _end, Action<Vector2[], PathResultType> _callback) {
+    public PathRequest(Vector2 _start, Vector2 _end, Callback _callback) {
         pathStart = _start;
         pathEnd = _end;
         callback = _callback;
     }
+
+    public delegate void Callback(Vector2[] fullPath, Vector2[] simplifyPath, PathResultType type);
 }
 
 public enum PathResultType{
     Found,
     NotEnough,
     NotFound,
+    IsCompleted
 }

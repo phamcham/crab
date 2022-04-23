@@ -5,15 +5,28 @@ using System;
 
 public abstract class Unit : MonoBehaviour, IMoveable {
     public BoundsInt area = new BoundsInt(Vector3Int.zero, Vector3Int.one);
-    protected Vector2 TargetPosition { get; set; }
-    protected UnitProperties Properties { get; set; }
-    private Vector2[] path;
+    private Vector2 _targetPosition;
+    public Vector2 TargetPosition {
+        get => _targetPosition;
+        set {
+            if (_targetPosition != value){
+                // chuyen thanh notfound ngay vi van de dong bo
+                PathResultType = PathResultType.NotFound;
+            }
+            _targetPosition = value;
+        }
+    }
+    private Vector2 prevTargetPosition;
+    public UnitProperties Properties { get; set; }
+    private Vector2[] followingSimplifyPath;
+    private Vector2[] followingFullPath;
     private int targetIndex;
     private Rigidbody2D rb;
-    private const float requestPathInterval = 0.5f;
+    private const float requestInterval = 0.5f;
     private float time = 0;
     private bool isPathFound = false;
     private Vector2Int? prevIndex = null;
+    public PathResultType PathResultType { get; private set; }
 
     protected virtual void Awake() {
         rb = GetComponent<Rigidbody2D>();
@@ -21,8 +34,40 @@ public abstract class Unit : MonoBehaviour, IMoveable {
     protected virtual void Update() {
         if (time <= 0) {
             if (!isPathFound) {
-                AStarPathRequestManager.RequestPath(new PathRequest(transform.position, TargetPosition, OnPathFound));
-                isPathFound = true;
+                // TODO: after long interval, check current path to new request path,
+                // use new request path when cost big enough
+
+                bool shouldRequestNew = true;
+                //print(prevTargetPosition +", "+ TargetPosition);
+                if (prevTargetPosition != TargetPosition){
+                    // target had move
+                    prevTargetPosition = TargetPosition;
+                }
+                else {
+                    // target keep pos
+                    if (followingFullPath != null){
+                        shouldRequestNew = false;
+                        foreach (Vector2 pos in followingFullPath){
+                            AStarNode node = AStarGrid.current.NodeFromWorldPoint(pos);
+                            if (!node.walkable){
+                                shouldRequestNew = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (shouldRequestNew){
+                    //Debug.Log("req new path");
+                    AStarPathRequestManager.RequestPath(new PathRequest(transform.position, TargetPosition, OnPathFound));
+                    isPathFound = true;
+                }
+                else{
+                    // keep prev path
+                    //print("keep prev path");
+                    time = requestInterval;
+                    isPathFound = false;
+                }
             }
         } else {
             time -= Time.deltaTime;
@@ -46,51 +91,72 @@ public abstract class Unit : MonoBehaviour, IMoveable {
         }
     }
 
-    public void OnPathFound(Vector2[] newPath, PathResultType pathSuccessful) {
-        time = requestPathInterval;
+    public void OnPathFound(Vector2[] fullPath, Vector2[] simplifyPath, PathResultType pathStatus) {
+        time = requestInterval;
         isPathFound = false;
+        PathResultType = pathStatus;
         StopCoroutine(nameof(FollowPath));
-        if (pathSuccessful != PathResultType.NotFound) {
-            path = newPath;
+        //Debug.Log(pathStatus);
+        if (pathStatus == PathResultType.Found || pathStatus == PathResultType.NotEnough) {
+            followingFullPath = fullPath;
+            followingSimplifyPath = simplifyPath;
             targetIndex = 0;
-            StartCoroutine(nameof(FollowPath));
+            if (followingSimplifyPath != null){
+                StartCoroutine(nameof(FollowPath));
+            }
         }
         else{
-            path = null;
+            followingSimplifyPath = null;
+            followingFullPath = null;
+            // khong tim thay duong thi delay lau hon bth 1 chut
+            // cause: thuong neu k tim thay duong thi sau do cung khong thay duong
+            time = requestInterval;
         }
     }
 
     private IEnumerator FollowPath() {
-        Vector3 currentWaypoint = path[0];
-
+        Vector3 currentWaypoint = followingSimplifyPath[0];
+        var _waitForFixedUpdate = new WaitForFixedUpdate();
         while (true) {
-            if (transform.position == currentWaypoint) {
-                targetIndex++;
-                if (targetIndex >= path.Length) {
-                    yield break;
+            if (followingSimplifyPath != null && followingSimplifyPath.Length > 0) {
+                //Debug.Log($"({transform.position.x}, {transform.position.y}) ({currentWaypoint.x}, {currentWaypoint.y})");
+                if (transform.position == currentWaypoint) {
+                    targetIndex++;
+                    if (targetIndex >= followingSimplifyPath.Length) {
+                        //Debug.Log(name + " pathfinding completed");
+                        PathResultType = PathResultType.IsCompleted;
+                        yield break;
+                    }
+                    currentWaypoint = followingSimplifyPath[targetIndex];
                 }
-                currentWaypoint = path[targetIndex];
+
+                float speed = Properties.moveSpeed;
+                Vector2 position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.fixedDeltaTime);
+                //print($"position: ({position.x}, {position.y})");
+                MovePosition(position);
+
+                OnMove(currentWaypoint - transform.position);
+                yield return _waitForFixedUpdate;
             }
-
-            float speed = Properties.moveSpeed;
-            MovePosition(Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.fixedDeltaTime));
-
-            OnMove(currentWaypoint - transform.position);
-            yield return new WaitForFixedUpdate();
+            else{
+                print("path null");
+                PathResultType = PathResultType.NotFound;
+                yield break;
+            }
         }
     }
 
     protected virtual void OnDrawGizmos() {
         if (Application.isPlaying){
-            if (path != null) {
-                for (int i = targetIndex; i < path.Length; i++) {
+            if (followingSimplifyPath != null) {
+                for (int i = targetIndex; i < followingSimplifyPath.Length; i++) {
                     Gizmos.color = Color.black;
-                    Gizmos.DrawSphere(path[i], 0.3f);
+                    Gizmos.DrawSphere(followingSimplifyPath[i], 0.3f);
 
                     if (i == targetIndex) {
-                        Gizmos.DrawLine(transform.position, path[i]);
+                        Gizmos.DrawLine(transform.position, followingSimplifyPath[i]);
                     } else {
-                        Gizmos.DrawLine(path[i - 1], path[i]);
+                        Gizmos.DrawLine(followingSimplifyPath[i - 1], followingSimplifyPath[i]);
                     }
                 }
                 
@@ -103,6 +169,7 @@ public abstract class Unit : MonoBehaviour, IMoveable {
     }
 
     public void MovePosition(Vector2 position) {
+        //Debug.Log($"move: ({position.x}, {position.y})");
         rb.MovePosition(position);
     }
     public abstract void OnMove(Vector2 direction);

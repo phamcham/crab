@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIBuildingManager : MonoBehaviour
+public class UI_Building : MonoBehaviour
 {
-    public static UIBuildingManager current { get; private set; }
+    public static UI_Building current { get; private set; }
     [SerializeField] GameObject headquarter;
     [SerializeField] GameObject building;
 

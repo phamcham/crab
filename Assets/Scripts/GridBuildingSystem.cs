@@ -79,7 +79,7 @@ public class GridBuildingSystem : MonoBehaviour {
             for (int j = 0; j < area.size.y; j++){
                 Vector2Int curPosition = new Vector2Int(i, j);
                 Vector2Int cellIndex = AStarGrid.current.PositionToIndex(curPosition + (Vector2Int)area.position);
-                Debug.Log(cellIndex);
+                //Debug.Log(cellIndex);
                 AStarGrid.current.AddTempObstacle(cellIndex);
                 AStarGrid.current.UpdateGridNode(cellIndex);
             }

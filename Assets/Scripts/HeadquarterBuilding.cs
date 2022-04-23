@@ -8,7 +8,7 @@ public class HeadquarterBuilding : Building {
     }
 
     void OnBuildingPlacedHandle(){
-        GameController.current.HeadquarterStartGameplay();
-        UIBuildingManager.current.HeadquarterPlaced();
+        GameController.current.HeadquarterStartGameplay(this);
+        UI_Building.current.HeadquarterPlaced();
     }
 }

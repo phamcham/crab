@@ -13,13 +13,29 @@ public class AStarPathfinding : MonoBehaviour {
         sw.Start();
 
         Vector2[] waypoints = new Vector2[0];
+        Vector2[] fullPath = new Vector2[0];
         PathResultType pathSuccess = PathResultType.NotFound;
 
         AStarNode startNode = AStarGrid.current.NodeFromWorldPoint(request.pathStart);
         AStarNode targetNode = AStarGrid.current.NodeFromWorldPoint(request.pathEnd);
 
         if (startNode == null || targetNode == null) {
-            callback(new PathResult(waypoints, PathResultType.NotFound, request.callback));
+            callback(new PathResult(fullPath, waypoints, PathResultType.NotFound, request.callback));
+            return;
+        }
+
+        //print(request.pathEnd + " " + request.pathStart);
+        if (startNode == targetNode){
+            if ((Vector2)targetNode.worldPosition != request.pathStart) {
+                //print("found: " + request.pathStart + ", target: " + targetNode.worldPosition);
+                fullPath = new Vector2[1] { targetNode.worldPosition };
+                waypoints = new Vector2[1] { targetNode.worldPosition };
+                
+                callback(new PathResult(fullPath, waypoints, PathResultType.Found, request.callback));
+            }
+            else {
+                callback(new PathResult(fullPath,waypoints, PathResultType.IsCompleted, request.callback));
+            }
             return;
         }
 
@@ -63,7 +79,6 @@ public class AStarPathfinding : MonoBehaviour {
                 }
             }
         }
-        
 
         if (pathSuccess == PathResultType.Found) {
             List<AStarNode> retrace = RetracePath(startNode, targetNode);
@@ -79,10 +94,11 @@ public class AStarPathfinding : MonoBehaviour {
                 }
             }
             //
+            fullPath = checkRetrace.Select(r => (Vector2)r.worldPosition).ToArray();
             waypoints = SimplifyPath(checkRetrace);
             if (waypoints.Length == 0) pathSuccess = PathResultType.NotFound;
         }
-        callback(new PathResult(waypoints, pathSuccess, request.callback));
+        callback(new PathResult(fullPath, waypoints, pathSuccess, request.callback));
     }
 
     private List<AStarNode> RetracePath(AStarNode startNode, AStarNode endNode) {
@@ -93,6 +109,7 @@ public class AStarPathfinding : MonoBehaviour {
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
+
         path.Reverse();
         return path;
     }

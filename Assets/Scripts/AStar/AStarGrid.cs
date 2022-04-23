@@ -148,7 +148,7 @@ public class AStarGrid : MonoBehaviour {
         }
 
         // debug nay rat nang
-        
+        /*
         UnityEditor.Handles.color = Color.white;
         for (int i = 0; i < gridWorldSize.x; i++) {
             for (int j = 0; j < gridWorldSize.y; j++) {
@@ -159,6 +159,7 @@ public class AStarGrid : MonoBehaviour {
                 UnityEditor.Handles.Label(pos + Vector3.one / 2, penaty + "", new GUIStyle { fontSize = 9, alignment = TextAnchor.MiddleCenter });
             }
         }
+        */
         
     }
 

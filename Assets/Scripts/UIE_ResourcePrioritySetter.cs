@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ResourcePrioritySetter : MonoBehaviour{
+public class UIE_ResourcePrioritySetter : MonoBehaviour{
     [SerializeField] Image image;
     [SerializeField] Text text;
-    [SerializeField] NumberSpinner numberSpinner;
+    public NumberSpinner numberSpinner;
     private ResourceType resourceType;
     public void Setup(ResourceType type, Sprite sprite, string name, int priority = 0){
+        resourceType = type;
         image.sprite = sprite;
         text.text = name;
         numberSpinner.Value = priority;
 
-        numberSpinner.OnValueChanged.AddListener(OnValueChanged);
+        numberSpinner.OnValueSet.AddListener(OnEditEnd);
     }
 
-    public void OnValueChanged(int priority){
-        UIResourcePrioritiesManager.current.UpdateResourcePriorities();
+    private void OnEditEnd(int priority){
+        ResourcePrioritiesManager.current.UpdateResourcePriorities();
     }
 
     public int Priority => numberSpinner.Value;

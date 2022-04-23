@@ -12,6 +12,27 @@ public class NumberSpinner : MonoBehaviour
     [SerializeField] Button incrementButton;
     [SerializeField] Button decrementButton;
 
+    public int MinValue {
+        get => minValue;
+        set {
+            minValue = value;
+            if (minValue > Value) {
+                Value = minValue;
+            }
+            CheckEnableButtons();
+        }
+    }
+    public int MaxValue{
+        get => maxValue;
+        set {
+            maxValue = value;
+            if (maxValue < Value) {
+                Value = maxValue;
+            }
+            CheckEnableButtons();
+        }
+    }
+
     private int _value;
     public int Value {
         get => _value;
@@ -20,13 +41,9 @@ public class NumberSpinner : MonoBehaviour
 
     private void Awake() {
         inputField.contentType = InputField.ContentType.IntegerNumber;
-        inputField.onValueChanged.AddListener(s => {
+        inputField.onEndEdit.AddListener(s => {
             int.TryParse(s, out int num);
-            OnValueChanged?.Invoke(_value);
-            if (num != _value){
-                Debug.Log("aaaa");
-                SetValue(num);
-            }
+            SetValue(num);
         });
         if (!int.TryParse(inputField.text, out _value)){
             inputField.text = _value.ToString();
@@ -42,8 +59,15 @@ public class NumberSpinner : MonoBehaviour
         });
     }
 
-    private void SetValue(int value){
+    private void SetValue(int value) {
         _value = Mathf.Clamp(value, minValue, maxValue);
+        CheckEnableButtons();
+        
+        OnValueSet?.Invoke(_value);
+        inputField.text = _value.ToString();
+    }
+
+    void CheckEnableButtons(){
         incrementButton.enabled = decrementButton.enabled = true;
 
         if (_value <= minValue){
@@ -52,9 +76,7 @@ public class NumberSpinner : MonoBehaviour
         if (_value >= maxValue){
             incrementButton.enabled = false;
         }
-
-        inputField.text = _value.ToString();
     }
 
-    public UnityEvent<int> OnValueChanged;
+    public UnityEvent<int> OnValueSet;
 }
