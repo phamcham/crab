@@ -43,7 +43,9 @@ public class NumberSpinner : MonoBehaviour
         inputField.contentType = InputField.ContentType.IntegerNumber;
         inputField.onEndEdit.AddListener(s => {
             int.TryParse(s, out int num);
-            SetValue(num);
+            if (num != _value){
+                SetValue(num);
+            }
         });
         if (!int.TryParse(inputField.text, out _value)){
             inputField.text = _value.ToString();

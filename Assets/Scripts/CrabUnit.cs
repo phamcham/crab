@@ -6,7 +6,7 @@ using UnityEngine;
 public class CrabUnit : Unit {
     protected override void Awake() {
         base.Awake();
-        Properties = new UnitProperties(Team.DefaultPlayer, 100, 10, 10);
+        Properties = new UnitProperties(Team.DefaultPlayer, 100, 10, 6);
     }
     private void Start() {
         TargetPosition = transform.position;

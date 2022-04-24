@@ -15,12 +15,12 @@ public class ResourcePrioritiesManager {
     private List<Gatherer> subscribedUnits = new List<Gatherer>();
 
     public void UpdateResourcePriorities(){
-        List<UIE_ResourcePrioritySetter> setters = UI_ResourcePriorities.current.GetAllSetters();
+        List<UIE_ResourcePrioritySetter> setters = UI_ResourcesManager.current.GetAllSetters();
         // ra lenh cho cac unit o day
         int unitCount = subscribedUnits.Count;
 
         List<Gatherer> units = new List<Gatherer>(subscribedUnits);
-        units.Shuffer();
+        units.PCShuffer();
         Stack<Gatherer> queue = new Stack<Gatherer>(units);
         string s = queue.Count + " : ";
 
@@ -44,7 +44,7 @@ public class ResourcePrioritiesManager {
             setter.numberSpinner.MaxValue = setter.numberSpinner.Value + remain;
         }
 
-        UI_ResourcePriorities.current.UpdateText($"{remain}/{unitCount}");
+        UI_ResourcesManager.current.UpdateText($"{remain}/{unitCount}");
         
     }
     public void SubscribeGathererUnit(Gatherer unit){

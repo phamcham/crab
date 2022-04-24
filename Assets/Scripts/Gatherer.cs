@@ -84,15 +84,16 @@ public class Gatherer : MonoBehaviour {
 
     private void DoWork_DropResourceToHeadquarter(){
         //print("DropResourceToHeadquarter");
-        holdingObject.gameObject.SetActive(false);
-        holdingResourceType = ResourceType.None;
-        if (TargetResource != null){
+        if (TargetResource != null && holdingResourceType != ResourceType.None){
+            UI_ResourcesManager.current.GetResourceAmountUI(holdingResourceType).AddAmount(1);
             unit.TargetPosition = (Vector2Int)TargetResource.info.area.position;
+            holdingResourceType = ResourceType.None;
             currentWork = WorkType.MoveToResource;
         }
         else{
             currentWork = WorkType.DoNothing;
         }
+        holdingObject.gameObject.SetActive(false);
     }
 
     private void OnDestroy() {

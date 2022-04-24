@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public abstract class Building : MonoBehaviour
-{
-    public BoundsInt area = new BoundsInt(Vector3Int.zero, Vector3Int.one);
+public abstract class Building : MonoBehaviour {
+    public Info info;
     public bool IsPlaced { get;private set; }
-    public Action OnBuildingPlaced;
+    public abstract void OnBuildingPlaced();
     public bool CanBePlaced(){
-        BoundsInt areaTemp = GridBuildingSystem.current.CalculateAreaFromWorldPosition(area, transform.position);
+        BoundsInt areaTemp = GridBuildingSystem.current.CalculateAreaFromWorldPosition(info.area, transform.position);
 
         if (GridBuildingSystem.current.CanTakeArea(areaTemp)){
             return true;
@@ -18,13 +17,21 @@ public abstract class Building : MonoBehaviour
         return false;
     }
     public void Place(){
-        BoundsInt areaTemp = GridBuildingSystem.current.CalculateAreaFromWorldPosition(area, transform.position);
+        BoundsInt areaTemp = GridBuildingSystem.current.CalculateAreaFromWorldPosition(info.area, transform.position);
 
         IsPlaced = true;
         GridBuildingSystem.current.TakeArea(areaTemp);
         transform.DOKill();
         transform.DOMove(areaTemp.center, 0.1f).Play();
 
-        OnBuildingPlaced?.Invoke();
+        OnBuildingPlaced();
+    }
+
+    [System.Serializable]
+    public struct Info {
+        public string name;
+        public string description;
+        public List<RequiredResource> requiredResources;
+        public BoundsInt area;
     }
 }

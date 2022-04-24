@@ -58,7 +58,7 @@ public class AStarPathfinding : MonoBehaviour {
                 }
 
                 List<AStarNode> adjs = AStarGrid.current.GetNeighbours(currentNode);
-                adjs.Shuffer();
+                adjs.PCShuffer();
                 foreach (AStarNode neighbour in adjs) {
                     if (!neighbour.walkable || closedSet.Contains(neighbour)) {
                         continue;
@@ -85,13 +85,13 @@ public class AStarPathfinding : MonoBehaviour {
             // kiem tra con duong nay co unit nao tren con duong minh dang di khong
             List<AStarNode> checkRetrace = new List<AStarNode>();
             foreach (AStarNode node in retrace) {
-                if (node.tempObstacleUnit > 0) {
-                    pathSuccess = PathResultType.NotEnough;
-                    break;
-                }
-                else {
+            //    if (node.tempObstacleUnit > 0) {
+             //       pathSuccess = PathResultType.NotEnough;
+            //        break;
+            //    }
+            //    else {
                     checkRetrace.Add(node);
-                }
+             //   }
             }
             //
             fullPath = checkRetrace.Select(r => (Vector2)r.worldPosition).ToArray();

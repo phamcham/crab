@@ -124,7 +124,10 @@ public abstract class Unit : MonoBehaviour, IMoveable {
                     targetIndex++;
                     if (targetIndex >= followingSimplifyPath.Length) {
                         //Debug.Log(name + " pathfinding completed");
-                        PathResultType = PathResultType.IsCompleted;
+                        // BUG: cai nay chi la di het duong chu khong phai la da hoan thanh
+                        if (PathResultType == PathResultType.Found){
+                            PathResultType = PathResultType.IsCompleted;
+                        }
                         yield break;
                     }
                     currentWaypoint = followingSimplifyPath[targetIndex];

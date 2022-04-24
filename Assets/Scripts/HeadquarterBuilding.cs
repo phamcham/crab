@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HeadquarterBuilding : Building {
-    private void Start() {
-        OnBuildingPlaced += OnBuildingPlacedHandle;
-    }
-
-    void OnBuildingPlacedHandle(){
+    public override void OnBuildingPlaced(){
         GameController.current.HeadquarterStartGameplay(this);
         UI_Building.current.HeadquarterPlaced();
     }

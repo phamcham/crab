@@ -5,17 +5,17 @@ using System.Threading;
 
 namespace PhamCham.Extension {
     public static class ListExtensions {
-        public static void Shuffer<TSource>(this IList<TSource> list) {
+        public static void PCShuffer<TSource>(this IList<TSource> list) {
             if (list == null) {
                 throw new ArgumentNullException("list");
             }
             int n = list.Count;
             for (int i = 0; i + 1 < n; i++) {
                 int j = UnityEngine.Random.Range(i + 1, n);
-                list.Swap(i, j);
+                list.PCSwap(i, j);
             }
         }
-        public static void Swap<TSource>(this IList<TSource> list, int firstIndex, int secondIndex) {
+        public static void PCSwap<TSource>(this IList<TSource> list, int firstIndex, int secondIndex) {
             if (list == null) {
                 throw new ArgumentNullException("list");
             }

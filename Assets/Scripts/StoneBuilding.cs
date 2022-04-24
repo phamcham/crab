@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class StoneBuilding : Building
 {
-    
+    public override void OnBuildingPlaced()
+    {
+        
+    }
 }
