@@ -6,12 +6,12 @@ using UnityEngine.Tilemaps;
 public class ResourceManager : MonoBehaviour
 {
     public static ResourceManager current { get; private set; }
-    [SerializeField] UI_ResourcesManager ui;
+    //[SerializeField] UI_ResourcesManager ui;
     [SerializeField] Tilemap tilemapResource;
     [SerializeField] Tilemap tilemapGround;
     [SerializeField] List<ResourceData> resourceDatas;
-    Dictionary<ResourceType, ResourceData> dictResourceData;
-    Dictionary<ResourceType, List<ResourceTile>> dictResourceTiles;
+    Dictionary<ResourceType, ResourceData> dictResourceData = new Dictionary<ResourceType, ResourceData>();
+    Dictionary<ResourceType, List<ResourceTile>> dictResourceTiles = new Dictionary<ResourceType, List<ResourceTile>>();
     private void Awake() {
         current = this;
     }
@@ -23,7 +23,6 @@ public class ResourceManager : MonoBehaviour
     }
 
     void InitializeResourceDataDict(){
-        dictResourceData = new Dictionary<ResourceType, ResourceData>();
         foreach (ResourceData resource in resourceDatas){
             dictResourceData.Add(resource.type, resource);
         }

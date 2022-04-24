@@ -30,8 +30,9 @@ public abstract class Building : MonoBehaviour {
     [System.Serializable]
     public struct Info {
         public string name;
+        [TextArea(3, 6)]
         public string description;
-        public List<RequiredResource> requiredResources;
+        public List<ResourceRequirement> resourceRequirements;
         public BoundsInt area;
     }
 }

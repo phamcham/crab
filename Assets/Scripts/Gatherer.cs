@@ -7,7 +7,7 @@ using UnityEngine;
 public class Gatherer : MonoBehaviour {
     [SerializeField] SpriteRenderer holdingObject;
     private Unit unit;
-    Resource TargetResource;
+    ResourceTile TargetResource;
     float collectTime = 0;
     float curCollectTime;
     //LinkedList<Action> gathererActions = new LinkedList<Action>();
@@ -20,8 +20,6 @@ public class Gatherer : MonoBehaviour {
     }
 
     private void Start() {
-        ResourcePrioritiesManager.current.SubscribeGathererUnit(this);
-
         works.Add(WorkType.DoNothing, DoWork_DoNothing);
         works.Add(WorkType.MoveToResource, DoWork_MoveToResource);
         works.Add(WorkType.PickResource, DoWork_PickResource);
@@ -60,10 +58,10 @@ public class Gatherer : MonoBehaviour {
     private void DoWork_PickResource(){
         //print("PickResource");
         holdingObject.gameObject.SetActive(true);
-        holdingObject.sprite = TargetResource.info.sprite;
-        holdingResourceType = TargetResource.info.type;
+        holdingObject.sprite = TargetResource.tile.sprite;
+        holdingResourceType = TargetResource.type;
         HeadquarterBuilding headquarter = GameController.current.GetHeadquarterBuilding();
-        unit.TargetPosition = (Vector2Int)headquarter.area.position;
+        unit.TargetPosition = (Vector2Int)headquarter.info.area.position;
             
         currentWork = WorkType.BringResourceToHeadquarter;
     }
@@ -85,8 +83,8 @@ public class Gatherer : MonoBehaviour {
     private void DoWork_DropResourceToHeadquarter(){
         //print("DropResourceToHeadquarter");
         if (TargetResource != null && holdingResourceType != ResourceType.None){
-            UI_ResourcesManager.current.GetResourceAmountUI(holdingResourceType).AddAmount(1);
-            unit.TargetPosition = (Vector2Int)TargetResource.info.area.position;
+            //UI_ResourcesManager.current.GetResourceAmountUI(holdingResourceType).AddAmount(1);
+            unit.TargetPosition = TargetResource.position;
             holdingResourceType = ResourceType.None;
             currentWork = WorkType.MoveToResource;
         }
@@ -98,7 +96,7 @@ public class Gatherer : MonoBehaviour {
 
     private void OnDestroy() {
         if (Application.isPlaying){
-            ResourcePrioritiesManager.current.UnsubcribeGatherUnit(this);
+            //ResourcePrioritiesManager.current.UnsubcribeGatherUnit(this);
         }
     }
 
@@ -106,7 +104,7 @@ public class Gatherer : MonoBehaviour {
         works[currentWork]?.Invoke();
     }
 
-    public void OnChangeTargetResourceType(ResourceType resourceType){
+    /*public void OnChangeTargetResourceType(ResourceType resourceType){
         if (resourceType == ResourceType.None){
             if (holdingResourceType == ResourceType.None){
                 // do nothing
@@ -139,10 +137,12 @@ public class Gatherer : MonoBehaviour {
             }
         }
     }
+    
     void FindTargetResourcePosition(){
         Vector2Int position = (Vector2Int)TargetResource.info.area.position;
         unit.TargetPosition = position;
     }
+    */
 
     public enum WorkType {
         DoNothing,
@@ -152,42 +152,3 @@ public class Gatherer : MonoBehaviour {
         DropResourceToHeadquarter,
     }
 }
-/*
-public class CircularActionsOnUpdate {
-    CircularAction first, last;
-    CircularAction cur;
-
-    // call in update
-    public void Update(){
-        cur.action?.Invoke();
-    }
-
-    public CircularActionsOnUpdate AddAction(Action action){
-        CircularAction add = new CircularAction(action, first);
-        if (last == null){
-            last = add;
-        }
-
-        last.next = add;
-        last = add;
-
-        if (first == null){
-            first = cur = last;
-        }
-
-        return this;
-    }
-
-    public void MoveNext(){
-        cur = cur.next;
-    }
-
-    public class CircularAction {
-        public Action action;
-        public CircularAction next;
-        public CircularAction(Action action, CircularAction next){
-            this.action = action;
-            this.next = next;
-        }
-    }
-}*/

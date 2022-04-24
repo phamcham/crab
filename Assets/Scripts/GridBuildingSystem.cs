@@ -51,8 +51,8 @@ public class GridBuildingSystem : MonoBehaviour {
     private void FollowBuilding(){
         ClearArea();
 
-        BoundsInt buildingArea = CalculateAreaFromWorldPosition(temp.area, temp.transform.position);
-        temp.area.position = buildingArea.position;
+        BoundsInt buildingArea = CalculateAreaFromWorldPosition(temp.info.area, temp.transform.position);
+        temp.info.area.position = buildingArea.position;
 
         TileBase[] baseArray = GetTilesBlock(buildingArea, mainTilemap);
 

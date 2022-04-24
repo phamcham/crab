@@ -11,6 +11,8 @@ public class BuildingManager : MonoBehaviour
         current = this;
     }
     private void Start() {
-        
+        foreach (Building building in buildingPrefabs){
+            ui.AddBuildingUI(building);
+        }
     }
 }

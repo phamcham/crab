@@ -5,6 +5,6 @@ using UnityEngine;
 public class HeadquarterBuilding : Building {
     public override void OnBuildingPlaced(){
         GameController.current.HeadquarterStartGameplay(this);
-        UI_Building.current.HeadquarterPlaced();
+        //UI_Building.current.HeadquarterPlaced();
     }
 }
