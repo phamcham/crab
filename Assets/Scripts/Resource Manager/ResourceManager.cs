@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using PhamCham.Extension;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class ResourceManager : MonoBehaviour
 {
     public static ResourceManager current { get; private set; }
-    //[SerializeField] UI_ResourcesManager ui;
     [SerializeField] Tilemap tilemapResource;
     [SerializeField] Tilemap tilemapGround;
     [SerializeField] List<ResourceData> resourceDatas;
+    [SerializeField] UI_Resource ui;
     Dictionary<ResourceType, ResourceData> dictResourceData = new Dictionary<ResourceType, ResourceData>();
     Dictionary<ResourceType, List<ResourceTile>> dictResourceTiles = new Dictionary<ResourceType, List<ResourceTile>>();
     private void Awake() {
@@ -30,7 +31,7 @@ public class ResourceManager : MonoBehaviour
 
     void FillResourcesToTilemap() {
         // tmp
-        List<Vector2Int> starfish_positions = new List<Vector2Int>(){
+        /*List<Vector2Int> starfish_positions = new List<Vector2Int>(){
             new Vector2Int(-26, -13), new Vector2Int(-20, -13), new Vector2Int(-25, -12), new Vector2Int(-23, -12), 
             new Vector2Int(-22, -12), new Vector2Int(-26, -11), new Vector2Int(-25, -11), new Vector2Int(-24, -11), 
             new Vector2Int(-25, -10), new Vector2Int(-27, -9)
@@ -49,13 +50,32 @@ public class ResourceManager : MonoBehaviour
         List<Vector2Int> coconut_positions = new List<Vector2Int>(){
             new Vector2Int(-4, 7), new Vector2Int(-5, 8), new Vector2Int(-3, 8), new Vector2Int(-2, 8), new Vector2Int(-2, 9)
         };
+        */
 
-        var resourcePositions = new Dictionary<ResourceType, List<Vector2Int>>(){
-            {ResourceType.Starfish, starfish_positions},
-            {ResourceType.Grass, grass_positions},
-            {ResourceType.Conch, conch_positions},
-            {ResourceType.Coconut, coconut_positions}
+        tilemapResource.ClearAllTiles();
+        List<Vector2Int> availablePositions = new List<Vector2Int>();
+        foreach (Vector2Int pos in tilemapGround.cellBounds.allPositionsWithin){
+            TileBase tile = tilemapGround.GetTile((Vector3Int)pos);
+            if (tile != null){
+                availablePositions.Add(pos);
+            }
+        }
+        availablePositions.PCShuffer();
+        Stack<Vector2Int> stack = new Stack<Vector2Int>(availablePositions);
+        Dictionary<ResourceType, List<Vector2Int>> resourcePositions = new Dictionary<ResourceType, List<Vector2Int>>(){
+            { ResourceType.Starfish, new List<Vector2Int>() },
+            { ResourceType.Grass, new List<Vector2Int>() },
+            { ResourceType.Conch, new List<Vector2Int>() },
+            { ResourceType.Coconut, new List<Vector2Int>() }
         };
+        foreach (ResourceType type in resourcePositions.Keys){
+            for (int i = 0; i < 5; i++){
+                if (stack.Count > 0) {
+                    Vector2Int pos = stack.Pop();
+                    resourcePositions[type].Add(pos);
+                }
+            }
+        }
 
         // TODO: hard code
         var resList = new List<ResourceType>() {ResourceType.Starfish, ResourceType.Grass, ResourceType.Conch, ResourceType.Coconut};
@@ -76,7 +96,7 @@ public class ResourceManager : MonoBehaviour
     void UpdateUI(){
         var resList = new List<ResourceType>() {ResourceType.Starfish, ResourceType.Grass, ResourceType.Conch, ResourceType.Coconut};
         foreach (ResourceType type in resList){
-            //ui.AddResourceUI(type, info.sprite, type.ToString());
+            ui.UpdateResourceStoringUI(type, 0);
         }
     }
 

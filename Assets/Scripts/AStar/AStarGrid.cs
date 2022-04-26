@@ -6,8 +6,8 @@ using UnityEngine.Tilemaps;
 
 public class AStarGrid : MonoBehaviour {
     public static AStarGrid current { get; private set; }
+    [SerializeField] Tilemap groundTilemap;
     public AStarNode[,] nodes;
-    Tilemap mainTilemap;
     public bool displayGridGizmos;
     public int obstacleProximityPenalty = 30;
     private Vector2Int gridWorldSize;
@@ -26,10 +26,13 @@ public class AStarGrid : MonoBehaviour {
         }
     }
 
-    public void UpdateGrid(Tilemap mainTilemap) {
-        this.mainTilemap = mainTilemap;
-        gridWorldSize = (Vector2Int)mainTilemap.cellBounds.size;
-        gridBottomLeftPosition = (Vector2Int)mainTilemap.cellBounds.min;
+    private void Start() {
+        UpdateGrid();
+    }
+
+    public void UpdateGrid() {
+        gridWorldSize = (Vector2Int)groundTilemap.cellBounds.size;
+        gridBottomLeftPosition = (Vector2Int)groundTilemap.cellBounds.min;
         nodes = new AStarNode[gridWorldSize.x, gridWorldSize.y];
 
         for (int x = 0; x < gridWorldSize.x; x++) {
@@ -121,7 +124,7 @@ public class AStarGrid : MonoBehaviour {
     }
 
     public AStarNode NodeFromWorldPoint(Vector3 worldPosition) {
-        Vector2Int index = (Vector2Int)mainTilemap.WorldToCell((Vector2)worldPosition - gridBottomLeftPosition);
+        Vector2Int index = (Vector2Int)groundTilemap.WorldToCell((Vector2)worldPosition - gridBottomLeftPosition);
         if (!IsGridPointValid(index)) return null;
         return nodes[index.x, index.y];
     }
@@ -168,7 +171,7 @@ public class AStarGrid : MonoBehaviour {
         if (IsGridPointValid(cellIndex)) {
             int movementPenalty = 0;
             Vector3Int cellPosition = (Vector3Int)IndexToPosition(cellIndex);
-            TileBase tile = mainTilemap.GetTile(cellPosition);
+            TileBase tile = groundTilemap.GetTile(cellPosition);
             //bool walkable = tile != null && !GridBuildingSystem.current.IsBuilding(tile);
             bool walkable = tile != null;
 
@@ -176,7 +179,7 @@ public class AStarGrid : MonoBehaviour {
                 movementPenalty += obstacleProximityPenalty;
             }
 
-            Vector3 worldPos = mainTilemap.CellToWorld(cellPosition) + Vector3.one / 2;
+            Vector3 worldPos = groundTilemap.CellToWorld(cellPosition) + Vector3.one / 2;
             worldPos.z = 0;
             int temp = nodes[cellIndex.x, cellIndex.y]?.tempObstacleUnit ?? 0;
             nodes[cellIndex.x, cellIndex.y] = new AStarNode(walkable, worldPos, cellIndex, movementPenalty, temp);

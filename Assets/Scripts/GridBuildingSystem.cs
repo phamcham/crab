@@ -9,6 +9,7 @@ public class GridBuildingSystem : MonoBehaviour {
 
     public GridLayout gridLayout;
     [SerializeField] Tilemap groundTilemap;
+    [SerializeField] TileBase walkableTile;
     [SerializeField] Tilemap mainTilemap;
     [SerializeField] Tilemap tempTilemap;
     private static Dictionary<TileType, TileBase> tileBases = new Dictionary<TileType, TileBase>();
@@ -26,7 +27,7 @@ public class GridBuildingSystem : MonoBehaviour {
         foreach (Vector3Int v in groundArea.allPositionsWithin){
             Vector3Int pos = new Vector3Int(v.x, v.y, 0);
             TileBase tile = groundTilemap.GetTile(pos);
-            if (tile != null){
+            if (tile != null && tile == walkableTile){
                 positionList.Add(pos);
             }
         }
@@ -35,7 +36,6 @@ public class GridBuildingSystem : MonoBehaviour {
         FillTiles(tileArray, TileType.White);
 
         mainTilemap.SetTiles(positionList.ToArray(), tileArray);
-        AStarGrid.current.UpdateGrid(mainTilemap);
     }
     public void InitializeWithBuilding(GameObject buildingObj){
         temp = Instantiate(buildingObj, Vector3.zero, Quaternion.identity).GetComponent<Building>();

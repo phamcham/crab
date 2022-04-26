@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   info:
+    icon: {fileID: 21300000, guid: efbee4b3490e2bc48b1b28a2abf39955, type: 3}
     name: Spawner
     description: Spawn something hehe
     resourceRequirements:

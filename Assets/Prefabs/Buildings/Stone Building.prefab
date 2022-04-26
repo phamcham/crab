@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   info:
+    icon: {fileID: 21300000, guid: bcd9f8a046c549940aca76cc809aebc5, type: 3}
     name: Stone
     description: It's just a stone.
     resourceRequirements:
