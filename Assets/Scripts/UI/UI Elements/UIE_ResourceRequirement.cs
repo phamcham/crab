@@ -10,7 +10,7 @@ public class UIE_ResourceRequirement : MonoBehaviour
     [SerializeField] UnityEvent<string> amountUpdateText;
     public void Setup(ResourceRequirement requirement) {
         //image.sprite = requirement.data.tile.sprite;
-        image.sprite = ResourceManager.current.GetResourceData(requirement.type).tile.sprite;
+        image.sprite = ResourceManager.current.GetResourceSprite(requirement.type);
         amountUpdateText?.Invoke(requirement.amount + "");
     }
 }

@@ -44,18 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2d3e76f05c2d20498b12816471367cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  info:
-    icon: {fileID: 21300000, guid: bcd9f8a046c549940aca76cc809aebc5, type: 3}
-    name: Stone
-    description: It's just a stone.
-    resourceRequirements:
-    - type: 3
-      amount: 3
-    - type: 4
-      amount: 5
-    area:
-      m_Position: {x: 0, y: 0, z: 0}
-      m_Size: {x: 1, y: 1, z: 1}
+  icon: {fileID: 21300000, guid: bcd9f8a046c549940aca76cc809aebc5, type: 3}
+  buildingName: Stone
+  description: sonte !!!!
+  resourceRequirements:
+  - type: 4
+    amount: 1
+  area:
+    m_Position: {x: 0, y: 0, z: 0}
+    m_Size: {x: 0, y: 0, z: 0}
 --- !u!1 &2576235328535390408
 GameObject:
   m_ObjectHideFlags: 0

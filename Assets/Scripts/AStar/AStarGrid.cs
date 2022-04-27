@@ -193,7 +193,8 @@ public class AStarGrid : MonoBehaviour {
     }
     public void DeleteTempObstacle(Vector2Int cellIndex){
         if (IsGridPointValid(cellIndex)){
-            nodes[cellIndex.x, cellIndex.y].tempObstacleUnit--;
+            int temp = nodes[cellIndex.x, cellIndex.y].tempObstacleUnit - 1;
+            nodes[cellIndex.x, cellIndex.y].tempObstacleUnit = Mathf.Max(0, temp);
         }
     }
 

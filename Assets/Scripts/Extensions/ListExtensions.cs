@@ -34,5 +34,15 @@ namespace PhamCham.Extension {
             list[secondIndex] = list[firstIndex];
             list[firstIndex] = temp;
         }
+        public static TSource PCItemRandom<TSource>(this IList<TSource> list) {
+            if (list == null) {
+                throw new ArgumentNullException("list");
+            }
+            if (list.Count == 0){
+                return default;
+            }
+            int index = UnityEngine.Random.Range(0, list.Count);
+            return list[index];
+        }
     }
 }

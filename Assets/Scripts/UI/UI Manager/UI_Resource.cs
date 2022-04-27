@@ -12,12 +12,12 @@ public class UI_Resource : MonoBehaviour
     private void Awake() {
         storingHolder.PCDestroyChildren();
     }
-    public void UpdateResourceStoringUI(ResourceType type, int add){
+    public void UpdateResourceStoringUI(ResourceType type, int amount){
         if (!resources.TryGetValue(type, out UIE_ResourceStoring res)){
             res = Instantiate(uie_ResourceStoringPrefab.gameObject, storingHolder)
                 .GetComponent<UIE_ResourceStoring>();
             resources.Add(type, res);
         }
-        res.Setup(type, add);
+        res.Setup(type, amount);
     }
 }

@@ -5,6 +5,7 @@ using System;
 
 public abstract class Unit : MonoBehaviour {
     [Header("Unit Settings")]
+    [SerializeField] UnitType unitType;
     public BoundsInt area = new BoundsInt(Vector3Int.zero, Vector3Int.one);
     public UnitProperties Properties { get; set; }
     protected void Awake(){
@@ -15,6 +16,9 @@ public abstract class Unit : MonoBehaviour {
         OnStart();
     }
     protected abstract void OnStart();
+    public UnitType GetUnitType(){
+        return unitType;
+    }
 }
 
 public class UnitProperties{

@@ -7,12 +7,12 @@ using UnityEngine.Tilemaps;
 public class ResourceManager : MonoBehaviour
 {
     public static ResourceManager current { get; private set; }
-    [SerializeField] Tilemap tilemapResource;
     [SerializeField] Tilemap tilemapGround;
-    [SerializeField] List<ResourceData> resourceDatas;
+    [SerializeField] List<Resource> resourcePrefabs;
     [SerializeField] UI_Resource ui;
-    Dictionary<ResourceType, ResourceData> dictResourceData = new Dictionary<ResourceType, ResourceData>();
-    Dictionary<ResourceType, List<ResourceTile>> dictResourceTiles = new Dictionary<ResourceType, List<ResourceTile>>();
+    Dictionary<ResourceType, Resource> dictResourcePrefabs = new Dictionary<ResourceType, Resource>();
+    Dictionary<ResourceType, List<Resource>> dictResources = new Dictionary<ResourceType, List<Resource>>();
+    Dictionary<ResourceType, int> resourceStorage = new Dictionary<ResourceType, int>();
     private void Awake() {
         current = this;
     }
@@ -20,12 +20,12 @@ public class ResourceManager : MonoBehaviour
     private void Start() {
         InitializeResourceDataDict();
         FillResourcesToTilemap();
-        UpdateUI();
     }
 
     void InitializeResourceDataDict(){
-        foreach (ResourceData resource in resourceDatas){
-            dictResourceData.Add(resource.type, resource);
+        foreach (Resource resourcePrefab in resourcePrefabs){
+            dictResourcePrefabs.Add(resourcePrefab.GetResourceType(), resourcePrefab);
+            resourceStorage.Add(resourcePrefab.GetResourceType(), 0);
         }
     }
 
@@ -52,7 +52,6 @@ public class ResourceManager : MonoBehaviour
         };
         */
 
-        tilemapResource.ClearAllTiles();
         List<Vector2Int> availablePositions = new List<Vector2Int>();
         foreach (Vector2Int pos in tilemapGround.cellBounds.allPositionsWithin){
             TileBase tile = tilemapGround.GetTile((Vector3Int)pos);
@@ -82,28 +81,35 @@ public class ResourceManager : MonoBehaviour
 
         foreach (ResourceType type in resList) {
             List<Vector2Int> pos = resourcePositions[type];
-            dictResourceTiles.Add(type, new List<ResourceTile>());
+            dictResources.Add(type, new List<Resource>());
             foreach (Vector2Int ele in pos){
-                Tile tile = GetResourceData(type).tile;
                 // TODO: hard code
-                ResourceTile resourceTile = new ResourceTile(type, tile, ele, 10);
-                tilemapResource.SetTile((Vector3Int)resourceTile.position, resourceTile.tile);
-                dictResourceTiles[type].Add(resourceTile);
+                Resource resource = Create(type);
+                resource.transform.position = (Vector2)ele + new Vector2(0.5f, 0.5f);
+                dictResources[type].Add(resource);
             }
         }
     }
+    public Sprite GetResourceSprite(ResourceType type){
+        return dictResourcePrefabs[type].GetSprite();
+    }
+    // get resources is placing on map
+    public List<Resource> GetResources(ResourceType type){
+        return dictResources[type];
+    }
+    public List<ResourceType> GetResourceTypes(){
+        return new List<ResourceType>(dictResources.Keys);
+    }
+    public void CollectResource(ResourceType type, int add){
+        resourceStorage[type] += add;
+        ui.UpdateResourceStoringUI(type, resourceStorage[type]);
+    }
+    public Resource Create(ResourceType type) {
+        return Instantiate(dictResourcePrefabs[type]);
+    }
+    // public ResourceTile GetResourceTile(Vector2 position){
+    //     Vector3Int cellPosition = tilemapResource.WorldToCell(position);
+    //     tilemapResource.GetTile(cellPosition);
 
-    void UpdateUI(){
-        var resList = new List<ResourceType>() {ResourceType.Starfish, ResourceType.Grass, ResourceType.Conch, ResourceType.Coconut};
-        foreach (ResourceType type in resList){
-            ui.UpdateResourceStoringUI(type, 0);
-        }
-    }
-
-    public ResourceData GetResourceData(ResourceType type) {
-        return dictResourceData[type];
-    }
-    public List<ResourceTile> GetResourceTiles(ResourceType type){
-        return dictResourceTiles[type];
-    }
+    // }
 }

@@ -20,7 +20,7 @@ public class UIE_CreateBuilding : MonoBehaviour, IPointerEnterHandler, IPointerE
         this.onHover = onHover;
         this.onExit = onExit;
 
-        image.sprite = this.building.info.icon;
+        image.sprite = this.building.icon;
 
         button.onClick.RemoveListener(OnClick);
         button.onClick.AddListener(OnClick);

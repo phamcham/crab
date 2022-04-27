@@ -37,8 +37,9 @@ public class GridBuildingSystem : MonoBehaviour {
 
         mainTilemap.SetTiles(positionList.ToArray(), tileArray);
     }
+    // TODO: nen sua thanh Create cho dong bo
     public void InitializeWithBuilding(GameObject buildingObj){
-        temp = Instantiate(buildingObj, Vector3.zero, Quaternion.identity).GetComponent<Building>();
+        temp = Instantiate(buildingObj, InputExtension.MouseWorldPoint(), Quaternion.identity).GetComponent<Building>();
         FollowBuilding();
         SetActiveBuilding(true);
     }
@@ -51,8 +52,8 @@ public class GridBuildingSystem : MonoBehaviour {
     private void FollowBuilding(){
         ClearArea();
 
-        BoundsInt buildingArea = CalculateAreaFromWorldPosition(temp.info.area, temp.transform.position);
-        temp.info.area.position = buildingArea.position;
+        BoundsInt buildingArea = CalculateAreaFromWorldPosition(temp.area, temp.transform.position);
+        temp.area.position = buildingArea.position;
 
         TileBase[] baseArray = GetTilesBlock(buildingArea, mainTilemap);
 

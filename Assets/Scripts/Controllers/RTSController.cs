@@ -73,34 +73,48 @@ public class RTSController : MonoBehaviour {
             if (Input.GetMouseButtonDown(1)){
                 Vector2 mouseWorldPosition = InputExtension.MouseWorldPoint();
                 RaycastHit2D[] hits = Physics2D.RaycastAll(mouseWorldPosition, Vector3.forward);
-                if (hits != null && hits.Length > 0){
-                    foreach (RaycastHit2D hit in hits){
-                        Collider2D collider = hit.collider;
-                        // BUG
-                        if (collider.TryGetComponent<GameObject>(out GameObject target)){
+                if (hits != null && hits.Length > 0) {
+                    foreach (RaycastHit2D hit in hits) {
+                        // neu bam vao building storage, THUA THAI
+                        if (hit.collider.TryGetComponent(out BuildingStorage storage)){
                             foreach (UnitSelectable selectable in selectables){
-                                selectable.OnTakeOrder();
+                                if (selectable.TryGetComponent(out UnitTaskGathering gathering)){
+                                    gathering.SetBuildingStorage(storage);
+                                    gathering.SetState(UnitTaskGathering.TaskGatheringState.MoveToStorage);
+                                    gathering.StartDoTask();
+                                }
                             }
-                            
-                            break;
+                        }
+                        // bam vao resource
+                        if (hit.collider.TryGetComponent(out Resource resource)){
+                            foreach (UnitSelectable selectable in selectables){
+                                if (selectable.TryGetComponent(out UnitTaskGathering gathering)){
+                                    gathering.SetResource(resource);
+                                    gathering.SetState(UnitTaskGathering.TaskGatheringState.MoveToResource);
+                                    gathering.StartDoTask();
+                                }
+                            }
                         }
                     }
                 }
                 else{
                     // just moving
-                    arrowMoveObj.SetActive(true);
-                    arrowMoveObj.transform.DOKill();
-                    arrowMoveObj.transform.position = mouseWorldPosition + Vector2.up;
-                    arrowMoveObj.transform.DOMoveY(mouseWorldPosition.y, 0.5f)
-                        .SetEase(Ease.OutBack)
-                        .OnComplete(() => DOVirtual.DelayedCall(3f, () => arrowMoveObj.SetActive(false)))
-                        .Play();
                     foreach (UnitSelectable selectable in selectables){
-                        if (selectable.TryGetComponent<UnitMovement>(out UnitMovement movement)){
+                        if (selectable.TryGetComponent(out IUnitTask task)){
+                            task.EndDoTask();
+                        }
+                        if (selectable.TryGetComponent(out UnitMovement movement)){
                             movement.MoveToPosition(mouseWorldPosition);
                         }
                     }
                 }
+                arrowMoveObj.SetActive(true);
+                arrowMoveObj.transform.DOKill();
+                arrowMoveObj.transform.position = mouseWorldPosition + Vector2.up;
+                arrowMoveObj.transform.DOMoveY(mouseWorldPosition.y, 0.5f)
+                    .SetEase(Ease.OutBack)
+                    .OnComplete(() => DOVirtual.DelayedCall(3f, () => arrowMoveObj.SetActive(false)))
+                    .Play();
             }
         }
     }
