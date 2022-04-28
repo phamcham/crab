@@ -8,9 +8,10 @@ public class CrabUnit : Unit  {
     
     [Header("Crab settings")]
     [SerializeField] Transform spriteTrans;
-    //UnitTask[] unitTasks;
-
+    [SerializeField] GameObject selectorObj;
+    [SerializeField] UIE_CrabUnitControl uieControlUIPrefab;
     UnitMovement movement;
+    UIE_CrabUnitControl uie;
 
     protected override void OnAwake() {
         Properties = new UnitProperties(Team.DefaultPlayer, 100, 10, 6);
@@ -18,13 +19,18 @@ public class CrabUnit : Unit  {
         movement = GetComponent<UnitMovement>();
     }
     protected override void OnStart() {
-        movement.MoveToPosition(transform.position);
+        //movement.MoveToPosition(transform.position);
+        selectorObj.SetActive(false);
     }
-    /*public override void OnMove(Vector2 direction){
-        if (direction != Vector2.zero){
-            float angle = Vector2.SignedAngle(Vector2.up, direction);
-            spriteTrans.DOKill();
-            spriteTrans.DOLocalRotate(new Vector3(0, 0, angle), 0.3f).Play();
-        }
-    }*/
+    public override void OnSelected(){
+        Transform holder = SelectionOneUIControlManager.current.GetHolder();
+        uie = Instantiate(uieControlUIPrefab.gameObject, holder).GetComponent<UIE_CrabUnitControl>();
+        //Debug.Assert(uie != null);
+        //SelectionOneUIControlManager.current.AddControlUI(uie);
+        selectorObj.SetActive(true);
+    }
+    public override void OnDeselected(){
+        if (uie) Destroy(uie.gameObject);
+        selectorObj.SetActive(false);
+    }
 }

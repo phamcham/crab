@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using PhamCham.Extension;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Unit))]
+[RequireComponent(typeof(Unit))]
 public class UnitMovement : MonoBehaviour {
     private Unit unit;
-    private Rigidbody2D rb;
     public Vector2 TargetPosition {get; private set;}
     private Vector2 prevTargetPosition = new Vector2(int.MaxValue, int.MinValue);
     private Vector2[] followingSimplifyPath;
@@ -16,13 +16,13 @@ public class UnitMovement : MonoBehaviour {
     private bool isPathFound = false;
     //private Vector2Int prevIndex = new Vector2Int(int.MaxValue, int.MinValue);
     public PathResultType PathResultType { get; private set; }
+    private bool startMoving = false;
     private void Awake() {
-        rb = GetComponent<Rigidbody2D>();
         unit = GetComponent<Unit>();
     }
     private void Update() {
         if (time <= 0) {
-            if (!isPathFound && PathResultType != PathResultType.IsCompleted) {
+            if (!isPathFound && startMoving && PathResultType != PathResultType.IsCompleted) {
                 // TODO: after long interval, check current path to new request path,
                 // use new request path when cost big enough
 
@@ -84,12 +84,14 @@ public class UnitMovement : MonoBehaviour {
     }
 
     private IEnumerator FollowPath() {
-        Vector3 currentWaypoint = followingSimplifyPath[0];
-        var _waitForFixedUpdate = new WaitForFixedUpdate();
+        Vector2 currentWaypoint = followingSimplifyPath[0];
+        //var _waitForFixedUpdate = new WaitForFixedUpdate();
         while (true) {
+            //Debug.Log("find : " + PathResultType + ", " + TargetPosition + ", " + transform.position);
             if (followingSimplifyPath != null && followingSimplifyPath.Length > 0) {
                 //Debug.Log($"({transform.position.x}, {transform.position.y}) ({currentWaypoint.x}, {currentWaypoint.y})");
-                if (transform.position == currentWaypoint) {
+                //Debug.Log(((Vector2)transform.position).PCToString() + ", " + currentWaypoint.PCToString() + ", equ: " + ((Vector2)transform.position == currentWaypoint));
+                if ((Vector2)transform.position == currentWaypoint) {
                     targetIndex++;
                     if (targetIndex >= followingSimplifyPath.Length) {
                         //Debug.Log(name + " pathfinding completed");
@@ -97,7 +99,9 @@ public class UnitMovement : MonoBehaviour {
                         //float distance = Vector2.Distance(transform.position, TargetPosition);
                         //Debug.Log(distance);
                         if (PathResultType == PathResultType.Found){
+                            Debug.Log("xong : " + TargetPosition);
                             PathResultType = PathResultType.IsCompleted;
+                            startMoving = false;
                         }
                         yield break;
                     }
@@ -105,11 +109,14 @@ public class UnitMovement : MonoBehaviour {
                 }
 
                 float speed = unit.Properties.moveSpeed;
-                Vector2 position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.fixedDeltaTime);
+                //Vector2 position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.fixedDeltaTime);
+                Vector2 position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
                 
+                //Debug.Log($"move from {transform.position.PCToString()} to {currentWaypoint.PCToString()} is {position}");
                 TryTranslateToPosition(position);
 
-                yield return _waitForFixedUpdate;
+                //yield return _waitForFixedUpdate;
+                yield return null;
             }
             else {
                 print("path null");
@@ -138,7 +145,10 @@ public class UnitMovement : MonoBehaviour {
         //     AStarGrid.current.AddTempObstacle(nextGridIndex);
         // }
         //print($"position: ({position.x}, {position.y})");
-        rb.MovePosition(position);
+        //print("1: " + rb.position.PCToString());
+        //rb.MovePosition(position);
+        transform.position = position;
+        //print("2: " + rb.position.PCToString());
         
     }
 
@@ -191,7 +201,8 @@ public class UnitMovement : MonoBehaviour {
         if (TargetPosition != position){
             // chuyen thanh notfound ngay vi van de dong bo
             PathResultType = PathResultType.NotFound;
+            startMoving = true;
+            TargetPosition = position;
         }
-        TargetPosition = position;
     }
 }

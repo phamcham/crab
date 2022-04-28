@@ -129,6 +129,11 @@ public class AStarGrid : MonoBehaviour {
         return nodes[index.x, index.y];
     }
 
+    public Vector2Int WorldPositionToGridPosition(Vector3 worldPosition) {
+        Vector2Int cellPosition = (Vector2Int)groundTilemap.WorldToCell((Vector2)worldPosition - gridBottomLeftPosition);
+        return cellPosition;
+    }
+
     public AStarNode NodeFromGridPoint(Vector2Int point) {
         if (!IsGridPointValid(point)) return null;
         return nodes[point.x, point.y];

@@ -13,21 +13,24 @@ public abstract class Unit : MonoBehaviour {
     }
     protected abstract void OnAwake();
     protected void Start(){
+        UnitManager.current.AddUnit(this);
         OnStart();
     }
     protected abstract void OnStart();
     public UnitType GetUnitType(){
         return unitType;
     }
+    public abstract void OnSelected();
+    public abstract void OnDeselected();
 }
 
 public class UnitProperties{
     public Team team;
     public int healthPoint;
-    public float moveSpeed;
+    public int moveSpeed;
     public int damage;
 
-    public UnitProperties(Team team, int healthPoint, int damage, float moveSpeed){
+    public UnitProperties(Team team, int healthPoint, int damage, int moveSpeed){
         this.team = team;
         this.healthPoint = healthPoint;
         this.damage = damage;

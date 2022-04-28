@@ -95,6 +95,7 @@ public class ResourceManager : MonoBehaviour
     }
     // get resources is placing on map
     public List<Resource> GetResources(ResourceType type){
+        if (type == ResourceType.None) return null;
         return dictResources[type];
     }
     public List<ResourceType> GetResourceTypes(){
@@ -107,9 +108,4 @@ public class ResourceManager : MonoBehaviour
     public Resource Create(ResourceType type) {
         return Instantiate(dictResourcePrefabs[type]);
     }
-    // public ResourceTile GetResourceTile(Vector2 position){
-    //     Vector3Int cellPosition = tilemapResource.WorldToCell(position);
-    //     tilemapResource.GetTile(cellPosition);
-
-    // }
 }

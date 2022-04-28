@@ -8,7 +8,7 @@ public class RTSController : MonoBehaviour {
     [SerializeField] GameObject selectionBoxObj;
     [SerializeField] GameObject arrowMoveObj;
     [SerializeField] Tilemap tilemapGround;
-    List<UnitSelectable> selectables = new List<UnitSelectable>();
+    List<Unit> unitSelectables = new List<Unit>();
     Vector3 startSelectionBoxPosition;
     Vector3 startMoveCameraPosition;
     bool isSelectingBox = false;
@@ -53,31 +53,32 @@ public class RTSController : MonoBehaviour {
                 selectionBoxObj.SetActive(false);
 
                 Collider2D[] collider2Ds = Physics2D.OverlapAreaAll(startSelectionBoxPosition, InputExtension.MouseWorldPoint());
-                foreach (UnitSelectable prev in selectables){
+                foreach (Unit prev in unitSelectables){
                     if (prev != null){
                         prev.OnDeselected();
                     }
                 }
-                selectables.Clear();
+                unitSelectables.Clear();
                 foreach (Collider2D collider in collider2Ds){
-                    if (collider.TryGetComponent<UnitSelectable>(out UnitSelectable selectable)){
-                        selectable.OnSelected();
-                        selectables.Add(selectable);
+                    if (collider.TryGetComponent(out Unit unitSelectable)){
+                        unitSelectable.OnSelected();
+                        unitSelectables.Add(unitSelectable);
                     }
                 }
             }
         }
     }
     void GiveOrdersControl(){
-        if (!isSelectingBox && selectables != null && selectables.Count > 0){
+        if (!isSelectingBox && unitSelectables != null && unitSelectables.Count > 0){
             if (Input.GetMouseButtonDown(1)){
                 Vector2 mouseWorldPosition = InputExtension.MouseWorldPoint();
                 RaycastHit2D[] hits = Physics2D.RaycastAll(mouseWorldPosition, Vector3.forward);
+                // TODO: kiem tra neu bam vao 1 phat thi mo control ui
                 if (hits != null && hits.Length > 0) {
                     foreach (RaycastHit2D hit in hits) {
-                        // neu bam vao building storage, THUA THAI
+                        // neu bam vao building storage
                         if (hit.collider.TryGetComponent(out BuildingStorage storage)){
-                            foreach (UnitSelectable selectable in selectables){
+                            foreach (Unit selectable in unitSelectables){
                                 if (selectable.TryGetComponent(out UnitTaskGathering gathering)){
                                     gathering.SetBuildingStorage(storage);
                                     gathering.SetState(UnitTaskGathering.TaskGatheringState.MoveToStorage);
@@ -87,7 +88,7 @@ public class RTSController : MonoBehaviour {
                         }
                         // bam vao resource
                         if (hit.collider.TryGetComponent(out Resource resource)){
-                            foreach (UnitSelectable selectable in selectables){
+                            foreach (Unit selectable in unitSelectables){
                                 if (selectable.TryGetComponent(out UnitTaskGathering gathering)){
                                     gathering.SetResource(resource);
                                     gathering.SetState(UnitTaskGathering.TaskGatheringState.MoveToResource);
@@ -99,7 +100,7 @@ public class RTSController : MonoBehaviour {
                 }
                 else{
                     // just moving
-                    foreach (UnitSelectable selectable in selectables){
+                    foreach (Unit selectable in unitSelectables){
                         if (selectable.TryGetComponent(out IUnitTask task)){
                             task.EndDoTask();
                         }
@@ -121,7 +122,7 @@ public class RTSController : MonoBehaviour {
     void ZoomCameraControl(){
         float scroll = Input.mouseScrollDelta.y;
         if (scroll != 0){
-            float size = Camera.main.orthographicSize - scroll;
+            float size = Camera.main.orthographicSize - scroll * 5;
             Camera.main.DOKill();
             Camera.main.DOOrthoSize(Mathf.Clamp(size, 10, 20), 0.2f).Play();
         }

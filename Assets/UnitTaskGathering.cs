@@ -41,8 +41,8 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
         return storages?.PCItemRandom();
     }
     private Resource GetRandomResource(){
-        List<ResourceType> list = (Enum.GetValues(typeof(ResourceType)) as IEnumerable<ResourceType>).Cast<ResourceType>().ToList();
-        List<Resource> tiles = ResourceManager.current.GetResources(list.PCItemRandom());
+        List<ResourceType> curTypes = ResourceManager.current.GetResourceTypes();
+        List<Resource> tiles = ResourceManager.current.GetResources(curTypes.PCItemRandom());
         return tiles?.PCItemRandom();
     }
     public void EndDoTask() {

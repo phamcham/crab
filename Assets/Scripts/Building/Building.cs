@@ -29,6 +29,9 @@ public abstract class Building : MonoBehaviour {
         transform.DOKill();
         transform.DOMove(areaTemp.center, 0.1f).Play();
 
+
         OnBuildingPlaced();
     }
+    public abstract void OnSelected();
+    public abstract void OnDeselected();
 }
