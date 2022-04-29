@@ -18,4 +18,9 @@ public class StoneBuilding : Building
     public override void OnDeselected() {
         selectorObj.SetActive(false);
     }
+
+    public override void ShowControlUI(bool active)
+    {
+        
+    }
 }

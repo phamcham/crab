@@ -77,19 +77,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eba569588bce44d42b0e4933d86e171f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: efbee4b3490e2bc48b1b28a2abf39955, type: 3}
-  buildingName: Headquarter
-  description: loa asd aetgw egas egr hs rg s rgsr gh sr fgs rg
-  resourceRequirements:
-  - type: 1
-    amount: 2
-  - type: 3
-    amount: 3
-  area:
-    m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 3, y: 3, z: 1}
+  properties:
+    buildingName: Headquarter
+    description: 'jijijwd iawjidjwi aiefia edijawid aijwdiajwd  qweq qwe qwe qwe
+      qwe '
+    maxHealthPoint: 130
+    curHealthPoint: 0
+    area:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 3, y: 3, z: 1}
+    resourceRequirements:
+    - type: 1
+      amount: 3
+    - type: 2
+      amount: 5
+  spriteRenderer: {fileID: 4557125660582455259}
   selectorObj: {fileID: 2525206812351456555}
-  headquarterControlUIPrefab: {fileID: 5191765294857185318, guid: b939a77086fef6a4ab5851818ef620de, type: 3}
 --- !u!114 &1256213141291779191
 MonoBehaviour:
   m_ObjectHideFlags: 0

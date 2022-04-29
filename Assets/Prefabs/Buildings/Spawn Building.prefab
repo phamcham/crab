@@ -184,18 +184,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e708a709e1ddd3448608bca11fe4318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: b8048c39cc8c2a144b4072660a9388dc, type: 3}
-  buildingName: Spawner
-  description: wedfnq uenfqe ifnqoiefn qwrdqwe q weqwe
-  resourceRequirements:
-  - type: 3
-    amount: 3
-  - type: 2
-    amount: 1
-  - type: 4
-    amount: 1
-  area:
-    m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 2, y: 2, z: 1}
+  properties:
+    buildingName: Spawner
+    description: qwueu qwuehquwhe qwuehqw euqwheqwhe q weqw qweqetq er qwer qwerq
+      er qer
+    maxHealthPoint: 60
+    curHealthPoint: 0
+    area:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 2, y: 2, z: 1}
+    resourceRequirements:
+    - type: 4
+      amount: 3
+    - type: 3
+      amount: 4
+    - type: 2
+      amount: 1
+  spriteRenderer: {fileID: 7488459802248142356}
   selectorObj: {fileID: 6717118122189974662}
-  spawnerControlUIPrefab: {fileID: 622080711890966847, guid: 4c275f4f723ebe24a85bf9f363754e6b, type: 3}

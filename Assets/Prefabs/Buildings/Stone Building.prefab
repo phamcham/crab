@@ -45,15 +45,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2d3e76f05c2d20498b12816471367cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: bcd9f8a046c549940aca76cc809aebc5, type: 3}
-  buildingName: Stone
-  description: sonte !!!!
-  resourceRequirements:
-  - type: 4
-    amount: 1
-  area:
-    m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 1, y: 1, z: 1}
+  properties:
+    buildingName: Stone
+    description: qiwjdiqwm qwmd
+    maxHealthPoint: 20
+    curHealthPoint: 0
+    area:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 1, y: 1, z: 1}
+    resourceRequirements:
+    - type: 1
+      amount: 2
+    - type: 3
+      amount: 1
+  spriteRenderer: {fileID: 2576235328535390410}
   selectorObj: {fileID: 4112429350119442890}
 --- !u!1 &2576235328535390408
 GameObject:

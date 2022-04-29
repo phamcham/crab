@@ -10,8 +10,8 @@ public class SpawnerBuilding : Building {
     List<Vector2Int> circles = new List<Vector2Int>();
     Vector2Int center;
     int circleIndex;
-    [SerializeField] UIE_SpawnerBuildingControl spawnerControlUIPrefab;
-    UIE_SpawnerBuildingControl uie;
+    
+    //UIE_SpawnerBuildingControl uie;
     private void Start() {
         selectorObj.SetActive(false);
     }
@@ -40,7 +40,7 @@ public class SpawnerBuilding : Building {
         // TODO: kiem tra co de phai con cua nao khong????
 
         for (int i = 1; i < circles.Count; i++){
-            int nextIndex = i + circleIndex;
+            int nextIndex = (i + circleIndex) % circles.Count;
             Vector2Int nextPosition = circles[nextIndex];
             AStarNode node = AStarGrid.current.NodeFromGridPoint(nextPosition);
             if (node == null) continue;
@@ -50,7 +50,7 @@ public class SpawnerBuilding : Building {
             // TODO: kiem tra co con cua nao dang dung o do khong
             bool hasUnit = HasUnitInPosition(wpos, 0.5f);
             if (isWalkable && !hasUnit) {
-                Unit unit = UnitManager.current.Create(UnitType.Crab);
+                Unit unit = UnitManager.current.Create<CrabUnit>();
                 unit.transform.position = transform.position;
                 if (unit.TryGetComponent(out UnitMovement movement)){
                     movement.MoveToPosition(wpos);
@@ -87,14 +87,25 @@ public class SpawnerBuilding : Building {
         return false;
     }
     public override void OnSelected() {
-        Transform holder = SelectionOneUIControlManager.current.GetHolder();
-        uie = Instantiate(spawnerControlUIPrefab.gameObject, holder).GetComponent<UIE_SpawnerBuildingControl>();
-        //SelectionOneUIControlManager.current.AddControlUI(uie);
         selectorObj.SetActive(true);
     }
 
     public override void OnDeselected() {
-        if (uie) Destroy(uie);
         selectorObj.SetActive(false);
+    }
+
+    public override void ShowControlUI(bool active){
+        // if (uie == null) {
+        //     Transform holder = SelectionOneUIControlManager.current.GetHolder();
+        //     uie = Instantiate(spawnerControlUIPrefab.gameObject, holder).GetComponent<UIE_SpawnerBuildingControl>();
+        // }
+        UIE_SpawnerBuildingControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_SpawnerBuildingControl>(this);
+        uie.gameObject.SetActive(active);
+    }
+    private void OnDestroy() {
+        // if (uie && uie.gameObject) {
+        //     Destroy(uie.gameObject);
+        // }
+        SelectionOneUIControlManager.current.RemoveUIControl(this);
     }
 }

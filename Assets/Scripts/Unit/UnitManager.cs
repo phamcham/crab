@@ -1,28 +1,25 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitManager : MonoBehaviour {
     public static UnitManager current { get; private set; }
-    [SerializeField] List<Unit> unitPrefabs;
-    Dictionary<UnitType, Unit> dictUnitPrefabs = new Dictionary<UnitType, Unit>();
+    [SerializeField] CrabUnit crabUnitPrefab;
+    Dictionary<Type, Unit> dictUnitPrefabs = new Dictionary<Type, Unit>();
     List<Unit> units = new List<Unit>();
     private void Awake() {
         current = this;
-        foreach (Unit unit in unitPrefabs){
-            dictUnitPrefabs.Add(unit.GetUnitType(), unit);
-        }
     }
-    public Unit Create(UnitType type) {
-        if (type == UnitType.None) return null;
-        return Instantiate(dictUnitPrefabs[type]);
+    private void Start() {
+        dictUnitPrefabs = new Dictionary<Type, Unit>() {
+            { typeof(CrabUnit), crabUnitPrefab }
+        };
     }
-    public void AddUnit(Unit unit) {
-        if (units.Contains(unit)) return;
-        units.Add(unit);
+    public T Create<T>() where T : Unit {
+        return Instantiate(dictUnitPrefabs[typeof(T)].gameObject).GetComponent<T>();
     }
-}
-
-public enum UnitType {
-    None,
-    Crab
+    // public void AddUnit(Unit unit) {
+    //     if (units.Contains(unit)) return;
+    //     units.Add(unit);
+    // }
 }

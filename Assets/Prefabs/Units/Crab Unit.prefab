@@ -312,13 +312,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c4ca9fa1851c354dbd098ed926a630b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitType: 1
-  area:
-    m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 1, y: 1, z: 1}
+  properties:
+    unitName: Crab
+    maxHealthPoint: 40
+    moveSpeed: 7
+    damage: 5
+    area:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 1, y: 1, z: 1}
+    curHealthPoint: 0
+  spriteRenderer: {fileID: 8589906722304778302}
   spriteTrans: {fileID: 8589906722304778301}
   selectorObj: {fileID: 8589906723748690840}
-  uieControlUIPrefab: {fileID: 4439223919674406611, guid: 1af77baef790b4744bd08ead4bfe8a75, type: 3}
 --- !u!114 &8589906723737199399
 MonoBehaviour:
   m_ObjectHideFlags: 0

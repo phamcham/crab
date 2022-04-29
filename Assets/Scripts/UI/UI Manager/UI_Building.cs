@@ -27,8 +27,8 @@ public class UI_Building : MonoBehaviour {
             .GetComponent<UIE_CreateBuilding>();
         creater.Setup(building, () => {
             string name = building.name;
-            string description = building.description;
-            List<ResourceRequirement> requirements = building.resourceRequirements;
+            string description = building.properties.description;
+            List<ResourceRequirement> requirements = building.properties.resourceRequirements;
             // BUG: thay vi setup, chuyen thanh update
             uieShowBuildingInfo.Setup(name, description, requirements);
             uieShowBuildingInfo.gameObject.SetActive(true);

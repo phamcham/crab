@@ -99,7 +99,7 @@ public class UnitMovement : MonoBehaviour {
                         //float distance = Vector2.Distance(transform.position, TargetPosition);
                         //Debug.Log(distance);
                         if (PathResultType == PathResultType.Found){
-                            Debug.Log("xong : " + TargetPosition);
+                            //Debug.Log("xong : " + TargetPosition);
                             PathResultType = PathResultType.IsCompleted;
                             startMoving = false;
                         }
@@ -108,7 +108,7 @@ public class UnitMovement : MonoBehaviour {
                     currentWaypoint = followingSimplifyPath[targetIndex];
                 }
 
-                float speed = unit.Properties.moveSpeed;
+                float speed = unit.properties.moveSpeed;
                 //Vector2 position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.fixedDeltaTime);
                 Vector2 position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
                 
