@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2576235328506977704}
   - component: {fileID: 3479523983237022044}
+  - component: {fileID: -5965291435591565443}
   m_Layer: 0
   m_Name: Stone Building
   m_TagString: Untagged
@@ -50,6 +51,7 @@ MonoBehaviour:
     description: qiwjdiqwm qwmd
     maxHealthPoint: 20
     curHealthPoint: 0
+    defendPoint: 0
     area:
       m_Position: {x: 0, y: 0, z: 0}
       m_Size: {x: 1, y: 1, z: 1}
@@ -60,6 +62,18 @@ MonoBehaviour:
       amount: 1
   spriteRenderer: {fileID: 2576235328535390410}
   selectorObj: {fileID: 4112429350119442890}
+--- !u!114 &-5965291435591565443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2576235328506977719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b763723651c0714bb16757744dc1d08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2576235328535390408
 GameObject:
   m_ObjectHideFlags: 0

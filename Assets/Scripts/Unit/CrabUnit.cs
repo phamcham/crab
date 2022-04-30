@@ -10,12 +10,21 @@ public class CrabUnit : Unit  {
     [SerializeField] Transform spriteTrans;
     [SerializeField] GameObject selectorObj;
     UnitMovement movement;
+    UnitDamagable damagable;
+    UnitSelectable selectable;
+    public override Team Team => Team.DefaultPlayer;
     //UIE_CrabUnitControl uie;
 
     protected override void OnAwake() {
         //properties = new UnitProperties(Team.DefaultPlayer, 100, 10, 6);
         //unitTasks = GetComponents<UnitTask>();
         movement = GetComponent<UnitMovement>();
+        damagable = GetComponent<UnitDamagable>();
+        selectable = GetComponent<UnitSelectable>();
+
+        selectable.OnSelected = OnSelectedHandle;
+        selectable.OnDeselected = OnDeselectedHandle;
+        selectable.OnShowControlUI = OnShowControlUIHandle;
     }
     protected override void OnStart() {
         //movement.MoveToPosition(transform.position);
@@ -23,13 +32,18 @@ public class CrabUnit : Unit  {
         //print("false roi ma");
     }
 
-    public override void OnSelected(){
+    // event unitselectable
+    public void OnSelectedHandle(){
         selectorObj.SetActive(true);
+        damagable.SetDisplayHealthbar(true);
     }
-    public override void OnDeselected(){
+    // event unitselectable
+    public void OnDeselectedHandle(){
         selectorObj.SetActive(false);
+        damagable.SetDisplayHealthbar(false);
     }
-    public override void ShowControlUI(bool active) {
+    // event unitselectable
+    public void OnShowControlUIHandle(bool active) {
         UIE_CrabUnitControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_CrabUnitControl>(this);
         uie.Setup(this);
         uie.gameObject.SetActive(active);
@@ -37,5 +51,20 @@ public class CrabUnit : Unit  {
 
     protected override void OnUnitDestroy() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public override bool Equals(object other)
+    {
+        return base.Equals(other);
+    }
+
+    public override string ToString()
+    {
+        return base.ToString();
     }
 }

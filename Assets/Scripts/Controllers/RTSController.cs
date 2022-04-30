@@ -8,8 +8,8 @@ public class RTSController : MonoBehaviour {
     [SerializeField] GameObject selectionBoxObj;
     [SerializeField] GameObject arrowMoveObj;
     [SerializeField] Tilemap tilemapGround;
-    List<Unit> selectedUnits = new List<Unit>();
-    private Building onlyOneSelectedBuilding;
+    List<UnitSelectable> selectedUnits = new List<UnitSelectable>();
+    private BuildingSelectable onlyOneSelectedBuilding;
     //private bool isMultiSelect;
     Vector3 startSelectionBoxPosition;
     Vector3 startMoveCameraPosition;
@@ -43,17 +43,17 @@ public class RTSController : MonoBehaviour {
                 if (collider2Ds != null && collider2Ds.Length > 0) {
                     // TODO: kiem tra neu bam vao 1 phat thi mo control ui, neu k mo multiselect
                     if (collider2Ds.Length == 1) {
-                        if (collider2Ds[0].TryGetComponent(out Building building)){
-                            SelectOneThing(building);
+                        if (collider2Ds[0].TryGetComponent(out BuildingSelectable building)){
+                            SelectOneBuilding(building);
                         }
-                        else if (collider2Ds[0].TryGetComponent(out Unit unit)) {
-                            SelectOneThing(unit);
+                        else if (collider2Ds[0].TryGetComponent(out UnitSelectable unit)) {
+                            SelectOneUnit(unit);
                         }
                     }
                     else if (collider2Ds.Length > 1) {
-                        List<Unit> units = new List<Unit>();
+                        List<UnitSelectable> units = new List<UnitSelectable>();
                         foreach (Collider2D collider in collider2Ds){
-                            if (collider.TryGetComponent(out Unit unit)){
+                            if (collider.TryGetComponent(out UnitSelectable unit)){
                                 units.Add(unit);
                             }
                         }
@@ -86,37 +86,38 @@ public class RTSController : MonoBehaviour {
         isSelectingBox = false;
         selectionBoxObj.SetActive(false);
 
-        foreach (Unit prev in selectedUnits){
+        foreach (UnitSelectable prev in selectedUnits){
             if (prev != null){
-                prev.OnDeselected();
-                prev.ShowControlUI(false);
+                prev.OnDeselected?.Invoke();
+                prev.OnShowControlUI?.Invoke(false);
             }
         }
         selectedUnits.Clear();
         if (onlyOneSelectedBuilding) {
             print("deselect building");
-            onlyOneSelectedBuilding.ShowControlUI(false);
+            onlyOneSelectedBuilding.OnShowControlUI(false);
             onlyOneSelectedBuilding = null;
         }
     }
-    private void SelectOneThing(Building building) {
+    // BUG
+    private void SelectOneBuilding(BuildingSelectable building) {
         // on 1 building selected
         building.OnSelected();
-        building.ShowControlUI(true);
+        building.OnShowControlUI(true);
         onlyOneSelectedBuilding = building;
     }
-    private void SelectOneThing(Unit unit) {
-        unit.OnSelected();
-        unit.ShowControlUI(true);
+    private void SelectOneUnit(UnitSelectable unit) {
+        unit.OnSelected?.Invoke();
+        unit.OnShowControlUI?.Invoke(true);
         selectedUnits.Add(unit);
     }
-    private void SelectMoreThings(List<Unit> units) {
+    private void SelectMoreThings(List<UnitSelectable> units) {
         if (units.Count == 1) {
-            SelectOneThing(units[0]);
+            SelectOneUnit(units[0]);
         }
         else {
-            foreach (Unit unit in units) {
-                unit.OnSelected();
+            foreach (UnitSelectable unit in units) {
+                unit.OnSelected?.Invoke();
                 selectedUnits.Add(unit);
                 // no show control ui here
             }
@@ -127,7 +128,7 @@ public class RTSController : MonoBehaviour {
             if (onlyOneSelectedBuilding) {
                 // vua bam vao building sau do bam chuot ra cho khac => cha lam j ca
                 onlyOneSelectedBuilding.OnDeselected();
-                onlyOneSelectedBuilding.ShowControlUI(false);
+                onlyOneSelectedBuilding.OnShowControlUI(false);
                 onlyOneSelectedBuilding = null;
             }
             else if (selectedUnits != null && selectedUnits.Count > 0) {
@@ -158,7 +159,7 @@ public class RTSController : MonoBehaviour {
         
     }
     private void GiveOrderByBuildingStorage(BuildingStorage storage) {
-        foreach (Unit selectable in selectedUnits){
+        foreach (UnitSelectable selectable in selectedUnits){
             if (selectable.TryGetComponent(out UnitTaskGathering gathering)){
                 gathering.SetBuildingStorage(storage);
                 gathering.SetState(UnitTaskGathering.TaskGatheringState.MoveToStorage);
@@ -167,7 +168,7 @@ public class RTSController : MonoBehaviour {
         }
     }
     private void GiveOrderByResource(Resource resource) {
-        foreach (Unit selectable in selectedUnits){
+        foreach (UnitSelectable selectable in selectedUnits){
             if (selectable.TryGetComponent(out UnitTaskGathering gathering)){
                 gathering.SetResource(resource);
                 gathering.SetState(UnitTaskGathering.TaskGatheringState.MoveToResource);
@@ -176,7 +177,7 @@ public class RTSController : MonoBehaviour {
         }
     }
     private void GiveOrderByMoving(Vector2 position) {
-        foreach (Unit selectable in selectedUnits){
+        foreach (UnitSelectable selectable in selectedUnits){
             if (selectable.TryGetComponent(out IUnitTask task)){
                 task.EndDoTask();
             }

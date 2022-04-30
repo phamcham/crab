@@ -31,9 +31,9 @@ public abstract class Building : Entity {
     public Sprite GetSprite() {
         return spriteRenderer.sprite;
     }
-    public abstract void ShowControlUI(bool active);
-    public abstract void OnSelected();
-    public abstract void OnDeselected();
+    // public abstract void ShowControlUI(bool active);
+    // public abstract void OnSelected();
+    // public abstract void OnDeselected();
 }
 
 [System.Serializable]

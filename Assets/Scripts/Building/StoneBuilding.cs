@@ -5,21 +5,31 @@ using UnityEngine;
 public class StoneBuilding : Building
 {
     [SerializeField] GameObject selectorObj;
+    BuildingSelectable selectable;
+    public override Team Team => Team.DefaultPlayer;
+
     public override void OnBuildingPlaced() {
         
+    }
+    private void Awake() {
+        selectable = GetComponent<BuildingSelectable>();
+
+        selectable.OnSelected = OnSelected;
+        selectable.OnDeselected = OnDeselected;
+        selectable.OnShowControlUI = ShowControlUI;
     }
     private void Start() {
         selectorObj.SetActive(false);
     }
-    public override void OnSelected() {
+    private void OnSelected() {
         selectorObj.SetActive(true);
     }
 
-    public override void OnDeselected() {
+    private void OnDeselected() {
         selectorObj.SetActive(false);
     }
 
-    public override void ShowControlUI(bool active)
+    private void ShowControlUI(bool active)
     {
         
     }

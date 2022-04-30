@@ -10,8 +10,18 @@ public class SpawnerBuilding : Building {
     List<Vector2Int> circles = new List<Vector2Int>();
     Vector2Int center;
     int circleIndex;
-    
+    BuildingSelectable selectable;
+
+    public override Team Team => Team.DefaultPlayer;
+
     //UIE_SpawnerBuildingControl uie;
+    private void Awake() {
+        selectable = GetComponent<BuildingSelectable>();
+
+        selectable.OnSelected = OnSelectedHandle;
+        selectable.OnDeselected = OnDeselectedHandle;
+        selectable.OnShowControlUI = OnShowControlUIHandle;
+    }
     private void Start() {
         selectorObj.SetActive(false);
     }
@@ -86,15 +96,15 @@ public class SpawnerBuilding : Building {
         }
         return false;
     }
-    public override void OnSelected() {
+    private void OnSelectedHandle() {
         selectorObj.SetActive(true);
     }
 
-    public override void OnDeselected() {
+    private void OnDeselectedHandle() {
         selectorObj.SetActive(false);
     }
 
-    public override void ShowControlUI(bool active){
+    private void OnShowControlUIHandle(bool active){
         // if (uie == null) {
         //     Transform holder = SelectionOneUIControlManager.current.GetHolder();
         //     uie = Instantiate(spawnerControlUIPrefab.gameObject, holder).GetComponent<UIE_SpawnerBuildingControl>();

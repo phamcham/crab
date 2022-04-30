@@ -174,10 +174,11 @@ GameObject:
   m_Component:
   - component: {fileID: 8589906723737199420}
   - component: {fileID: 8589906723737199393}
-  - component: {fileID: 8589906723737199395}
   - component: {fileID: 8589906723737199399}
   - component: {fileID: 2325717220950185751}
   - component: {fileID: 1759249815}
+  - component: {fileID: 2437556750182263267}
+  - component: {fileID: 8589906723737199395}
   m_Layer: 0
   m_Name: Crab Unit
   m_TagString: Untagged
@@ -219,30 +220,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &8589906723737199395
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8589906723737199421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c4ca9fa1851c354dbd098ed926a630b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  properties:
-    unitName: Crab
-    maxHealthPoint: 40
-    moveSpeed: 7
-    damage: 5
-    area:
-      m_Position: {x: 0, y: 0, z: 0}
-      m_Size: {x: 1, y: 1, z: 1}
-    curHealthPoint: 0
-  spriteRenderer: {fileID: 8589906722304778302}
-  spriteTrans: {fileID: 8589906722304778301}
-  selectorObj: {fileID: 8589906723748690840}
 --- !u!114 &8589906723737199399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,6 +258,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBar: {fileID: 5690266740865683978}
+--- !u!114 &2437556750182263267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8589906723737199421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e96d0a06622a7943bb1c3b72df9da7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8589906723737199395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8589906723737199421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4ca9fa1851c354dbd098ed926a630b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  properties:
+    unitName: Crab
+    maxHealthPoint: 40
+    moveSpeed: 4
+    damage: 5
+    area:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 1, y: 1, z: 1}
+    curHealthPoint: 0
+  spriteRenderer: {fileID: 8589906722304778302}
+  spriteTrans: {fileID: 8589906722304778301}
+  selectorObj: {fileID: 8589906723748690840}
 --- !u!1 &8589906723748690840
 GameObject:
   m_ObjectHideFlags: 0

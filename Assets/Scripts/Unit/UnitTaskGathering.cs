@@ -18,7 +18,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     private ResourceType currentTargetType;
     private Resource currentTargetResource;
     private UnitMovement movement;
-    private Unit unit;
+    public Unit BaseUnit { get; private set; }
     private BuildingStorage storage;
     private TaskGatheringState currentState = TaskGatheringState.DoNothing;
     private bool initStep = false;
@@ -55,7 +55,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     }
 
     private void Awake() {
-        unit = GetComponent<Unit>();
+        BaseUnit = GetComponent<Unit>();
         movement = GetComponent<UnitMovement>();
     }
     private void Start() {

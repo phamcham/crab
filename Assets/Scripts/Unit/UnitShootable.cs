@@ -3,25 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitShootable : MonoBehaviour {
-    [SerializeField] Bullet bulletPrefab;
     [SerializeField] int attackRadius;
     [SerializeField] int reloadingTime;
-    private Unit unit;
-    //const float checkInterval = 1f;
-    //float checkTime = 0;
+    public Unit BaseUnit { get; private set; }
+    const float checkInterval = 1f;
+    float checkTime = 0;
     float curReloadingTime = 0;
     UnitDamagable enemey;
     private void Awake() {
-        unit = GetComponent<Unit>();
+        BaseUnit = GetComponent<Unit>();
     }
 
     private void Update() {
         if (curReloadingTime < reloadingTime) {
             curReloadingTime += Time.deltaTime;
         }
-        else{
-            curReloadingTime = 0;
+        else {
             if (enemey) {
+                curReloadingTime = 0;
                 // check if old enemy still in range
                 float distance = Vector2.Distance(transform.position, enemey.transform.position);
                 if (distance < attackRadius) {
@@ -29,14 +28,28 @@ public class UnitShootable : MonoBehaviour {
                     Vector2 direction = (enemey.transform.position - transform.position).normalized;
                     Bullet bullet = BulletManager.GetBulletPooled();
                     bullet.transform.position = transform.position;
-                    bullet.Shoot(unit.properties.damage, direction, bullet.speed);
+                    bullet.Shoot(BaseUnit, BaseUnit.properties.damage, direction, bullet.speed);
                 }
                 else {
                     // find other enemy
+                    enemey = null;
+                }
+            }
+            else {
+                if (checkTime < checkInterval) {
+                    checkTime += Time.deltaTime;
+                }
+                else {
+                    checkTime = 0;
+                    // check enemy
                     Collider2D[] collider2Ds = Physics2D.OverlapCircleAll(transform.position, attackRadius);
-                    foreach (Collider2D collider2D in collider2Ds) {
-                        if (collider2D.TryGetComponent(out UnitDamagable damagable)) {
-                            Unit target = damagable.BaseUnit;
+                    foreach (Collider2D collider in collider2Ds) {
+                        if (collider.TryGetComponent(out UnitDamagable damagable)) {
+                            if (damagable.BaseUnit.Team != BaseUnit.Team) {
+                                // kill this
+                                enemey = damagable;
+                                break;
+                            }
                         }
                     }
                 }

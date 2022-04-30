@@ -5,8 +5,8 @@ using UnityEngine;
 
 [RequireComponent(typeof(Unit))]
 public class UnitMovement : MonoBehaviour {
-    private Unit unit;
-    public Vector2 TargetPosition {get; private set;}
+    public Unit BaseUnit { get; private set; }
+    public Vector2 TargetPosition { get; private set; }
     private Vector2 prevTargetPosition = new Vector2(int.MaxValue, int.MinValue);
     private Vector2[] followingSimplifyPath;
     private Vector2[] followingFullPath;
@@ -18,7 +18,7 @@ public class UnitMovement : MonoBehaviour {
     public PathResultType PathResultType { get; private set; }
     public bool startMoving { get; private set; } = false;
     private void Awake() {
-        unit = GetComponent<Unit>();
+        BaseUnit = GetComponent<Unit>();
     }
     private void Update() {
         if (time <= 0) {
@@ -112,7 +112,7 @@ public class UnitMovement : MonoBehaviour {
                     currentWaypoint = followingSimplifyPath[targetIndex];
                 }
 
-                float speed = unit.properties.moveSpeed;
+                float speed = BaseUnit.properties.moveSpeed;
                 Vector2 position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
                 
                 TryTranslateToPosition(position);

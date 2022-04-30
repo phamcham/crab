@@ -5,7 +5,7 @@ using UnityEngine;
 public class HeadquarterBuilding : Building {
     public OwnProperties ownProperties;
     [SerializeField] GameObject selectorObj;
-    //UIE_HeadquarterBuildingControl uie;
+    BuildingSelectable selectable;
     private float time;
     private bool isStartSpawned;
     private List<Vector2Int> circles = new List<Vector2Int>();
@@ -13,6 +13,15 @@ public class HeadquarterBuilding : Building {
     private int circleIndex;
     bool isPrevSpawnSuccess = true;
     bool isContinue = true;
+
+    public override Team Team => Team.DefaultPlayer;
+    private void Awake() {
+        selectable = GetComponent<BuildingSelectable>();
+
+        selectable.OnSelected = OnSelectedHandle;
+        selectable.OnDeselected = OnDeselectedHandle;
+        selectable.OnShowControlUI = OnShowControlUIHandle;
+    }
     private void Start() {
         selectorObj.SetActive(false);
     }
@@ -26,11 +35,11 @@ public class HeadquarterBuilding : Building {
         circles = new List<Vector2Int>(new HashSet<Vector2Int>(circles));
         time = ownProperties.productionInterval;
     }
-    public override void OnSelected() {
+    private void OnSelectedHandle() {
         selectorObj.SetActive(true);
         // setting uie
     }
-    public override void OnDeselected() {
+    private void OnDeselectedHandle() {
         selectorObj.SetActive(false);
     }
     private bool SpawnNewCrab(){
@@ -107,7 +116,7 @@ public class HeadquarterBuilding : Building {
     }
 
     // ly do khong de vao select vi minh chi select 1 cai thoi THANG NGUUUU
-    public override void ShowControlUI(bool active){
+    private void OnShowControlUIHandle(bool active){
         // if (uie == null) {
         //     Transform holder = SelectionOneUIControlManager.current.GetHolder();
         //     uie = Instantiate(headquarterControlUIPrefab.gameObject, holder).GetComponent<UIE_HeadquarterBuildingControl>();

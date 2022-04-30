@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 7488459802620507746}
   - component: {fileID: 1841128406}
   - component: {fileID: 7488459802620507747}
+  - component: {fileID: -6422537527338075641}
   m_Layer: 0
   m_Name: Spawn Building
   m_TagString: Untagged
@@ -190,6 +191,7 @@ MonoBehaviour:
       er qer
     maxHealthPoint: 60
     curHealthPoint: 0
+    defendPoint: 0
     area:
       m_Position: {x: 0, y: 0, z: 0}
       m_Size: {x: 2, y: 2, z: 1}
@@ -202,3 +204,15 @@ MonoBehaviour:
       amount: 1
   spriteRenderer: {fileID: 7488459802248142356}
   selectorObj: {fileID: 6717118122189974662}
+--- !u!114 &-6422537527338075641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7488459802620507745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b763723651c0714bb16757744dc1d08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

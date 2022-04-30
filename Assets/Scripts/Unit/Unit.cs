@@ -23,9 +23,9 @@ public abstract class Unit : Entity {
         OnUnitDestroy();
     }
     protected abstract void OnUnitDestroy();
-    public abstract void ShowControlUI(bool active);
-    public abstract void OnSelected();
-    public abstract void OnDeselected();
+    //public abstract void ShowControlUI(bool active);
+    //public abstract void OnSelected();
+    //public abstract void OnDeselected();
 }
 [System.Serializable]
 public class UnitProperties{
