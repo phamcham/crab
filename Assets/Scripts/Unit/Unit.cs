@@ -11,13 +11,18 @@ public abstract class Unit : Entity {
     }
     protected abstract void OnAwake();
     protected void Start(){
-        //UnitManager.current.AddUnit(this);
+        UnitManager.current.AddUnit(this);
         OnStart();
     }
+    protected abstract void OnStart();
     public Sprite GetSprite() {
         return spriteRenderer.sprite;
     }
-    protected abstract void OnStart();
+    protected void OnDestroy() {
+        UnitManager.current.RemoveUnit(this);
+        OnUnitDestroy();
+    }
+    protected abstract void OnUnitDestroy();
     public abstract void ShowControlUI(bool active);
     public abstract void OnSelected();
     public abstract void OnDeselected();

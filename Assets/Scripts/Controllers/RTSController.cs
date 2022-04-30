@@ -197,9 +197,9 @@ public class RTSController : MonoBehaviour {
     void ZoomCameraControl(){
         float scroll = Input.mouseScrollDelta.y;
         if (scroll != 0){
-            float size = Camera.main.orthographicSize - scroll * 5;
+            float size = Camera.main.orthographicSize - scroll * 3;
             Camera.main.DOKill();
-            Camera.main.DOOrthoSize(Mathf.Clamp(size, 10, 20), 0.2f).Play();
+            Camera.main.DOOrthoSize(Mathf.Clamp(size, 5, 20), 0.2f).Play();
         }
     }
     void MoveCameraControl(){

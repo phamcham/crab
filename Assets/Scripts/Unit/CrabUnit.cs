@@ -20,6 +20,7 @@ public class CrabUnit : Unit  {
     protected override void OnStart() {
         //movement.MoveToPosition(transform.position);
         selectorObj.SetActive(false);
+        //print("false roi ma");
     }
 
     public override void OnSelected(){
@@ -29,18 +30,12 @@ public class CrabUnit : Unit  {
         selectorObj.SetActive(false);
     }
     public override void ShowControlUI(bool active) {
-        // if (uie == null) {
-        //     Transform holder = SelectionOneUIControlManager.current.GetHolder();
-        //     uie = Instantiate(uieControlUIPrefab.gameObject, holder).GetComponent<UIE_CrabUnitControl>();
-        // }
         UIE_CrabUnitControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_CrabUnitControl>(this);
         uie.Setup(this);
         uie.gameObject.SetActive(active);
     }
-    private void OnDestroy() {
-        // if (uie && uie.gameObject){ 
-        //     Destroy(uie.gameObject);
-        // }
+
+    protected override void OnUnitDestroy() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
     }
 }

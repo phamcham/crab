@@ -16,7 +16,7 @@ public class UnitMovement : MonoBehaviour {
     private bool isPathFound = false;
     //private Vector2Int prevIndex = new Vector2Int(int.MaxValue, int.MinValue);
     public PathResultType PathResultType { get; private set; }
-    private bool startMoving = false;
+    public bool startMoving { get; private set; } = false;
     private void Awake() {
         unit = GetComponent<Unit>();
     }
@@ -85,19 +85,23 @@ public class UnitMovement : MonoBehaviour {
 
     private IEnumerator FollowPath() {
         Vector2 currentWaypoint = followingSimplifyPath[0];
-        //var _waitForFixedUpdate = new WaitForFixedUpdate();
+        float randomStopTime = Random.Range(2, 6);
+        float randomStopDuration = Random.Range(0.3f, 1);
         while (true) {
-            //Debug.Log("find : " + PathResultType + ", " + TargetPosition + ", " + transform.position);
+            // kiem tra theo chu ky co overlap unit nao khong
+            // if (randomStopTime <= 0) {
+            //     randomStopTime = Random.Range(2, 6);
+            //     randomStopDuration = Random.Range(0.3f, 1);
+            //     yield return new WaitForSeconds(randomStopDuration);
+            // }
+            // else {
+            //     randomStopTime -= Time.deltaTime;
+            // }
+
             if (followingSimplifyPath != null && followingSimplifyPath.Length > 0) {
-                //Debug.Log($"({transform.position.x}, {transform.position.y}) ({currentWaypoint.x}, {currentWaypoint.y})");
-                //Debug.Log(((Vector2)transform.position).PCToString() + ", " + currentWaypoint.PCToString() + ", equ: " + ((Vector2)transform.position == currentWaypoint));
                 if ((Vector2)transform.position == currentWaypoint) {
                     targetIndex++;
                     if (targetIndex >= followingSimplifyPath.Length) {
-                        //Debug.Log(name + " pathfinding completed");
-                        // BUG: cai nay chi la di het duong chu khong phai la da hoan thanh
-                        //float distance = Vector2.Distance(transform.position, TargetPosition);
-                        //Debug.Log(distance);
                         if (PathResultType == PathResultType.Found){
                             //Debug.Log("xong : " + TargetPosition);
                             PathResultType = PathResultType.IsCompleted;
@@ -109,17 +113,13 @@ public class UnitMovement : MonoBehaviour {
                 }
 
                 float speed = unit.properties.moveSpeed;
-                //Vector2 position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.fixedDeltaTime);
                 Vector2 position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
                 
-                //Debug.Log($"move from {transform.position.PCToString()} to {currentWaypoint.PCToString()} is {position}");
                 TryTranslateToPosition(position);
 
-                //yield return _waitForFixedUpdate;
                 yield return null;
             }
             else {
-                print("path null");
                 PathResultType = PathResultType.NotFound;
                 yield break;
             }
@@ -127,53 +127,10 @@ public class UnitMovement : MonoBehaviour {
     }
 
     void TryTranslateToPosition(Vector2 position){
-        // TODO: thay vi transform.positon, chuyen thanh y dinh can di chuyen chu kp vi tri hien tai
-        // Vector2Int currentGridIndex = AStarGrid.current.NodeFromWorldPoint(transform.position).gridIndex;
-        // Vector2Int nextGridIndex = AStarGrid.current.NodeFromWorldPoint(position).gridIndex;
-        // if (nextGridIndex != currentGridIndex){
-        //     // unit da di chuyen den mot cell moi
-        //     // TODO: kiem tra cell do da bi chiem boi 1 unit nao chua, hard code
-        //     var units = FindObjectsOfType<Unit>();
-        //     for (int i = 0; i < units.Length; i++){
-        //         Vector2Int check = AStarGrid.current.NodeFromWorldPoint(units[i].transform.position).gridIndex;
-        //         if (check == nextGridIndex){
-        //             // vi tri chuan bi di chuyen da bi chiem
-        //         }
-        //     }
-
-        //     AStarGrid.current.DeleteTempObstacle(currentGridIndex);
-        //     AStarGrid.current.AddTempObstacle(nextGridIndex);
-        // }
-        //print($"position: ({position.x}, {position.y})");
-        //print("1: " + rb.position.PCToString());
-        //rb.MovePosition(position);
         transform.position = position;
         //print("2: " + rb.position.PCToString());
         
     }
-
-    // bool RigidMove(Vector2 position){
-    //     Vector2 direction = (position - (Vector2)transform.position).normalized;
-    //     float distance = Vector2.Distance(position, transform.position);
-    //     List<RaycastHit2D> results = new List<RaycastHit2D>();
-    //     int count = rb.Cast(direction, results, distance);
-    //     if (count == 0){
-    //         //Debug.Log(direction);
-    //         // No collisions
-    //         rb.MovePosition(position);
-    //         return true;
-    //     }
-    //     else {
-    //         foreach (RaycastHit2D hit in results){
-    //             if (hit.collider != null && hit.collider.gameObject != null){
-    //                 if (hit.collider.TryGetComponent<Unit>(out Unit unit)){
-                        
-    //                 }
-    //             }
-    //         }
-    //         return false;
-    //     }
-    // }
 
     protected virtual void OnDrawGizmos() {
         if (Application.isPlaying){

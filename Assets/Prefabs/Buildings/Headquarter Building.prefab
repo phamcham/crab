@@ -83,6 +83,7 @@ MonoBehaviour:
       qwe '
     maxHealthPoint: 130
     curHealthPoint: 0
+    defendPoint: 12
     area:
       m_Position: {x: 0, y: 0, z: 0}
       m_Size: {x: 3, y: 3, z: 1}
@@ -92,6 +93,9 @@ MonoBehaviour:
     - type: 2
       amount: 5
   spriteRenderer: {fileID: 4557125660582455259}
+  ownProperties:
+    productionInterval: 5
+    curProductionPercent: 0
   selectorObj: {fileID: 2525206812351456555}
 --- !u!114 &1256213141291779191
 MonoBehaviour:

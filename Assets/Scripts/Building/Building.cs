@@ -44,6 +44,7 @@ public struct BuildingProperties {
     public int maxHealthPoint;
     [HideInInspector]
     public int curHealthPoint;
+    public int defendPoint;
     public BoundsInt area;
     public List<ResourceRequirement> resourceRequirements;
 }
