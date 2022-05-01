@@ -20,6 +20,7 @@ public class UnitDamagable : MonoBehaviour {
 
         int curHeath = BaseUnit.properties.curHealthPoint;
         int maxHeath = BaseUnit.properties.maxHealthPoint;
+        //print("cuerh: " + curHeath + "/" + maxHeath);
         curHeath -= damage;
         if (curHeath < 0) curHeath = 0;
         BaseUnit.properties.curHealthPoint = curHeath;
@@ -34,7 +35,7 @@ public class UnitDamagable : MonoBehaviour {
         }
     }
     IEnumerator DoHideHealthbar() {
-        Debug.Log("aasdasd");
+        //Debug.Log("aasdasd");
         yield return new WaitForSeconds(4f);
         healthBar.gameObject.SetActive(false);
     }

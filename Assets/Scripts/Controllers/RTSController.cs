@@ -8,6 +8,8 @@ public class RTSController : MonoBehaviour {
     [SerializeField] GameObject selectionBoxObj;
     [SerializeField] GameObject arrowMoveObj;
     [SerializeField] Tilemap tilemapGround;
+    public bool controlMoveCameraByEdgeScreen = false;
+    public float moveCamSpeed;
     List<UnitSelectable> selectedUnits = new List<UnitSelectable>();
     private BuildingSelectable onlyOneSelectedBuilding;
     //private bool isMultiSelect;
@@ -16,17 +18,20 @@ public class RTSController : MonoBehaviour {
     bool isSelectingBox = false;
     bool isMoveCamera = false;
     private void Awake() {
+        Cursor.lockState = CursorLockMode.Confined;
+    }
+    private void Start() {
         selectionBoxObj.SetActive(false);
-        arrowMoveObj.SetActive(false);
+        arrowMoveObj.SetActive(false);    
     }
     private void Update() {
-        SelectionBoxControl();
-        GiveOrdersControl();
-    }
-
-    private void LateUpdate() {
-        MoveCameraControl();
-        ZoomCameraControl();
+        if (!GameController.current.IsGameplayPaused) {
+            SelectionBoxControl();
+            GiveOrdersControl();
+            
+            MoveCameraControl();
+            ZoomCameraControl();
+        }
     }
 
     void SelectionBoxControl(){
@@ -95,6 +100,7 @@ public class RTSController : MonoBehaviour {
         selectedUnits.Clear();
         if (onlyOneSelectedBuilding) {
             print("deselect building");
+            onlyOneSelectedBuilding.OnDeselected();
             onlyOneSelectedBuilding.OnShowControlUI(false);
             onlyOneSelectedBuilding = null;
         }
@@ -127,6 +133,7 @@ public class RTSController : MonoBehaviour {
         if (!isSelectingBox && Input.GetMouseButtonDown(1)){
             if (onlyOneSelectedBuilding) {
                 // vua bam vao building sau do bam chuot ra cho khac => cha lam j ca
+                print("deselected");
                 onlyOneSelectedBuilding.OnDeselected();
                 onlyOneSelectedBuilding.OnShowControlUI(false);
                 onlyOneSelectedBuilding = null;
@@ -137,6 +144,8 @@ public class RTSController : MonoBehaviour {
                 RaycastHit2D[] hits = Physics2D.RaycastAll(mouseWorldPosition, Vector3.forward);
                 if (hits != null && hits.Length > 0) {
                     foreach (RaycastHit2D hit in hits) {
+
+                        // ========== THEM CAC LENH KHI BAM VAO VAT THE KHAC TAI DAY ===========
                         // neu bam vao building storage
                         if (hit.collider.TryGetComponent(out BuildingStorage storage)){
                             GiveOrderByBuildingStorage(storage);
@@ -145,6 +154,12 @@ public class RTSController : MonoBehaviour {
                         // bam vao resource
                         if (hit.collider.TryGetComponent(out Resource resource)){
                             GiveOrderByResource(resource);
+                            break;
+                        }
+                        // bam vao enemy
+                        if (hit.collider.TryGetComponent(out EnemyUnit enemyUnit)) {
+                            //print("order");
+                            GiveOrderAttackEnemy(enemyUnit);
                             break;
                         }
                     }
@@ -160,6 +175,8 @@ public class RTSController : MonoBehaviour {
     }
     private void GiveOrderByBuildingStorage(BuildingStorage storage) {
         foreach (UnitSelectable selectable in selectedUnits){
+            StopGathering(selectable);
+            StopShooting(selectable);
             if (selectable.TryGetComponent(out UnitTaskGathering gathering)){
                 gathering.SetBuildingStorage(storage);
                 gathering.SetState(UnitTaskGathering.TaskGatheringState.MoveToStorage);
@@ -168,7 +185,9 @@ public class RTSController : MonoBehaviour {
         }
     }
     private void GiveOrderByResource(Resource resource) {
-        foreach (UnitSelectable selectable in selectedUnits){
+        foreach (UnitSelectable selectable in selectedUnits) {
+            StopGathering(selectable);
+            StopShooting(selectable);
             if (selectable.TryGetComponent(out UnitTaskGathering gathering)){
                 gathering.SetResource(resource);
                 gathering.SetState(UnitTaskGathering.TaskGatheringState.MoveToResource);
@@ -176,14 +195,32 @@ public class RTSController : MonoBehaviour {
             }
         }
     }
+    private void GiveOrderAttackEnemy(EnemyUnit enemyUnit) {
+        foreach (UnitSelectable selectable in selectedUnits) {
+            StopGathering(selectable);
+            if (selectable.TryGetComponent(out UnitShootable shootable)) {
+                shootable.SetFollowEnemy(enemyUnit, UnitShootable.FollowEnemyState.Hunt);
+            }
+        }
+    }
     private void GiveOrderByMoving(Vector2 position) {
         foreach (UnitSelectable selectable in selectedUnits){
-            if (selectable.TryGetComponent(out IUnitTask task)){
-                task.EndDoTask();
-            }
+            StopGathering(selectable);
+            StopShooting(selectable);
             if (selectable.TryGetComponent(out UnitMovement movement)){
                 movement.MoveToPosition(position);
             }
+        }
+    }
+    private void StopGathering(UnitSelectable selectable) {
+        if (selectable.TryGetComponent(out UnitTaskGathering gathering)) {
+            gathering.EndDoTask();
+        }
+    }
+    private void StopShooting(UnitSelectable selectable) {
+        // tam dung tan cong
+        if (selectable.TryGetComponent(out UnitShootable shootable)) {
+            shootable.StopAttacking();
         }
     }
     private void ShowArrow(Vector2 position) {
@@ -208,14 +245,36 @@ public class RTSController : MonoBehaviour {
             startMoveCameraPosition = InputExtension.MouseWorldPoint();
             isMoveCamera = true;
         }
+
+       
         if (isMoveCamera){
             if (Input.GetMouseButton(2)){
                 Vector3 currentMousePosition = InputExtension.MouseWorldPoint();
                 Vector3 delta = startMoveCameraPosition - currentMousePosition;
+                delta.z = 0;
                 Camera.main.transform.position += delta;
             }
-            if (Input.GetMouseButtonUp(1)){
+            if (Input.GetMouseButtonUp(2)){
                 isMoveCamera = false;
+            }
+        }
+        else {
+            if (controlMoveCameraByEdgeScreen) {
+                const int boundary = 10;
+                int horizontal = 0;
+                if (Input.mousePosition.x <= boundary) horizontal = -1;
+                if (Input.mousePosition.x + boundary >= Screen.width) horizontal = 1;
+                
+                int vertical = 0;
+                if (Input.mousePosition.y <= boundary) vertical = -1;
+                if (Input.mousePosition.y + boundary >= Screen.height) vertical = 1;
+                
+                if (horizontal != 0 || vertical != 0) {
+                    Vector2 move = new Vector2(horizontal, vertical).normalized;
+                    Vector3 delta = move * Time.deltaTime * moveCamSpeed;
+                    delta.z = 0;
+                    Camera.main.transform.position += delta;
+                }
             }
         }
     }

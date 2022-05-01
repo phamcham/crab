@@ -285,7 +285,7 @@ MonoBehaviour:
   properties:
     unitName: Crab
     maxHealthPoint: 40
-    moveSpeed: 4
+    moveSpeed: 3
     damage: 5
     area:
       m_Position: {x: 0, y: 0, z: 0}

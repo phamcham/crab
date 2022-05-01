@@ -176,7 +176,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackRadius: 7
-  reloadingTime: 2
+  reloadingTime: 1
+  bulletSpeed: 5
 --- !u!114 &5900285085813020476
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,7 +205,7 @@ MonoBehaviour:
   properties:
     unitName: Bubble Crab
     maxHealthPoint: 40
-    moveSpeed: 7
+    moveSpeed: 2
     damage: 5
     area:
       m_Position: {x: 0, y: 0, z: 0}

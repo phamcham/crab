@@ -4,25 +4,51 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour {
     [SerializeField] Rigidbody2D rigid;
-    private Unit owner;
-    public int speed;
-    private int damage;
-    private Vector2 direction;
-    public void Shoot(Unit owner, int damage, Vector2 direction, int speed) {
-        this.owner = owner;
-        this.damage = damage;
-        this.direction = direction;
-        this.speed = speed;
+    BulletProperties properties;
+    float lifeTime;
+    bool isLiving = false;
+    public void Shoot(BulletProperties bulletProperties, float lifeTime) {
+        this.properties.owner = bulletProperties.owner;
+        this.properties.damage = bulletProperties.damage;
+        this.properties.direction = bulletProperties.direction;
+        this.properties.speed = bulletProperties.speed;
+        this.lifeTime = lifeTime;
+        isLiving = true;
 
-        rigid.velocity = direction.normalized * speed;
+        rigid.velocity = properties.direction.normalized * properties.speed;
+    }
+    private void Update() {
+        if (isLiving) {
+            if (lifeTime > 0) {
+                lifeTime -= Time.deltaTime;
+            }
+            else {
+                isLiving = false;
+                BulletManager.ReturnBulletPooled(this);
+            }
+        }
     }
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject == gameObject) return;
         if (other.TryGetComponent(out UnitDamagable damagable)) {
-            if (damagable.BaseUnit.Team != owner.Team) {
-                damagable.TakeDamage(damage);
+            if (damagable.BaseUnit.Team != properties.owner) {
+                damagable.TakeDamage(properties.damage);
                 BulletManager.ReturnBulletPooled(this);
             }
         }
+    }
+}
+
+public struct BulletProperties {
+    public Team owner;
+    public int speed;
+    public int damage;
+    public Vector2 direction;
+
+    public BulletProperties(Team owner, int speed, int damage, Vector2 direction) {
+        this.owner = owner;
+        this.speed = speed;
+        this.damage = damage;
+        this.direction = direction;
     }
 }

@@ -68,7 +68,15 @@ public class UnitMovement : MonoBehaviour {
         //Debug.Log(pathStatus);
         if (pathStatus == PathResultType.Found || pathStatus == PathResultType.NotEnough) {
             followingFullPath = fullPath;
+            if (followingFullPath.Length >= 1) {
+                followingFullPath[followingFullPath.Length - 1] = TargetPosition;
+            }
+
             followingSimplifyPath = simplifyPath;
+            if (followingSimplifyPath.Length >= 1) {
+                followingSimplifyPath[followingSimplifyPath.Length - 1] = TargetPosition;
+            }
+
             targetIndex = 0;
             if (followingSimplifyPath != null){
                 StartCoroutine(nameof(FollowPath));
@@ -85,8 +93,8 @@ public class UnitMovement : MonoBehaviour {
 
     private IEnumerator FollowPath() {
         Vector2 currentWaypoint = followingSimplifyPath[0];
-        float randomStopTime = Random.Range(2, 6);
-        float randomStopDuration = Random.Range(0.3f, 1);
+        // float randomStopTime = Random.Range(2, 6);
+        // float randomStopDuration = Random.Range(0.3f, 1);
         while (true) {
             // kiem tra theo chu ky co overlap unit nao khong
             // if (randomStopTime <= 0) {
@@ -161,5 +169,11 @@ public class UnitMovement : MonoBehaviour {
             startMoving = true;
             TargetPosition = position;
         }
+    }
+
+    public void StopMovement() {
+        TargetPosition = transform.position;
+        startMoving = false;
+        StopCoroutine(nameof(FollowPath));
     }
 }

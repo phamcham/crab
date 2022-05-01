@@ -22,7 +22,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     private BuildingStorage storage;
     private TaskGatheringState currentState = TaskGatheringState.DoNothing;
     private bool initStep = false;
-    protected Dictionary<TaskGatheringState, Action> steps = new Dictionary<TaskGatheringState, Action>();
+    private Dictionary<TaskGatheringState, Action> steps = new Dictionary<TaskGatheringState, Action>();
     public void SetResourceType(ResourceType type){
         currentTargetType = type;
     }

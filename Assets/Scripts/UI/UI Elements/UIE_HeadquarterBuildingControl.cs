@@ -19,7 +19,7 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
     bool isContinue = true;
     HeadquarterBuilding building;
     float updateInterval = 0.2f;
-    float time;
+    float curUpdateUIInterval;
     private void Start() {
         continuePauseButton.onClick.AddListener(() => {
             if (isContinue) {
@@ -54,15 +54,15 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
         percentUpdateText?.Invoke(ownProperties.curProductionPercent + "%");
     }
     private void OnEnable() {
-        time = 0;
+        curUpdateUIInterval = 0;
     }
     private void Update() {
-        if (time <= 0) {
-            time = updateInterval;
+        if (curUpdateUIInterval <= 0) {
+            curUpdateUIInterval = updateInterval;
             UpdateUI();
         }
         else {
-            time -= Time.deltaTime;
+            curUpdateUIInterval -= Time.deltaTime;
         }
     }
 }

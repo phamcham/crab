@@ -8,6 +8,7 @@ public class HealthBar : MonoBehaviour {
     // sizeNomalized = curHeath / maxHeath
     public void SetSize(float sizeNomalized) {
         sizeNomalized = Mathf.Clamp01(sizeNomalized);
+        //print(sizeNomalized);
         bar.localScale = new Vector3(sizeNomalized, 1f, 1f);
     }
 }

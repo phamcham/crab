@@ -7,6 +7,7 @@ public abstract class Unit : Entity {
     public UnitProperties properties;
     [SerializeField] SpriteRenderer spriteRenderer;
     protected void Awake(){
+        properties.curHealthPoint = properties.maxHealthPoint;
         OnAwake();
     }
     protected abstract void OnAwake();
@@ -28,7 +29,7 @@ public abstract class Unit : Entity {
     //public abstract void OnDeselected();
 }
 [System.Serializable]
-public class UnitProperties{
+public class UnitProperties {
     public string unitName;
     public int maxHealthPoint;
     public int moveSpeed;
@@ -36,11 +37,4 @@ public class UnitProperties{
     public BoundsInt area = new BoundsInt(Vector3Int.zero, Vector3Int.one);
     [HideInInspector]
     public int curHealthPoint;
-
-    public UnitProperties(string unitName, int maxHealthPoint, int damage, int moveSpeed) {
-        this.maxHealthPoint = maxHealthPoint;
-        this.damage = damage;
-        this.moveSpeed = moveSpeed;
-        curHealthPoint = maxHealthPoint;
-    }
 }

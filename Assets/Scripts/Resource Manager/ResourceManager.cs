@@ -13,8 +13,12 @@ public class ResourceManager : MonoBehaviour
     Dictionary<ResourceType, Resource> dictResourcePrefabs = new Dictionary<ResourceType, Resource>();
     Dictionary<ResourceType, List<Resource>> dictResources = new Dictionary<ResourceType, List<Resource>>();
     Dictionary<ResourceType, int> resourceStorage = new Dictionary<ResourceType, int>();
+    Transform holder;
     private void Awake() {
         current = this;
+        
+        holder = new GameObject("Resource Holder").transform;
+        holder.position = Vector3.zero;
     }
 
     private void Start() {
@@ -30,27 +34,6 @@ public class ResourceManager : MonoBehaviour
     }
 
     void FillResourcesToTilemap() {
-        // tmp
-        /*List<Vector2Int> starfish_positions = new List<Vector2Int>(){
-            new Vector2Int(-26, -13), new Vector2Int(-20, -13), new Vector2Int(-25, -12), new Vector2Int(-23, -12), 
-            new Vector2Int(-22, -12), new Vector2Int(-26, -11), new Vector2Int(-25, -11), new Vector2Int(-24, -11), 
-            new Vector2Int(-25, -10), new Vector2Int(-27, -9)
-        };
-        List<Vector2Int> grass_positions = new List<Vector2Int>(){
-            new Vector2Int(15, -13), new Vector2Int(16, -13), new Vector2Int(21, -13), new Vector2Int(22, -13), 
-            new Vector2Int(23, -13), new Vector2Int(17, -12), new Vector2Int(19, -12), new Vector2Int(22, -12), 
-            new Vector2Int(23, -12), new Vector2Int(19, -11), new Vector2Int(20, -11), new Vector2Int(21, -11), 
-            new Vector2Int(22, -11), new Vector2Int(16, -10), new Vector2Int(19, -10), new Vector2Int(23, -10), 
-            new Vector2Int(19, -9), new Vector2Int(20, -9), new Vector2Int(23, -8), new Vector2Int(24, -7)
-        };
-        List<Vector2Int> conch_positions = new List<Vector2Int>(){
-            new Vector2Int(21, 4), new Vector2Int(15, 6), new Vector2Int(19, 6), new Vector2Int(16, 7), 
-            new Vector2Int(17, 7), new Vector2Int(18, 7), new Vector2Int(16, 8)
-        };
-        List<Vector2Int> coconut_positions = new List<Vector2Int>(){
-            new Vector2Int(-4, 7), new Vector2Int(-5, 8), new Vector2Int(-3, 8), new Vector2Int(-2, 8), new Vector2Int(-2, 9)
-        };
-        */
 
         List<Vector2Int> availablePositions = new List<Vector2Int>();
         foreach (Vector2Int pos in tilemapGround.cellBounds.allPositionsWithin){
@@ -106,6 +89,6 @@ public class ResourceManager : MonoBehaviour
         ui.UpdateResourceStoringUI(type, resourceStorage[type]);
     }
     public Resource Create(ResourceType type) {
-        return Instantiate(dictResourcePrefabs[type]);
+        return Instantiate(dictResourcePrefabs[type], holder);
     }
 }
