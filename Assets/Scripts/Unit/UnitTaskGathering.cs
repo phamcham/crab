@@ -38,6 +38,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     }
     private BuildingStorage GetRandomBuildingStorage(){
         List<BuildingStorage> storages = FindObjectsOfType<BuildingStorage>()?.ToList();
+        storages = storages.Where(s => s.CanStoraged).ToList();
         return storages?.PCItemRandom();
     }
     private Resource GetRandomResource(){
@@ -109,18 +110,20 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     }
     private void MoveToStorageAction() {
         if (initStep){
-            initStep = false;
             // TODO: find shortest storage
             if (!storage){
                 storage = GetRandomBuildingStorage();
             }
             if (storage){
+                initStep = false;
                 movement.MoveToPosition(storage.transform.position);
             }
         }
-        if (movement.PathResultType == PathResultType.IsCompleted){
-            initStep = true;
-            currentState = TaskGatheringState.DropoffResource;
+        if (storage) {
+            if (movement.PathResultType == PathResultType.IsCompleted){
+                initStep = true;
+                currentState = TaskGatheringState.DropoffResource;
+            }
         }
     }
     private void DropoffResourceAction() {

@@ -125,12 +125,12 @@ GameObject:
   - component: {fileID: 7488459802620507747}
   - component: {fileID: -6422537527338075641}
   m_Layer: 0
-  m_Name: Spawn Building
+  m_Name: House Building
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7488459802620507746
 Transform:
   m_ObjectHideFlags: 0
@@ -144,6 +144,7 @@ Transform:
   m_Children:
   - {fileID: 7488459802248142355}
   - {fileID: 7066580676576228423}
+  - {fileID: 2728027483095320115}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -186,7 +187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   properties:
-    buildingName: Spawner
+    buildingName: House
     description: qwueu qwuehquwhe qwuehqw euqwheqwhe q weqw qweqetq er qwer qwerq
       er qer
     maxHealthPoint: 60
@@ -203,7 +204,10 @@ MonoBehaviour:
     - type: 2
       amount: 1
   spriteRenderer: {fileID: 7488459802248142356}
+  healthBar: {fileID: 2728027483095320113}
   selectorObj: {fileID: 6717118122189974662}
+  ownProperties:
+    capacity: 3
 --- !u!114 &-6422537527338075641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,5 +218,86 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b763723651c0714bb16757744dc1d08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1001 &4750099752561688735
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 7488459802620507746}
+    m_Modifications:
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7219366976953124525, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+      propertyPath: m_Name
+      value: Healthbar
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+--- !u!4 &2728027483095320115 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+  m_PrefabInstance: {fileID: 4750099752561688735}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2728027483095320113 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7219366976953124526, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
+  m_PrefabInstance: {fileID: 4750099752561688735}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87dff960256730a4daba029a72ac66a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

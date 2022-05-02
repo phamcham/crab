@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class UIE_CrabUnitControl : UIE_UIControl {
+public class UIE_BubbleCrabUnitControl : UIE_UIControl {
     [Header("Avatar settings")]
     [SerializeField] UnityEvent<string> titleUpdateText;
     [SerializeField] Image avatar;
@@ -14,7 +14,11 @@ public class UIE_CrabUnitControl : UIE_UIControl {
     [Space, Header("Control settings")]
     [SerializeField] UnityEvent<string> speedUpdateText;
     [SerializeField] UnityEvent<string> damageUpdateText;
-    public void Setup(GatheringCrabUnit unit) {
+    [SerializeField] UnityEvent<string> attackRadiusUpdateText;
+    [SerializeField] UnityEvent<string> bulletSpeedUpdateText;
+    [SerializeField] UnityEvent<string> bulletReloadTimeUpdateText;
+    public void Setup(UnitShootable shootable) {
+        Unit unit = shootable.BaseUnit;
         UnitProperties properties = unit.properties;
         // avatar
         titleUpdateText?.Invoke(properties.unitName);
@@ -24,5 +28,8 @@ public class UIE_CrabUnitControl : UIE_UIControl {
         // control
         speedUpdateText?.Invoke(properties.moveSpeed + "");
         damageUpdateText?.Invoke(properties.damage + "");
+        attackRadiusUpdateText?.Invoke(shootable.attackRadius + "");
+        bulletSpeedUpdateText?.Invoke(shootable.bulletSpeed + "");
+        bulletReloadTimeUpdateText?.Invoke(shootable.reloadingTime + "");
     }
 }

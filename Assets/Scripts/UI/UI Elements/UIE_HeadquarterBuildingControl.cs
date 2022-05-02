@@ -1,4 +1,4 @@
-using System.Collections;
+ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,9 +9,13 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
     [SerializeField] UnityEvent<string> titleUpdateText;
     [SerializeField] Image avatar;
     [SerializeField] UnityEvent<string> healthPointUpdateText;
+    [SerializeField] HealthBarUI healthBarUI;
     [SerializeField] UnityEvent<string> defendPointUpdateText;
     [SerializeField] UnityEvent<string> productionTimePointUpdateText;
     [SerializeField] UnityEvent<string> percentUpdateText;
+    [SerializeField] HealthBarUI spawnCrabProcessBarUI;
+    [SerializeField] Color enoughBarColor;
+    [SerializeField] Color notEnoughBarColor;
     [SerializeField] Button continuePauseButton;
     [SerializeField] Image continuePauseButtonRender;
     [SerializeField] Sprite continueSprite;
@@ -20,6 +24,7 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
     HeadquarterBuilding building;
     float updateInterval = 0.2f;
     float curUpdateUIInterval;
+    bool enoughCapacity = true;
     private void Start() {
         continuePauseButton.onClick.AddListener(() => {
             if (isContinue) {
@@ -47,11 +52,23 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
         titleUpdateText?.Invoke(properties.buildingName);
         avatar.sprite = building.GetSprite();
         healthPointUpdateText?.Invoke(string.Format("HP: {0}/{1}", properties.curHealthPoint, properties.maxHealthPoint));
+        healthBarUI.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         
         // control
         defendPointUpdateText?.Invoke(properties.defendPoint + "");
         productionTimePointUpdateText?.Invoke(ownProperties.productionInterval + "");
-        percentUpdateText?.Invoke(ownProperties.curProductionPercent + "%");
+        if (enoughCapacity) percentUpdateText?.Invoke(ownProperties.curProductionPercent + "%");
+        spawnCrabProcessBarUI.SetSize(1.0f * ownProperties.curProductionPercent / 100);
+    }
+    public void EnoughCapacityForCrab(bool enough) {
+        enoughCapacity = enough;
+        if (enough) {
+            spawnCrabProcessBarUI.SetColor(enoughBarColor);
+        }
+        else {
+            percentUpdateText?.Invoke("khong du nha roi");
+            spawnCrabProcessBarUI.SetColor(notEnoughBarColor);
+        }
     }
     private void OnEnable() {
         curUpdateUIInterval = 0;

@@ -16,7 +16,7 @@ public class RTSController : MonoBehaviour {
     Vector3 startSelectionBoxPosition;
     Vector3 startMoveCameraPosition;
     bool isSelectingBox = false;
-    bool isMoveCamera = false;
+    int moveCameraByMouse = -1;
     private void Awake() {
         Cursor.lockState = CursorLockMode.Confined;
     }
@@ -241,21 +241,29 @@ public class RTSController : MonoBehaviour {
         }
     }
     void MoveCameraControl(){
-        if (Input.GetMouseButtonDown(2) && !InputExtension.IsMouseOverUI()){
-            startMoveCameraPosition = InputExtension.MouseWorldPoint();
-            isMoveCamera = true;
+        if (moveCameraByMouse == -1 && !isSelectingBox) {
+            // neu chua bam chuot nao + dang k select
+            if (Input.GetMouseButtonDown(2) && !InputExtension.IsMouseOverUI()){
+                startMoveCameraPosition = InputExtension.MouseWorldPoint();
+                moveCameraByMouse = 2;
+            }
+        
+            if (Input.GetMouseButtonDown(1) && !InputExtension.IsMouseOverUI()){
+                startMoveCameraPosition = InputExtension.MouseWorldPoint();
+                moveCameraByMouse = 1;
+            }
         }
 
-       
-        if (isMoveCamera){
-            if (Input.GetMouseButton(2)){
+        if (moveCameraByMouse != -1) {
+            // neu dang keo
+            if (Input.GetMouseButton(moveCameraByMouse)){
                 Vector3 currentMousePosition = InputExtension.MouseWorldPoint();
                 Vector3 delta = startMoveCameraPosition - currentMousePosition;
                 delta.z = 0;
                 Camera.main.transform.position += delta;
             }
-            if (Input.GetMouseButtonUp(2)){
-                isMoveCamera = false;
+            if (Input.GetMouseButtonUp(moveCameraByMouse)){
+                moveCameraByMouse = -1;
             }
         }
         else {

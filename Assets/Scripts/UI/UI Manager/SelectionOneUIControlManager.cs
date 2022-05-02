@@ -7,8 +7,9 @@ public class SelectionOneUIControlManager : MonoBehaviour {
     public static SelectionOneUIControlManager current { get; private set; }
     [SerializeField] Transform controlUIHolder;
     [Header("Prefabs")]
-    [SerializeField] UIE_CrabUnitControl uieControlUIPrefab;
-    [SerializeField] UIE_SpawnerBuildingControl spawnerControlUIPrefab;
+    [SerializeField] UIE_CrabUnitControl crabUnitControlUIPrefab;
+    [SerializeField] UIE_BubbleCrabUnitControl bubbleCrabUnitControlUIPrefab;
+    [SerializeField] UIE_HouseBuildingControl houseControlUIPrefab;
     [SerializeField] UIE_HeadquarterBuildingControl headquarterControlUIPrefab;
     [SerializeField] UIE_LawnSprinklerBuildingControl lawnSprinklerControlUIPrefabs;
     Dictionary<Type, UIE_UIControl> dictPrefabs = new Dictionary<Type, UIE_UIControl>();
@@ -19,8 +20,9 @@ public class SelectionOneUIControlManager : MonoBehaviour {
     }
     private void Start() {
         dictPrefabs = new Dictionary<Type, UIE_UIControl>() {
-            { typeof(UIE_CrabUnitControl),  uieControlUIPrefab },
-            { typeof(UIE_SpawnerBuildingControl),  spawnerControlUIPrefab },
+            { typeof(UIE_CrabUnitControl),  crabUnitControlUIPrefab },
+            { typeof(UIE_BubbleCrabUnitControl), bubbleCrabUnitControlUIPrefab },
+            { typeof(UIE_HouseBuildingControl),  houseControlUIPrefab },
             { typeof(UIE_HeadquarterBuildingControl),  headquarterControlUIPrefab },
             { typeof(UIE_LawnSprinklerBuildingControl), lawnSprinklerControlUIPrefabs }
         };

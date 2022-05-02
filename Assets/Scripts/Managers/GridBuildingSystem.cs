@@ -14,9 +14,12 @@ public class GridBuildingSystem : MonoBehaviour {
     [SerializeField] Tilemap tempTilemap;
     private static Dictionary<TileType, TileBase> tileBases = new Dictionary<TileType, TileBase>();
 
-    private Building temp;
+    private GameObject tempObj; // only sprite
+    private Building tempBuilding;
+
     private Vector3Int prevPos;
     private BoundsInt prevArea;
+    Transform holder;
     
     // call neu co thay doi o map
     public void UpdateMainTilemap(){
@@ -38,8 +41,16 @@ public class GridBuildingSystem : MonoBehaviour {
         mainTilemap.SetTiles(positionList.ToArray(), tileArray);
     }
     // TODO: nen sua thanh Create cho dong bo
-    public void InitializeWithBuilding(GameObject buildingObj){
-        temp = Instantiate(buildingObj, InputExtension.MouseWorldPoint(), Quaternion.identity).GetComponent<Building>();
+    public void InitializeWithBuilding(Building building){
+        tempBuilding = Instantiate(building.gameObject, holder).GetComponent<Building>();
+        tempBuilding.gameObject.SetActive(false);
+
+        tempObj = new GameObject(tempBuilding.properties.buildingName + " temp");
+        SpriteRenderer spriteRenderer = tempObj.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = building.GetSprite();
+        spriteRenderer.sortingOrder = 3;
+        tempObj.transform.position = InputExtension.MouseWorldPoint();
+
         FollowBuilding();
         SetActiveBuilding(true);
     }
@@ -52,8 +63,8 @@ public class GridBuildingSystem : MonoBehaviour {
     private void FollowBuilding(){
         ClearArea();
 
-        BoundsInt buildingArea = CalculateAreaFromWorldPosition(temp.properties.area, temp.transform.position);
-        temp.properties.area.position = buildingArea.position;
+        BoundsInt buildingArea = CalculateAreaFromWorldPosition(tempBuilding.properties.area, tempBuilding.transform.position);
+        tempBuilding.properties.area.position = buildingArea.position;
 
         TileBase[] baseArray = GetTilesBlock(buildingArea, mainTilemap);
 
@@ -86,6 +97,19 @@ public class GridBuildingSystem : MonoBehaviour {
             }
         }
     }
+    public void ClearArea(BoundsInt area) {
+        SetTileBlock(area, TileType.White, mainTilemap);
+
+        for (int i = 0; i < area.size.x; i++){
+            for (int j = 0; j < area.size.y; j++){
+                Vector2Int curPosition = new Vector2Int(i, j);
+                Vector2Int cellIndex = AStarGrid.current.PositionToIndex(curPosition + (Vector2Int)area.position);
+                //Debug.Log(cellIndex);
+                AStarGrid.current.DeleteTempObstacle(cellIndex);
+                AStarGrid.current.UpdateGridNode(cellIndex);
+            }
+        }
+    }
     public bool IsBuilding(TileBase tile){
         print("Check: " + (tile == tileBases[TileType.Green]));
         return tile == tileBases[TileType.Green];
@@ -101,6 +125,9 @@ public class GridBuildingSystem : MonoBehaviour {
     }
     private void Awake() {
         current = this;
+
+        holder = new GameObject("Building Holder").transform;
+        holder.position = Vector3.zero;
     }
     private void Start() {
         string tilePath = @"Tiles/";
@@ -114,32 +141,38 @@ public class GridBuildingSystem : MonoBehaviour {
     }
 
     private void Update() {
-        if (!temp){
+        if (!tempObj){
             return;
         }
-        if (!temp.IsPlaced){
+        if (!tempBuilding.IsPlaced){
             if (InputExtension.IsMouseOverUI()){
                 return;
             }
             Vector2 touchPos = InputExtension.MouseWorldPoint();
             Vector3Int cellPos = gridLayout.WorldToCell(touchPos);
 
-            temp.transform.position = touchPos;
+            tempBuilding.transform.position = touchPos;
+            tempObj.transform.position = touchPos;
             if (prevPos != cellPos){
                 prevPos = cellPos;
                 FollowBuilding();
             }
             
             if (Input.GetMouseButtonDown(0)){
-                if (temp.CanBePlaced()){
-                    temp.Place();
+                if (tempBuilding.CanBePlaced()){
+                    tempBuilding.gameObject.SetActive(true);
+                    Destroy(tempObj);
+                    tempObj = null;
+                    tempBuilding.Place();
                     SetActiveBuilding(false);
                 }
             }
             else if (Input.GetMouseButtonDown(1)){
                 ClearArea();
-                Destroy(temp.gameObject);
-                temp = null;
+                Destroy(tempBuilding.gameObject);
+                Destroy(tempObj);
+                tempBuilding = null;
+                tempObj = null;
                 SetActiveBuilding(false);
             }
         }

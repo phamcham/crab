@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class CrabUnit : Unit  {
+public class GatheringCrabUnit : Unit, IDamagable  {
     
     [Header("Crab settings")]
+    [SerializeField] HealthBar healthBar;
     [SerializeField] Transform spriteTrans;
     [SerializeField] GameObject selectorObj;
     UnitMovement movement;
-    UnitDamagable damagable;
     UnitSelectable selectable;
     public override Team Team => Team.DefaultPlayer;
     //UIE_CrabUnitControl uie;
@@ -19,7 +19,6 @@ public class CrabUnit : Unit  {
         //properties = new UnitProperties(Team.DefaultPlayer, 100, 10, 6);
         //unitTasks = GetComponents<UnitTask>();
         movement = GetComponent<UnitMovement>();
-        damagable = GetComponent<UnitDamagable>();
         selectable = GetComponent<UnitSelectable>();
 
         selectable.OnSelected = OnSelectedHandle;
@@ -29,18 +28,19 @@ public class CrabUnit : Unit  {
     protected override void OnStart() {
         //movement.MoveToPosition(transform.position);
         selectorObj.SetActive(false);
+        healthBar.Hide();
         //print("false roi ma");
     }
 
     // event unitselectable
     public void OnSelectedHandle(){
         selectorObj.SetActive(true);
-        damagable.SetDisplayHealthbar(true);
+        healthBar.Show();
     }
     // event unitselectable
     public void OnDeselectedHandle(){
         selectorObj.SetActive(false);
-        damagable.SetDisplayHealthbar(false);
+        healthBar.Hide();
     }
     // event unitselectable
     public void OnShowControlUIHandle(bool active) {
@@ -53,18 +53,14 @@ public class CrabUnit : Unit  {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
     }
 
-    public override int GetHashCode()
-    {
-        return base.GetHashCode();
-    }
+    public void TakeDamage(int damage){
+        int curHeath = properties.curHealthPoint;
+        int maxHeath = properties.maxHealthPoint;
+        //print("cuerh: " + curHeath + "/" + maxHeath);
+        curHeath -= damage;
+        if (curHeath < 0) curHeath = 0;
+        properties.curHealthPoint = curHeath;
 
-    public override bool Equals(object other)
-    {
-        return base.Equals(other);
-    }
-
-    public override string ToString()
-    {
-        return base.ToString();
+        healthBar.SetSize(1.0f * curHeath / maxHeath);
     }
 }

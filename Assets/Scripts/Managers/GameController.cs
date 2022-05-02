@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameController : MonoBehaviour {
     public static GameController current { get; private set; }
     public bool IsGameplayPaused { get; private set; }
+    public bool IsApplicationQuited { get; private set; }
     [SerializeField] UIE_PauseGame uiePauseGame;
     Dictionary<ResourceType, int> storedResources = new Dictionary<ResourceType, int>();
     HeadquarterBuilding headquarterBuilding;
@@ -42,5 +43,9 @@ public class GameController : MonoBehaviour {
         IsGameplayPaused = false;
         uiePauseGame.ClosePauseWindowUI();
         Time.timeScale = 1;
+    }
+
+    private void OnApplicationQuit() {
+        IsApplicationQuited = false;
     }
 }

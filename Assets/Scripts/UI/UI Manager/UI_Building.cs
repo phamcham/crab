@@ -26,7 +26,7 @@ public class UI_Building : MonoBehaviour {
         UIE_CreateBuilding creater = Instantiate(uieCreateBuildingPrefab.gameObject, buildingButtonsHolder)
             .GetComponent<UIE_CreateBuilding>();
         creater.Setup(building, () => {
-            string name = building.name;
+            string name = building.properties.buildingName;
             string description = building.properties.description;
             List<ResourceRequirement> requirements = building.properties.resourceRequirements;
             // BUG: thay vi setup, chuyen thanh update

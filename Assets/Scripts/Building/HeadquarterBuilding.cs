@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HeadquarterBuilding : Building {
-    public OwnProperties ownProperties;
+public class HeadquarterBuilding : Building, IDamagable {
+    [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
+    public OwnProperties ownProperties;
     BuildingSelectable selectable;
+    BuildingStorage storage;
     private float time;
     private bool isStartSpawned;
     private List<Vector2Int> circles = new List<Vector2Int>();
@@ -13,9 +15,11 @@ public class HeadquarterBuilding : Building {
     private int circleIndex;
     bool isPrevSpawnSuccess = true;
     bool isContinue = true;
+    bool enoughHouseForCrabs = false;
 
     public override Team Team => Team.DefaultPlayer;
     private void Awake() {
+        storage = GetComponent<BuildingStorage>();
         selectable = GetComponent<BuildingSelectable>();
 
         selectable.OnSelected = OnSelectedHandle;
@@ -24,6 +28,7 @@ public class HeadquarterBuilding : Building {
     }
     private void Start() {
         selectorObj.SetActive(false);
+        healthBar.Hide();
     }
     public override void OnBuildingPlaced(){
         GameController.current.HeadquarterStartGameplay(this);
@@ -34,6 +39,14 @@ public class HeadquarterBuilding : Building {
         circles.AddRange(BresenhamsCircle.CircleBres(center, 3));
         circles = new List<Vector2Int>(new HashSet<Vector2Int>(circles));
         time = ownProperties.productionInterval;
+        storage.CanStoraged = true;
+
+        if (UnitManager.current.unitCount >= UnitManager.current.houseCapacity) {
+            enoughHouseForCrabs = true;
+        }
+        else {
+            enoughHouseForCrabs = false;
+        }
     }
     private void OnSelectedHandle() {
         selectorObj.SetActive(true);
@@ -56,7 +69,7 @@ public class HeadquarterBuilding : Building {
             // TODO: kiem tra co con cua nao dang dung o do khong
             bool hasUnit = HasUnitInPosition(wpos, 0.4f);
             if (isWalkable && !hasUnit) {
-                Unit unit = UnitManager.current.Create<CrabUnit>();
+                Unit unit = UnitManager.current.Create<GatheringCrabUnit>();
                 unit.transform.position = transform.position;
                 if (unit.TryGetComponent(out UnitMovement movement)){
                     movement.MoveToPosition(wpos);
@@ -100,11 +113,26 @@ public class HeadquarterBuilding : Building {
     private void Update() {
         if (isContinue && isStartSpawned){
             if (time <= 0){
-                isPrevSpawnSuccess = SpawnNewCrab();
-                if (!isPrevSpawnSuccess) {
-                    // TODO: thong bao khong the spawn vi het cho roi
+                if (UnitManager.current.unitCount >= UnitManager.current.houseCapacity) {
+                    if (enoughHouseForCrabs) {
+                        // thong bao k du nha
+                        enoughHouseForCrabs = false;
+                        UIE_HeadquarterBuildingControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_HeadquarterBuildingControl>(this);
+                        uie.EnoughCapacityForCrab(false);
+                    }
                 }
-                time = ownProperties.productionInterval;
+                else {
+                    if (!enoughHouseForCrabs) {
+                        enoughHouseForCrabs = true;
+                        UIE_HeadquarterBuildingControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_HeadquarterBuildingControl>(this);
+                        uie.EnoughCapacityForCrab(true);
+                    }
+                    isPrevSpawnSuccess = SpawnNewCrab();
+                    if (!isPrevSpawnSuccess) {
+                        // TODO: thong bao khong the spawn vi het cho de spawn roi
+                    }
+                    time = ownProperties.productionInterval;
+                }
             }
             else {
                 if (isPrevSpawnSuccess){
@@ -117,20 +145,27 @@ public class HeadquarterBuilding : Building {
 
     // ly do khong de vao select vi minh chi select 1 cai thoi THANG NGUUUU
     private void OnShowControlUIHandle(bool active){
-        // if (uie == null) {
-        //     Transform holder = SelectionOneUIControlManager.current.GetHolder();
-        //     uie = Instantiate(headquarterControlUIPrefab.gameObject, holder).GetComponent<UIE_HeadquarterBuildingControl>();
-        // }
         UIE_HeadquarterBuildingControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_HeadquarterBuildingControl>(this);
         uie.Setup(this);
         uie.gameObject.SetActive(active);
     }
-    private void OnDestroy() {
-        // if (uie && uie.gameObject) {
-        //     Destroy(uie.gameObject);
-        // }
+
+    public void TakeDamage(int damage) {
+        int curHeath = properties.curHealthPoint;
+        int maxHeath = properties.maxHealthPoint;
+        //print("cuerh: " + curHeath + "/" + maxHeath);
+        curHeath -= damage;
+        if (curHeath < 0) curHeath = 0;
+        properties.curHealthPoint = curHeath;
+
+        healthBar.SetSize(1.0f * curHeath / maxHeath);
+    }
+
+    protected override void OnDestroyBuilding()
+    {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
     }
+
     [System.Serializable]
     public struct OwnProperties {
         public int productionInterval;

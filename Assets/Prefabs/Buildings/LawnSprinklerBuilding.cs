@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LawnSprinklerBuilding : Building {
+public class LawnSprinklerBuilding : Building, IDamagable {
     public override Team Team => Team.DefaultPlayer;
     public OwnProperties ownProperties;
     private BuildingSelectable selectable;
@@ -12,6 +12,7 @@ public class LawnSprinklerBuilding : Building {
     float checkTime = 0;
     float curReloadingTime = 0;
     EnemyUnit targetEnemy;
+    [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
     [SerializeField] Transform source; // nong sung
     public override void OnBuildingPlaced() {
@@ -79,6 +80,7 @@ public class LawnSprinklerBuilding : Building {
     }
     private void Start() {
         selectorObj.SetActive(false);
+        healthBar.Hide();
     }
 
     private void OnSelectedHandle() {
@@ -93,9 +95,23 @@ public class LawnSprinklerBuilding : Building {
         uie.Setup(this);
         uie.gameObject.SetActive(active);
     }
-    private void OnDestroy() {
+
+    public void TakeDamage(int damage) {
+        int curHeath = properties.curHealthPoint;
+        int maxHeath = properties.maxHealthPoint;
+        //print("cuerh: " + curHeath + "/" + maxHeath);
+        curHeath -= damage;
+        if (curHeath < 0) curHeath = 0;
+        properties.curHealthPoint = curHeath;
+
+        healthBar.SetSize(1.0f * curHeath / maxHeath);
+    }
+
+    protected override void OnDestroyBuilding()
+    {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
     }
+
     [System.Serializable]
     public class OwnProperties {
         public int attackRadius;

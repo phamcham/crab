@@ -176,7 +176,6 @@ GameObject:
   - component: {fileID: 8589906723737199393}
   - component: {fileID: 8589906723737199399}
   - component: {fileID: 2325717220950185751}
-  - component: {fileID: 1759249815}
   - component: {fileID: 2437556750182263267}
   - component: {fileID: 8589906723737199395}
   m_Layer: 0
@@ -245,19 +244,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holdingObjectSpriteRenderer: {fileID: 8589906723204274511}
---- !u!114 &1759249815
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8589906723737199421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 238091a05fefc484988a4fc3e0975e6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthBar: {fileID: 5690266740865683978}
 --- !u!114 &2437556750182263267
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,7 +269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   properties:
-    unitName: Crab
+    unitName: Gathering Crab
     maxHealthPoint: 40
     moveSpeed: 3
     damage: 5
@@ -292,6 +278,7 @@ MonoBehaviour:
       m_Size: {x: 1, y: 1, z: 1}
     curHealthPoint: 0
   spriteRenderer: {fileID: 8589906722304778302}
+  healthBar: {fileID: 5690266740865683978}
   spriteTrans: {fileID: 8589906722304778301}
   selectorObj: {fileID: 8589906723748690840}
 --- !u!1 &8589906723748690840

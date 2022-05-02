@@ -26,7 +26,7 @@ public class UIE_CreateBuilding : MonoBehaviour, IPointerEnterHandler, IPointerE
         button.onClick.AddListener(OnClick);
     }
     void OnClick(){
-        GridBuildingSystem.current.InitializeWithBuilding(building.gameObject);
+        GridBuildingSystem.current.InitializeWithBuilding(building);
     }
 
     public void OnPointerEnter(PointerEventData eventData) {

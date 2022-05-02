@@ -92,11 +92,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2863253434817014881}
   - component: {fileID: 2863253434817014908}
-  - component: {fileID: 2530449280890892495}
   - component: {fileID: 2863253434817014906}
   - component: {fileID: 2863253434817014883}
   - component: {fileID: 5900285085813020476}
-  - component: {fileID: 2863253434817014910}
+  - component: {fileID: 802208272}
   m_Layer: 0
   m_Name: Bubble Crab Unit
   m_TagString: Untagged
@@ -138,19 +137,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &2530449280890892495
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863253434817014880}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 238091a05fefc484988a4fc3e0975e6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthBar: {fileID: 2863253434673255451}
 --- !u!114 &2863253434817014906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,7 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e96d0a06622a7943bb1c3b72df9da7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2863253434817014910
+--- !u!114 &802208272
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -199,7 +185,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2863253434817014880}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c4ca9fa1851c354dbd098ed926a630b, type: 3}
+  m_Script: {fileID: 11500000, guid: 577e04885810f704982788fe4e154a2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   properties:
@@ -212,6 +198,7 @@ MonoBehaviour:
       m_Size: {x: 1, y: 1, z: 1}
     curHealthPoint: 0
   spriteRenderer: {fileID: 2863253435459858275}
+  healthBar: {fileID: 2863253434673255451}
   spriteTrans: {fileID: 2863253435459858272}
   selectorObj: {fileID: 2863253434829681861}
 --- !u!1 &2863253434829681861

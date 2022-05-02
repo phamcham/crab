@@ -176,4 +176,11 @@ public class UnitMovement : MonoBehaviour {
         startMoving = false;
         StopCoroutine(nameof(FollowPath));
     }
+
+    public void HasPathToPosition(System.Action<bool> callback) {
+        AStarPathRequestManager.RequestPath(new PathRequest(transform.position, TargetPosition, (fullPath, simplifyPath, pathStatus) => {
+            bool hasPath = (pathStatus != PathResultType.NotFound);
+            callback?.Invoke(hasPath); 
+        }));
+    }
 }

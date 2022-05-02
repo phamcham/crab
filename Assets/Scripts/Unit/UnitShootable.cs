@@ -8,7 +8,6 @@ public class UnitShootable : MonoBehaviour {
     public int bulletSpeed;
     private float curReloadingTime = 0;
     public Unit BaseUnit { get; private set; }
-    private UnitShootable shootable;
     private UnitMovement movement;
     const float checkInterval = 2f;
     private float checkTime = 0;
@@ -17,7 +16,6 @@ public class UnitShootable : MonoBehaviour {
     bool isInRange = false;
     private void Awake() {
         BaseUnit = GetComponent<Unit>();
-        shootable = GetComponent<UnitShootable>();
         movement = GetComponent<UnitMovement>();
     }
 
@@ -30,7 +28,7 @@ public class UnitShootable : MonoBehaviour {
             else {
                 checkTime = 0;
                 // check enemy
-                List<EnemyUnit> enemies = GetEnemies();
+                List<EnemyUnit> enemies = GetEnemies(2 * attackRadius);
                 if (enemies.Count > 0) {
                     SetFollowEnemy(enemies[0], FollowEnemyState.Defense);
                 }
@@ -51,7 +49,7 @@ public class UnitShootable : MonoBehaviour {
                     Vector2 direction = (targetEnemy.transform.position - transform.position).normalized;
                     Bullet bullet = BulletManager.GetBulletPooled();
                     bullet.transform.position = transform.position;
-                    float lifeTime = 1.0f * shootable.attackRadius / bulletSpeed;
+                    float lifeTime = 1.0f * attackRadius / bulletSpeed;
                     bullet.Shoot(new BulletProperties(BaseUnit.Team, bulletSpeed, BaseUnit.properties.damage, direction), lifeTime);
                 }
                 else {
@@ -62,7 +60,7 @@ public class UnitShootable : MonoBehaviour {
                 // ke dich ngoai tam ban
                 isInRange = false;
                 
-                if (followEnemyState == FollowEnemyState.Hunt) {
+                if (followEnemyState == FollowEnemyState.Hunt || distance <= 2 * attackRadius) {
                     // duoi theo nooooo
                     movement.MoveToPosition(targetEnemy.transform.position);
                 }
@@ -86,9 +84,9 @@ public class UnitShootable : MonoBehaviour {
         targetEnemy = null;
     }
 
-    private List<EnemyUnit> GetEnemies() {
+    private List<EnemyUnit> GetEnemies(float radius) {
         List<EnemyUnit> list = new List<EnemyUnit>();
-        Collider2D[] collider2Ds = Physics2D.OverlapCircleAll(transform.position, shootable.attackRadius);
+        Collider2D[] collider2Ds = Physics2D.OverlapCircleAll(transform.position, radius);
         foreach (Collider2D collider in collider2Ds) {
             if (collider.TryGetComponent(out EnemyUnit damagable)) {
                 if (damagable.Team != BaseUnit.Team) {

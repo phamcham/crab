@@ -20,6 +20,7 @@ public class StoneBuilding : Building
     }
     private void Start() {
         selectorObj.SetActive(false);
+        //healthBar.Hide();
     }
     private void OnSelected() {
         selectorObj.SetActive(true);
@@ -32,5 +33,10 @@ public class StoneBuilding : Building
     private void ShowControlUI(bool active)
     {
         
+    }
+
+    protected override void OnDestroyBuilding()
+    {
+        throw new System.NotImplementedException();
     }
 }

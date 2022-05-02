@@ -30,9 +30,9 @@ public class Bullet : MonoBehaviour {
     }
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject == gameObject) return;
-        if (other.TryGetComponent(out UnitDamagable damagable)) {
-            if (damagable.BaseUnit.Team != properties.owner) {
-                damagable.TakeDamage(properties.damage);
+        if (other.TryGetComponent(out IDamagable unit)) {
+            if (unit.Team != properties.owner) {
+                unit.TakeDamage(properties.damage);
                 BulletManager.ReturnBulletPooled(this);
             }
         }

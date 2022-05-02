@@ -8,6 +8,7 @@ public abstract class Building : Entity {
     public BuildingProperties properties;
     [SerializeField] SpriteRenderer spriteRenderer;
     public bool IsPlaced { get;private set; }
+    bool isApplicationQuit = false;
     public abstract void OnBuildingPlaced();
     public bool CanBePlaced(){
         BoundsInt areaTemp = GridBuildingSystem.current.CalculateAreaFromWorldPosition(properties.area, transform.position);
@@ -25,15 +26,25 @@ public abstract class Building : Entity {
         transform.DOKill();
         transform.DOMove(areaTemp.center, 0.1f).Play();
 
-
+        properties.curHealthPoint = properties.maxHealthPoint;
+        
         OnBuildingPlaced();
     }
+    protected void OnDestroy() {
+        if (!isApplicationQuit) {
+            BoundsInt areaTemp = GridBuildingSystem.current.CalculateAreaFromWorldPosition(properties.area, transform.position);
+
+            GridBuildingSystem.current.ClearArea(areaTemp);
+            OnDestroyBuilding();
+        }
+    }
+    protected abstract void OnDestroyBuilding();
     public Sprite GetSprite() {
         return spriteRenderer.sprite;
     }
-    // public abstract void ShowControlUI(bool active);
-    // public abstract void OnSelected();
-    // public abstract void OnDeselected();
+    private void OnApplicationQuit() {
+        isApplicationQuit = true;
+    }
 }
 
 [System.Serializable]
