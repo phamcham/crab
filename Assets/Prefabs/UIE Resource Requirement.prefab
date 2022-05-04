@@ -55,8 +55,8 @@ MonoBehaviour:
   amountUpdateText:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.UI.Text, UnityEngine.UI
+      - m_Target: {fileID: 755631505}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
         m_MethodName: set_text
         m_Mode: 0
         m_Arguments:
@@ -67,6 +67,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  amountBackgroundColor: {fileID: 8611341095094790423}
+  enoughColor: {r: 0.03137255, g: 0.7058824, b: 0, a: 1}
+  notEnoughColor: {r: 0.7058824, g: 0.15686275, b: 0, a: 1}
 --- !u!114 &8381234405669301897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,7 +358,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5943396, g: 0.49489087, b: 0, a: 1}
+  m_Color: {r: 0.7058824, g: 0.1580121, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

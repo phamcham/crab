@@ -9,32 +9,37 @@ public abstract class Building : Entity {
     [SerializeField] SpriteRenderer spriteRenderer;
     public bool IsPlaced { get;private set; }
     bool isApplicationQuit = false;
+    BoundsInt gridArea;
     public abstract void OnBuildingPlaced();
     public bool CanBePlaced(){
-        BoundsInt areaTemp = GridBuildingSystem.current.CalculateAreaFromWorldPosition(properties.area, transform.position);
+        gridArea = GridBuildingSystem.current.CalculateAreaFromWorldPosition(properties.area, transform.position);
 
-        if (GridBuildingSystem.current.CanTakeArea(areaTemp)){
+        if (GridBuildingSystem.current.CanTakeArea(gridArea)){
             return true;
         }
         return false;
     }
     public void Place(){
-        BoundsInt areaTemp = GridBuildingSystem.current.CalculateAreaFromWorldPosition(properties.area, transform.position);
-
         IsPlaced = true;
-        GridBuildingSystem.current.TakeArea(areaTemp);
+        GridBuildingSystem.current.TakeArea(gridArea);
         transform.DOKill();
-        transform.DOMove(areaTemp.center, 0.1f).Play();
+        transform.DOMove(gridArea.center, 0.1f).Play();
 
         properties.curHealthPoint = properties.maxHealthPoint;
+
+        List<ResourceRequirement> requirements = properties.resourceRequirements;
+        foreach (ResourceRequirement requirement in requirements) {
+            ResourceType type = requirement.type;
+            int amount = requirement.amount;
+
+            ResourceManager.current.CollectResource(type, -amount);
+        }
         
         OnBuildingPlaced();
     }
     protected void OnDestroy() {
         if (!isApplicationQuit) {
-            BoundsInt areaTemp = GridBuildingSystem.current.CalculateAreaFromWorldPosition(properties.area, transform.position);
-
-            GridBuildingSystem.current.ClearArea(areaTemp);
+            GridBuildingSystem.current.ClearArea(gridArea);
             OnDestroyBuilding();
         }
     }

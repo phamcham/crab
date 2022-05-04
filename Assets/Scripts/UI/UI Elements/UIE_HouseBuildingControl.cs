@@ -12,14 +12,13 @@ public class UIE_HouseBuildingControl : UIE_UIControl {
     [SerializeField] HealthBarUI healthBarUI;
     [SerializeField] UnityEvent<string> capacityPointUpdateText;
     HouseBuilding building;
-    float updateUIInterval = 0.2f;
-    float curUpdateUITime;
 
-    public void Setup(HouseBuilding building) {
+    public void SetBuilding(HouseBuilding building) {
         //print("assigned?" +(building != null ? "ok" : "null"));
         this.building = building;
     }
-    void UpdateUI() {
+
+    protected override void UpdateIntervalOnUI() {
         //print("building null: " + (building is null ? "null" : "ok"));
         BuildingProperties properties = building.properties;
         HouseBuilding.OwnProperties ownProperties = building.ownProperties;
@@ -30,17 +29,5 @@ public class UIE_HouseBuildingControl : UIE_UIControl {
         healthBarUI.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         // control
         capacityPointUpdateText?.Invoke(ownProperties.capacity + "");
-    }
-    private void OnEnable() {
-        curUpdateUITime = 0;
-    }
-    private void Update() {
-        if (curUpdateUITime <= 0) {
-            curUpdateUITime = updateUIInterval;
-            UpdateUI();
-        }
-        else {
-            curUpdateUITime -= Time.deltaTime;
-        }
     }
 }

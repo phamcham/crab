@@ -2,50 +2,48 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BubbleCrabUnit : Unit, IDamagable {
+public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable {
     [Header("Crab settings")]
     [SerializeField] HealthBar healthBar;
     [SerializeField] Transform spriteTrans;
     [SerializeField] GameObject selectorObj;
     UnitMovement movement;
-    UnitSelectable selectable;
     UnitShootable shootable;
-    public override Team Team => Team.DefaultPlayer;
-    //UIE_CrabUnitControl uie;
+    UIE_BubbleCrabUnitControl uiControl;
 
     protected override void OnAwake() {
         //properties = new UnitProperties(Team.DefaultPlayer, 100, 10, 6);
         //unitTasks = GetComponents<UnitTask>();
         movement = GetComponent<UnitMovement>();
         shootable = GetComponent<UnitShootable>();
-        selectable = GetComponent<UnitSelectable>();
-
-        selectable.OnSelected = OnSelectedHandle;
-        selectable.OnDeselected = OnDeselectedHandle;
-        selectable.OnShowControlUI = OnShowControlUIHandle;
     }
     protected override void OnStart() {
-        //movement.MoveToPosition(transform.position);
+        uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_BubbleCrabUnitControl>(this);
+        uiControl.SetUnitShootable(shootable);
+        uiControl.Hide();
+
         selectorObj.SetActive(false);
+
+        healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         healthBar.Hide();
         //print("false roi ma");
     }
 
     // event unitselectable
-    public void OnSelectedHandle(){
+    public void OnSelected(){
         selectorObj.SetActive(true);
         healthBar.Show();
     }
     // event unitselectable
-    public void OnDeselectedHandle(){
+    public void OnDeselected(){
         selectorObj.SetActive(false);
         healthBar.Hide();
+        uiControl.Hide();
     }
     // event unitselectable
-    public void OnShowControlUIHandle(bool active) {
-        UIE_BubbleCrabUnitControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_BubbleCrabUnitControl>(this);
-        uie.Setup(shootable);
-        uie.gameObject.SetActive(active);
+    public void OnShowControlUI(bool isShow) {
+        if (isShow) uiControl.Show();
+        else uiControl.Hide();
     }
 
     protected override void OnUnitDestroy() {
@@ -61,5 +59,22 @@ public class BubbleCrabUnit : Unit, IDamagable {
         properties.curHealthPoint = curHeath;
 
         healthBar.SetSize(1.0f * curHeath / maxHeath);
+
+        if (curHeath == 0) {
+            Destroy(gameObject);
+        }
+    }
+
+    public void OnGiveOrder(Vector2 position) {
+        shootable.StopShooting();
+
+        RaycastHit2D[] hits = Physics2D.RaycastAll(position, Vector3.forward);
+        foreach (RaycastHit2D hit in hits) {
+            if (hit.collider.TryGetComponent(out EnemyUnit enemyUnit)) {
+                shootable.SetFollowEnemy(enemyUnit);
+                return;
+            }
+        }
+        movement.MoveToPosition(position);
     }
 }

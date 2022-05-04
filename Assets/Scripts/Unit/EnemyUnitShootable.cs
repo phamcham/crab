@@ -10,6 +10,7 @@ public class EnemyUnitShootable : MonoBehaviour {
     private float curReloadingTime = 0;
     const float checkInterval = 2f;
     float curCheck = 0;
+    Vector2 direction = Vector2.zero;
     public EnemyUnit BaseEnemyUnit { get; private set; }
     
     private void Awake() {
@@ -21,18 +22,26 @@ public class EnemyUnitShootable : MonoBehaviour {
         }
         else {
             curCheck = 0;
-            List<Building> buildings = GetBuildingDamagables();
-            Vector2 direction = Vector2.zero;
+            List<Building> buildings = GetBuildingDamagables(attackRadius);
             if (buildings != null && buildings.Count > 0) {
-                direction = (buildings[0].transform.position - transform.position).normalized;
+                Building building = GetNearestBuilding(buildings);
+                direction = (building.transform.position - transform.position).normalized;
             }
             else {
-                List<Unit> units = GetUnitDamagables();
+                List<Unit> units = GetUnitDamagables(attackRadius);
                 if (units != null && units.Count > 0) {
-                    direction = (units[0].transform.position - transform.position).normalized;
+                    Unit unit = GetNearestUnit(units);
+                    direction = (unit.transform.position - transform.position).normalized;
+                }
+                else {
+                    direction = Vector2.zero;
                 }
             }
-            
+        }
+
+        if (curReloadingTime <= 0) {
+            //Debug.Log(direction);
+            curReloadingTime = reloadingTime;
             if (direction != Vector2.zero) {
                 Bullet bullet = BulletManager.GetBulletPooled();
                 bullet.transform.position = transform.position;
@@ -40,10 +49,12 @@ public class EnemyUnitShootable : MonoBehaviour {
                 bullet.Shoot(new BulletProperties(BaseEnemyUnit.Team, bulletSpeed, BaseEnemyUnit.properties.damage, direction), lifeTime);
             }
         }
+
+        curReloadingTime = Mathf.Max(0, curReloadingTime - Time.deltaTime);
     }
 
-    private List<Unit> GetUnitDamagables() {
-        Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, attackRadius);
+    private List<Unit> GetUnitDamagables(float radius) {
+        Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, radius);
         List<Unit> list = new List<Unit>();
         foreach (Collider2D col in cols) {
             if (col.TryGetComponent(out Unit unit)) {
@@ -56,8 +67,20 @@ public class EnemyUnitShootable : MonoBehaviour {
         }
         return list;
     }
-    private List<Building> GetBuildingDamagables() {
-        Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, attackRadius);
+    private Unit GetNearestUnit(List<Unit> list) {
+        float minDistance = float.MaxValue;
+        Unit res = null;
+        foreach (Unit unit in list) {
+            float distance = Vector2.Distance(unit.transform.position, transform.position);
+            if (distance < minDistance) {
+                minDistance = distance;
+                res = unit;
+            }
+        }
+        return res;
+    }
+    private List<Building> GetBuildingDamagables(float radius) {
+        Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, radius);
         List<Building> list = new List<Building>();
         foreach (Collider2D col in cols) {
             if (col.TryGetComponent(out Building unit)) {
@@ -69,5 +92,18 @@ public class EnemyUnitShootable : MonoBehaviour {
             }
         }
         return list;
+    }
+
+    private Building GetNearestBuilding(List<Building> list) {
+        float minDistance = float.MaxValue;
+        Building res = null;
+        foreach (Building building in list) {
+            float distance = Vector2.Distance(building.transform.position, transform.position);
+            if (distance < minDistance) {
+                minDistance = distance;
+                res = building;
+            }
+        }
+        return res;
     }
 }

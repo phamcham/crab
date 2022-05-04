@@ -17,8 +17,10 @@ public class UnitMovement : MonoBehaviour {
     //private Vector2Int prevIndex = new Vector2Int(int.MaxValue, int.MinValue);
     public PathResultType PathResultType { get; private set; }
     public bool startMoving { get; private set; } = false;
+    private Animation anim;
     private void Awake() {
         BaseUnit = GetComponent<Unit>();
+        anim = GetComponent<Animation>();
     }
     private void Update() {
         if (time <= 0) {
@@ -96,15 +98,7 @@ public class UnitMovement : MonoBehaviour {
         // float randomStopTime = Random.Range(2, 6);
         // float randomStopDuration = Random.Range(0.3f, 1);
         while (true) {
-            // kiem tra theo chu ky co overlap unit nao khong
-            // if (randomStopTime <= 0) {
-            //     randomStopTime = Random.Range(2, 6);
-            //     randomStopDuration = Random.Range(0.3f, 1);
-            //     yield return new WaitForSeconds(randomStopDuration);
-            // }
-            // else {
-            //     randomStopTime -= Time.deltaTime;
-            // }
+            // TODO: kiem tra theo chu ky co overlap unit nao khong
 
             if (followingSimplifyPath != null && followingSimplifyPath.Length > 0) {
                 if ((Vector2)transform.position == currentWaypoint) {
@@ -113,6 +107,8 @@ public class UnitMovement : MonoBehaviour {
                         if (PathResultType == PathResultType.Found){
                             //Debug.Log("xong : " + TargetPosition);
                             PathResultType = PathResultType.IsCompleted;
+                            anim.Stop("crab move");
+                            anim.Play("crab idle");
                             startMoving = false;
                         }
                         yield break;
@@ -120,6 +116,7 @@ public class UnitMovement : MonoBehaviour {
                     currentWaypoint = followingSimplifyPath[targetIndex];
                 }
 
+                anim.Play("crab move");
                 float speed = BaseUnit.properties.moveSpeed;
                 Vector2 position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
                 
@@ -172,6 +169,8 @@ public class UnitMovement : MonoBehaviour {
     }
 
     public void StopMovement() {
+        anim.Stop("crab move");
+        anim.Play("crab idle");
         TargetPosition = transform.position;
         startMoving = false;
         StopCoroutine(nameof(FollowPath));

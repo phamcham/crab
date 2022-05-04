@@ -2,43 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HouseBuilding : Building, IDamagable {
+public class HouseBuilding : Building, IDamagable, ISelectable {
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
     public OwnProperties ownProperties;
-    BuildingSelectable selectable;
     public override Team Team => Team.DefaultPlayer;
-    private void Awake() {
-        selectable = GetComponent<BuildingSelectable>();
+    UIE_HouseBuildingControl uiControl;
 
-        selectable.OnSelected = OnSelectedHandle;
-        selectable.OnDeselected = OnDeselectedHandle;
-        selectable.OnShowControlUI = OnShowControlUIHandle;
-    }
     private void Start() {
+        uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_HouseBuildingControl>(this);
+        uiControl.SetBuilding(this);
+        uiControl.Hide();
+
         selectorObj.SetActive(false);
+        
+        healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         healthBar.Hide();
     }
-    private void OnSelectedHandle() {
+    public void OnSelected() {
         selectorObj.SetActive(true);
+        healthBar.Show();
     }
 
-    private void OnDeselectedHandle() {
+    public void OnDeselected() {
         selectorObj.SetActive(false);
-    }
-
-    private void OnShowControlUIHandle(bool active){
-        UIE_HouseBuildingControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_HouseBuildingControl>(this);
-        uie.Setup(this);
-        uie.gameObject.SetActive(active);
+        healthBar.Hide();
     }
 
     public override void OnBuildingPlaced() {
         UnitManager.current.ChangeHouseCapacity(ownProperties.capacity);
     }
 
-    public void TakeDamage(int damage)
-    {
+    public void TakeDamage(int damage) {
         int curHeath = properties.curHealthPoint;
         int maxHeath = properties.maxHealthPoint;
         //print("cuerh: " + curHeath + "/" + maxHeath);
@@ -47,12 +42,23 @@ public class HouseBuilding : Building, IDamagable {
         properties.curHealthPoint = curHeath;
 
         healthBar.SetSize(1.0f * curHeath / maxHeath);
+
+        if (curHeath == 0) {
+            Destroy(gameObject);
+        }
     }
 
-    protected override void OnDestroyBuilding()
-    {
+    protected override void OnDestroyBuilding() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
         UnitManager.current.ChangeHouseCapacity(-ownProperties.capacity);
+    }
+
+    public void OnGiveOrder(Vector2 position) {
+        OnDeselected();
+    }
+    public void OnShowControlUI(bool isShow) {
+        if (isShow) uiControl.Show();
+        else uiControl.Hide();
     }
 
     [System.Serializable]

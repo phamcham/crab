@@ -5,28 +5,7 @@ using System;
 
 public abstract class Unit : Entity {
     public UnitProperties properties;
-    [SerializeField] SpriteRenderer spriteRenderer;
-    protected void Awake(){
-        properties.curHealthPoint = properties.maxHealthPoint;
-        OnAwake();
-    }
-    protected abstract void OnAwake();
-    protected void Start(){
-        UnitManager.current.AddUnit(this);
-        OnStart();
-    }
-    protected abstract void OnStart();
-    public Sprite GetSprite() {
-        return spriteRenderer.sprite;
-    }
-    protected void OnDestroy() {
-        UnitManager.current.RemoveUnit(this);
-        OnUnitDestroy();
-    }
-    protected abstract void OnUnitDestroy();
-    //public abstract void ShowControlUI(bool active);
-    //public abstract void OnSelected();
-    //public abstract void OnDeselected();
+    [SerializeField] protected SpriteRenderer spriteRenderer;
 }
 [System.Serializable]
 public class UnitProperties {

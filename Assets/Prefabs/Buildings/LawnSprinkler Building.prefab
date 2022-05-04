@@ -1,5 +1,87 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1284837394
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1284837395}
+  - component: {fileID: 1284837396}
+  m_Layer: 9
+  m_Name: Minimap Icon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1284837395
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284837394}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2041882282525499161}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &1284837396
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284837394}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 10
+  m_Sprite: {fileID: 21300000, guid: 23c966cde77c35142a5e45ccbf505d4c, type: 3}
+  m_Color: {r: 1, g: 0.76831174, b: 0, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &1890614287
 GameObject:
   m_ObjectHideFlags: 0
@@ -40,7 +122,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2041882282525499161}
   - component: {fileID: 2041882282525499166}
-  - component: {fileID: 1210426739}
   - component: {fileID: 5107373284858836232}
   m_Layer: 0
   m_Name: LawnSprinkler Building
@@ -48,7 +129,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2041882282525499161
 Transform:
   m_ObjectHideFlags: 0
@@ -64,6 +145,7 @@ Transform:
   - {fileID: 2041882282738007019}
   - {fileID: 1890614288}
   - {fileID: 5738110413507569698}
+  - {fileID: 1284837395}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -90,30 +172,20 @@ MonoBehaviour:
       m_Size: {x: 1, y: 1, z: 1}
     resourceRequirements:
     - type: 2
-      amount: 21
-    - type: 3
-      amount: 71
+      amount: 2
+      enough: 1
+    - type: 1
+      amount: 7
+      enough: 0
   spriteRenderer: {fileID: 2041882284179641654}
-  ownProperties:
-    attackRadius: 8
-    reloadingTime: 0.5
-    bulletSpeed: 10
-    damage: 2
   healthBar: {fileID: 5738110413507569696}
   selectorObj: {fileID: 2041882282738007016}
   source: {fileID: 1890614288}
---- !u!114 &1210426739
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2041882282525499167}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b763723651c0714bb16757744dc1d08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  ownProperties:
+    attackRadius: 12
+    reloadingTime: 0.3
+    bulletSpeed: 13
+    damage: 4
 --- !u!61 &5107373284858836232
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -247,7 +319,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2041882284179641652}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2041882282525499161}
@@ -321,7 +393,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.628
+      value: 1.729
       objectReference: {fileID: 0}
     - target: {fileID: 7219366976953124524, guid: 5f4c4357bfb45a345802d70de5fac332, type: 3}
       propertyPath: m_LocalPosition.z

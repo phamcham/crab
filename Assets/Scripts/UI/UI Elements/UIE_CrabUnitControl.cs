@@ -14,7 +14,12 @@ public class UIE_CrabUnitControl : UIE_UIControl {
     [Space, Header("Control settings")]
     [SerializeField] UnityEvent<string> speedUpdateText;
     [SerializeField] UnityEvent<string> damageUpdateText;
-    public void Setup(GatheringCrabUnit unit) {
+    GatheringCrabUnit unit;
+    public void SetUnit(GatheringCrabUnit unit) {
+        this.unit = unit;
+    }
+
+    protected override void UpdateIntervalOnUI() {
         UnitProperties properties = unit.properties;
         // avatar
         titleUpdateText?.Invoke(properties.unitName);

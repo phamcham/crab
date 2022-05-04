@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
-    [SerializeField] HealthBar healthBar;
-    UnitMovement movement;
-    EnemyUnitShootable shootable;
+    [SerializeField] private HealthBar healthBar;
+    private UnitMovement movement;
+    private EnemyUnitShootable shootable;
     const float checkInterval = 2f;
-    float curCheck = 0;
-    HeadquarterBuilding headquarter;
-    float fixedOrbit;
-    bool stopToShoot;
+    private float curCheck = 0;
+    private HeadquarterBuilding headquarter;
+    private float fixedOrbit;
+    private bool stopToShoot;
     protected override void OnAwake() {
         movement = GetComponent<UnitMovement>();
         shootable = GetComponent<EnemyUnitShootable>();
@@ -18,6 +18,9 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
 
     protected override void OnStart() {
         fixedOrbit = Random.Range(0.5f, 0.9f) * shootable.attackRadius;
+
+        healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
+        healthBar.Hide();
     }
 
     private void Update() {
@@ -45,8 +48,23 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
         }
     }
 
-    protected override void OnUnitDestroy()
-    {
+    private List<Unit> GetUnitDamagables(float radius) {
+        Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, radius);
+        List<Unit> list = new List<Unit>();
+        foreach (Collider2D col in cols) {
+            if (col.TryGetComponent(out Unit unit)) {
+                if (unit.TryGetComponent(out IDamagable damagable)) {
+                    if (damagable.Team != Team){
+                        list.Add(unit);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    protected override void OnUnitDestroy() {
+        // TODO: hieu ung pha huy
     }
 
     public void TakeDamage(int damage) {
@@ -58,5 +76,10 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
         properties.curHealthPoint = curHeath;
 
         healthBar.SetSize(1.0f * curHeath / maxHeath);
+
+        if (curHeath == 0) {
+            // die for you
+            Destroy(gameObject);
+        }
     }
 }

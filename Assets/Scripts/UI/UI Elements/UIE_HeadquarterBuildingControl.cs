@@ -22,8 +22,6 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
     [SerializeField] Sprite pauseSprite;
     bool isContinue = true;
     HeadquarterBuilding building;
-    float updateInterval = 0.2f;
-    float curUpdateUIInterval;
     bool enoughCapacity = true;
     private void Start() {
         continuePauseButton.onClick.AddListener(() => {
@@ -42,10 +40,10 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
         continuePauseButtonRender.sprite = pauseSprite;
         building.ContinueProduction();
     }
-    public void Setup(HeadquarterBuilding building) {
+    public void SetBuilding(HeadquarterBuilding building) {
         this.building = building;
     }
-    void UpdateUI() {
+    protected override void UpdateIntervalOnUI() {
         BuildingProperties properties = building.properties;
         HeadquarterBuilding.OwnProperties ownProperties = building.ownProperties;
         // avatar
@@ -68,18 +66,6 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
         else {
             percentUpdateText?.Invoke("khong du nha roi");
             spawnCrabProcessBarUI.SetColor(notEnoughBarColor);
-        }
-    }
-    private void OnEnable() {
-        curUpdateUIInterval = 0;
-    }
-    private void Update() {
-        if (curUpdateUIInterval <= 0) {
-            curUpdateUIInterval = updateInterval;
-            UpdateUI();
-        }
-        else {
-            curUpdateUIInterval -= Time.deltaTime;
         }
     }
 }

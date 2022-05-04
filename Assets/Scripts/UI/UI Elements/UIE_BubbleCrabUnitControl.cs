@@ -17,8 +17,14 @@ public class UIE_BubbleCrabUnitControl : UIE_UIControl {
     [SerializeField] UnityEvent<string> attackRadiusUpdateText;
     [SerializeField] UnityEvent<string> bulletSpeedUpdateText;
     [SerializeField] UnityEvent<string> bulletReloadTimeUpdateText;
-    public void Setup(UnitShootable shootable) {
-        Unit unit = shootable.BaseUnit;
+
+    UnitShootable shootable;
+    public void SetUnitShootable(UnitShootable shootable) {
+        this.shootable = shootable;
+    }
+
+    protected override void UpdateIntervalOnUI() {
+        PlayerUnit unit = shootable.BaseUnit;
         UnitProperties properties = unit.properties;
         // avatar
         titleUpdateText?.Invoke(properties.unitName);

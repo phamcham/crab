@@ -9,7 +9,8 @@ public class ResourceManager : MonoBehaviour
     public static ResourceManager current { get; private set; }
     [SerializeField] Tilemap tilemapGround;
     [SerializeField] List<Resource> resourcePrefabs;
-    [SerializeField] UI_Resource ui;
+    [SerializeField] UI_Resource uiResource;
+    [SerializeField] UI_Building uiBuilding;
     Dictionary<ResourceType, Resource> dictResourcePrefabs = new Dictionary<ResourceType, Resource>();
     Dictionary<ResourceType, List<Resource>> dictResources = new Dictionary<ResourceType, List<Resource>>();
     Dictionary<ResourceType, int> resourceStorage = new Dictionary<ResourceType, int>();
@@ -19,10 +20,11 @@ public class ResourceManager : MonoBehaviour
         
         holder = new GameObject("Resource Holder").transform;
         holder.position = Vector3.zero;
+        
+        InitializeResourceDataDict();
     }
 
     private void Start() {
-        InitializeResourceDataDict();
         FillResourcesToTilemap();
     }
 
@@ -86,7 +88,11 @@ public class ResourceManager : MonoBehaviour
     }
     public void CollectResource(ResourceType type, int add){
         resourceStorage[type] += add;
-        ui.UpdateResourceStoringUI(type, resourceStorage[type]);
+        uiResource.UpdateResourceStoringUI(type, resourceStorage[type]);
+        uiBuilding.UpdateCreateBuildingUI();
+    }
+    public int GetAmount(ResourceType type) {
+        return resourceStorage[type];
     }
     public Resource Create(ResourceType type) {
         return Instantiate(dictResourcePrefabs[type], holder);

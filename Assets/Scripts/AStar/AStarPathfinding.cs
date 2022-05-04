@@ -65,7 +65,7 @@ public class AStarPathfinding : MonoBehaviour {
                     }
 
                     // TODO: need fix hard code: neighbour.tempObstacleUnit * 10
-                    int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour) + neighbour.movementPenalty + neighbour.tempObstacleUnit * 10;
+                    int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour) + neighbour.movementPenalty + neighbour.tempObstacleUnit * 500;
                     if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour)) {
                         neighbour.gCost = newMovementCostToNeighbour;
                         neighbour.hCost = GetDistance(neighbour, targetNode);

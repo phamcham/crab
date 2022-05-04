@@ -17,8 +17,7 @@ public class SelectionOneUIControlManager : MonoBehaviour {
     HashSet<UIE_UIControl> set = new HashSet<UIE_UIControl>();
     private void Awake() {
         current = this;
-    }
-    private void Start() {
+        
         dictPrefabs = new Dictionary<Type, UIE_UIControl>() {
             { typeof(UIE_CrabUnitControl),  crabUnitControlUIPrefab },
             { typeof(UIE_BubbleCrabUnitControl), bubbleCrabUnitControlUIPrefab },
@@ -27,6 +26,8 @@ public class SelectionOneUIControlManager : MonoBehaviour {
             { typeof(UIE_LawnSprinklerBuildingControl), lawnSprinklerControlUIPrefabs }
         };
     }
+    private void Start() {
+    }
     public Transform GetHolder(){
         return controlUIHolder;
     }
@@ -34,12 +35,14 @@ public class SelectionOneUIControlManager : MonoBehaviour {
         UIE_UIControl prefab = dictPrefabs[typeof(T)];
         if (!controls.TryGetValue(owner, out UIE_UIControl control)) {
             control = Instantiate(prefab.gameObject, controlUIHolder).GetComponent<T>();
+            control.name = $"{typeof(T).Name} ({owner.GetInstanceID()})";
             controls.Add(owner, control);
         }
         return control.GetComponent<T>();
     }
     public void RemoveUIControl(Entity owner) {
-        if (!controls.TryGetValue(owner, out UIE_UIControl control)) {
+        //print("remove " + owner.GetInstanceID());
+        if (controls.TryGetValue(owner, out UIE_UIControl control)) {
             if (control && control.gameObject){
                 Destroy(control.gameObject);
             }

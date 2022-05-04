@@ -16,13 +16,11 @@ public class UIE_LawnSprinklerBuildingControl : UIE_UIControl {
     [SerializeField] UnityEvent<string> bulletReloadTimeUpdateText;
     [SerializeField] UnityEvent<string> damageUpdateText;
     LawnSprinklerBuilding building;
-
-    float updateUIInterval = 0.2f;
-    float curUpdateUITime;
-    public void Setup(LawnSprinklerBuilding building) {
+    public void SetBuilding(LawnSprinklerBuilding building) {
         this.building = building;
     }
-    void UpdateUI() {
+
+    protected override void UpdateIntervalOnUI() {
         BuildingProperties properties = building.properties;
         LawnSprinklerBuilding.OwnProperties ownProperties = building.ownProperties;
         // avatar
@@ -35,18 +33,5 @@ public class UIE_LawnSprinklerBuildingControl : UIE_UIControl {
         bulletReloadTimeUpdateText?.Invoke(ownProperties.reloadingTime + "");
         bulletSpeedUpdateText?.Invoke(ownProperties.bulletSpeed + "");
         damageUpdateText?.Invoke(ownProperties.damage + "");
-    }
-
-    private void OnEnable() {
-        curUpdateUITime = 0;
-    }
-    private void Update() {
-        if (curUpdateUITime <= 0) {
-            curUpdateUITime = updateUIInterval;
-            UpdateUI();
-        }
-        else {
-            curUpdateUITime -= Time.deltaTime;
-        }
     }
 }

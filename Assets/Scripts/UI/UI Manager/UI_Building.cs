@@ -9,6 +9,7 @@ public class UI_Building : MonoBehaviour {
     [SerializeField] UIE_CreateBuilding uieCreateBuildingPrefab;
     [SerializeField] UIE_ShowBuildingInfo uieShowBuildingInfo;
     Queue<GameObject> emptiers = new Queue<GameObject>();
+    List<UIE_CreateBuilding> createBuildings = new List<UIE_CreateBuilding>();
 
     private void Awake() {
         buildingButtonsHolder.PCDestroyChildren();
@@ -36,9 +37,16 @@ public class UI_Building : MonoBehaviour {
             uieShowBuildingInfo.gameObject.SetActive(false);
         });
         creater.transform.SetAsFirstSibling();
+        createBuildings.Add(creater);
         
         if (emptiers.Count > 0){
             Destroy(emptiers.Dequeue());
+        }
+    }
+
+    public void UpdateCreateBuildingUI() {
+        foreach (UIE_CreateBuilding creater in createBuildings) {
+            creater.UpdateUI();
         }
     }
 }

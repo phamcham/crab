@@ -2,11 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HeadquarterBuilding : Building, IDamagable {
+public class HeadquarterBuilding : Building, IDamagable, ISelectable {
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
     public OwnProperties ownProperties;
-    BuildingSelectable selectable;
     BuildingStorage storage;
     private float time;
     private bool isStartSpawned;
@@ -16,18 +15,19 @@ public class HeadquarterBuilding : Building, IDamagable {
     bool isPrevSpawnSuccess = true;
     bool isContinue = true;
     bool enoughHouseForCrabs = false;
-
     public override Team Team => Team.DefaultPlayer;
+    UIE_HeadquarterBuildingControl uiControl;
     private void Awake() {
         storage = GetComponent<BuildingStorage>();
-        selectable = GetComponent<BuildingSelectable>();
-
-        selectable.OnSelected = OnSelectedHandle;
-        selectable.OnDeselected = OnDeselectedHandle;
-        selectable.OnShowControlUI = OnShowControlUIHandle;
     }
     private void Start() {
+        uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_HeadquarterBuildingControl>(this);
+        uiControl.SetBuilding(this);
+        uiControl.Hide();
+
         selectorObj.SetActive(false);
+        
+        healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         healthBar.Hide();
     }
     public override void OnBuildingPlaced(){
@@ -48,12 +48,13 @@ public class HeadquarterBuilding : Building, IDamagable {
             enoughHouseForCrabs = false;
         }
     }
-    private void OnSelectedHandle() {
+    public void OnSelected() {
         selectorObj.SetActive(true);
-        // setting uie
+        healthBar.Show();
     }
-    private void OnDeselectedHandle() {
+    public void OnDeselected() {
         selectorObj.SetActive(false);
+        healthBar.Hide();
     }
     private bool SpawnNewCrab(){
         // TODO: kiem tra co de phai con cua nao khong????
@@ -143,13 +144,6 @@ public class HeadquarterBuilding : Building, IDamagable {
         }
     }
 
-    // ly do khong de vao select vi minh chi select 1 cai thoi THANG NGUUUU
-    private void OnShowControlUIHandle(bool active){
-        UIE_HeadquarterBuildingControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_HeadquarterBuildingControl>(this);
-        uie.Setup(this);
-        uie.gameObject.SetActive(active);
-    }
-
     public void TakeDamage(int damage) {
         int curHeath = properties.curHealthPoint;
         int maxHeath = properties.maxHealthPoint;
@@ -159,11 +153,23 @@ public class HeadquarterBuilding : Building, IDamagable {
         properties.curHealthPoint = curHeath;
 
         healthBar.SetSize(1.0f * curHeath / maxHeath);
+
+        if (curHeath == 0) {
+            Destroy(gameObject);
+        }
     }
 
-    protected override void OnDestroyBuilding()
-    {
+    protected override void OnDestroyBuilding() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
+    }
+
+    public void OnGiveOrder(Vector2 position) {
+        OnDeselected();
+    }
+
+    public void OnShowControlUI(bool isShow) {
+        if (isShow) uiControl.Show();
+        else uiControl.Hide();
     }
 
     [System.Serializable]

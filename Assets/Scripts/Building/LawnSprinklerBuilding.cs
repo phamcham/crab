@@ -3,18 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LawnSprinklerBuilding : Building, IDamagable {
+public class LawnSprinklerBuilding : Building, IDamagable, ISelectable {
+    [SerializeField] HealthBar healthBar;
+    [SerializeField] GameObject selectorObj;
+    [SerializeField] Transform source; // nong sung
     public override Team Team => Team.DefaultPlayer;
     public OwnProperties ownProperties;
-    private BuildingSelectable selectable;
     bool isStartShooting = false;
     const float checkInterval = 1f;
     float checkTime = 0;
     float curReloadingTime = 0;
     EnemyUnit targetEnemy;
-    [SerializeField] HealthBar healthBar;
-    [SerializeField] GameObject selectorObj;
-    [SerializeField] Transform source; // nong sung
+    UIE_LawnSprinklerBuildingControl uiControl;
     public override void OnBuildingPlaced() {
         isStartShooting = true;
     }
@@ -31,7 +31,14 @@ public class LawnSprinklerBuilding : Building, IDamagable {
                     // check enemy
                     List<EnemyUnit> enemies = GetEnemies();
                     if (enemies.Count > 0) {
-                        targetEnemy = enemies[0];
+                        float minDistance = float.MaxValue;
+                        foreach (EnemyUnit enemy in enemies) {
+                            float distance = Vector2.Distance(enemy.transform.position, transform.position);
+                            if (!targetEnemy || distance < minDistance) {
+                                targetEnemy = enemy;
+                                minDistance = distance;
+                            }
+                        }
                     }
                 }
             }
@@ -47,14 +54,12 @@ public class LawnSprinklerBuilding : Building, IDamagable {
                         float lifeTime = 1.0f * ownProperties.attackRadius / ownProperties.bulletSpeed;
                         bullet.Shoot(new BulletProperties(Team, ownProperties.bulletSpeed, ownProperties.damage, direction), lifeTime);
                     }
-                    else {
-                        curReloadingTime += Time.deltaTime;
-                    }
                 }
                 else {
                     targetEnemy = null;
                 }
             }
+            curReloadingTime += Time.deltaTime;
         }
     }
     private List<EnemyUnit> GetEnemies() {
@@ -71,29 +76,26 @@ public class LawnSprinklerBuilding : Building, IDamagable {
         return list;
     }
     
-    private void Awake() {
-        selectable = GetComponent<BuildingSelectable>();
-
-        selectable.OnSelected = OnSelectedHandle;
-        selectable.OnDeselected = OnDeselectedHandle;
-        selectable.OnShowControlUI = OnShowControlUIHandle;
-    }
     private void Start() {
+        uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_LawnSprinklerBuildingControl>(this);
+        uiControl.SetBuilding(this);
+        uiControl.Hide();
+
         selectorObj.SetActive(false);
+
+        healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         healthBar.Hide();
     }
 
-    private void OnSelectedHandle() {
+    public void OnSelected() {
         selectorObj.SetActive(true);
+        healthBar.Show();
+        uiControl.Show();
     }
-    private void OnDeselectedHandle() {
-        print("???");
+    public void OnDeselected() {
         selectorObj.SetActive(false);
-    }
-    private void OnShowControlUIHandle(bool active){
-        UIE_LawnSprinklerBuildingControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_LawnSprinklerBuildingControl>(this);
-        uie.Setup(this);
-        uie.gameObject.SetActive(active);
+        healthBar.Hide();
+        uiControl.Hide();
     }
 
     public void TakeDamage(int damage) {
@@ -105,11 +107,22 @@ public class LawnSprinklerBuilding : Building, IDamagable {
         properties.curHealthPoint = curHeath;
 
         healthBar.SetSize(1.0f * curHeath / maxHeath);
+
+        if (curHeath == 0) {
+            Destroy(gameObject);
+        }
     }
 
-    protected override void OnDestroyBuilding()
-    {
+    protected override void OnDestroyBuilding() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
+    }
+
+    public void OnGiveOrder(Vector2 position) {
+        OnDeselected();
+    }
+    public void OnShowControlUI(bool isShow) {
+        if (isShow) uiControl.Show();
+        else uiControl.Hide();
     }
 
     [System.Serializable]

@@ -6,11 +6,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UIE_CreateBuilding : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
-    Button button;
-    Image image;
-    Building building;
-    Action onHover;
-    Action onExit;
+    private Button button;
+    private Image image;
+    private Building building;
+    private Action onHover;
+    private Action onExit;
     private void Awake() {
         button = GetComponent<Button>();
         image = GetComponent<Image>();
@@ -24,6 +24,24 @@ public class UIE_CreateBuilding : MonoBehaviour, IPointerEnterHandler, IPointerE
 
         button.onClick.RemoveListener(OnClick);
         button.onClick.AddListener(OnClick);
+
+        UpdateUI();
+    }
+    public void UpdateUI() {
+        List<ResourceRequirement> requirements = building.properties.resourceRequirements;
+        bool canBuild = true;
+        foreach (ResourceRequirement req in requirements) {
+            ResourceType type = req.type;
+            int amount = req.amount;
+            int remain = ResourceManager.current.GetAmount(type);
+
+            if (remain < amount) {
+                canBuild = false;
+                break;
+            }
+        }
+
+        button.interactable = canBuild;
     }
     void OnClick(){
         GridBuildingSystem.current.InitializeWithBuilding(building);

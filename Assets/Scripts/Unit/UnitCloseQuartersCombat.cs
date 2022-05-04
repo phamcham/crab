@@ -2,11 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitShootable : MonoBehaviour {
+public class UnitCloseQuartersCombat : MonoBehaviour {
     public int catchRadius;
     public int attackRadius;
     public float reloadingTime;
-    public int bulletSpeed;
     private float curReloadingTime = 0;
     public PlayerUnit BaseUnit { get; private set; }
     private UnitMovement movement;
@@ -15,15 +14,16 @@ public class UnitShootable : MonoBehaviour {
     private EnemyUnit targetEnemy;
     private EnemyUnit followToDieEnemy;
     bool isInRange = false;
+    private Animation anim;
     private void Awake() {
         BaseUnit = GetComponent<PlayerUnit>();
         movement = GetComponent<UnitMovement>();
+        anim = GetComponent<Animation>();
     }
-
     private void Update() {
         FindNearestEnemy();
         FollowAndAttack();
-        
+
         curReloadingTime = Mathf.Max(0, curReloadingTime - Time.deltaTime);
     }
 
@@ -67,12 +67,9 @@ public class UnitShootable : MonoBehaviour {
 
                 if (curReloadingTime <= 0) {
                     curReloadingTime = reloadingTime;
-                    // shoot
-                    Vector2 direction = (targetEnemy.transform.position - transform.position).normalized;
-                    Bullet bullet = BulletManager.GetBulletPooled();
-                    bullet.transform.position = transform.position;
-                    float lifeTime = 1.0f * attackRadius / bulletSpeed;
-                    bullet.Shoot(new BulletProperties(BaseUnit.Team, bulletSpeed, BaseUnit.properties.damage, direction), lifeTime);
+                    // attack
+                    anim.Play("crab attack");
+                    targetEnemy.GetComponent<IDamagable>()?.TakeDamage(BaseUnit.properties.damage);
                 }
             }
             else {
@@ -90,7 +87,7 @@ public class UnitShootable : MonoBehaviour {
         //targetEnemy = enemyUnit;
         followToDieEnemy = enemyUnit;
     }
-    public void StopShooting() {
+    public void StopFighting() {
         //print("k danh nua");
         targetEnemy = null;
     }
@@ -99,17 +96,13 @@ public class UnitShootable : MonoBehaviour {
         List<EnemyUnit> list = new List<EnemyUnit>();
         Collider2D[] collider2Ds = Physics2D.OverlapCircleAll(transform.position, radius);
         foreach (Collider2D collider in collider2Ds) {
-            if (collider.TryGetComponent(out EnemyUnit damagable)) {
-                if (damagable.Team != BaseUnit.Team) {
-                    list.Add(damagable);
+            if (collider.TryGetComponent(out EnemyUnit enemyUnit) && enemyUnit.TryGetComponent(out IDamagable damagable)) {
+                if (enemyUnit.Team != BaseUnit.Team) {
+                    list.Add(enemyUnit);
                     break;
                 }
             }
         }
         return list;
-    }
-    private void OnDrawGizmosSelected() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRadius);
     }
 }

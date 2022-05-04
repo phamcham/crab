@@ -14,7 +14,15 @@ public class GameController : MonoBehaviour {
     }
 
     private void Start() {
+        InitGame();
         ResumeGame();
+    }
+
+    void InitGame() {
+        ResourceManager.current.CollectResource(ResourceType.Coconut, 10);
+        ResourceManager.current.CollectResource(ResourceType.Conch, 10);
+        ResourceManager.current.CollectResource(ResourceType.Grass, 10);
+        ResourceManager.current.CollectResource(ResourceType.Starfish, 10);
     }
 
     public void HeadquarterStartGameplay(HeadquarterBuilding headquarter){

@@ -43,13 +43,20 @@ public class GridBuildingSystem : MonoBehaviour {
     // TODO: nen sua thanh Create cho dong bo
     public void InitializeWithBuilding(Building building){
         tempBuilding = Instantiate(building.gameObject, holder).GetComponent<Building>();
-        tempBuilding.gameObject.SetActive(false);
 
-        tempObj = new GameObject(tempBuilding.properties.buildingName + " temp");
-        SpriteRenderer spriteRenderer = tempObj.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = building.GetSprite();
-        spriteRenderer.sortingOrder = 3;
-        tempObj.transform.position = InputExtension.MouseWorldPoint();
+        SpriteRenderer tempRender;
+        if (!tempObj) {
+            tempObj = new GameObject(tempBuilding.properties.buildingName + " temp");
+            tempRender = tempObj.AddComponent<SpriteRenderer>();
+            tempRender.sortingOrder = 3;
+        }
+        else {
+            tempRender = tempObj.GetComponent<SpriteRenderer>();
+        }
+        tempRender.sprite = building.GetSprite();
+        tempObj.SetActive(true);
+        tempBuilding.gameObject.SetActive(false);
+        tempObj.transform.position = tempBuilding.transform.position = InputExtension.MouseWorldPoint();
 
         FollowBuilding();
         SetActiveBuilding(true);
@@ -141,7 +148,7 @@ public class GridBuildingSystem : MonoBehaviour {
     }
 
     private void Update() {
-        if (!tempObj){
+        if (!tempObj || !tempBuilding){
             return;
         }
         if (!tempBuilding.IsPlaced){
@@ -161,8 +168,7 @@ public class GridBuildingSystem : MonoBehaviour {
             if (Input.GetMouseButtonDown(0)){
                 if (tempBuilding.CanBePlaced()){
                     tempBuilding.gameObject.SetActive(true);
-                    Destroy(tempObj);
-                    tempObj = null;
+                    tempObj.SetActive(false);
                     tempBuilding.Place();
                     SetActiveBuilding(false);
                 }
@@ -170,9 +176,8 @@ public class GridBuildingSystem : MonoBehaviour {
             else if (Input.GetMouseButtonDown(1)){
                 ClearArea();
                 Destroy(tempBuilding.gameObject);
-                Destroy(tempObj);
                 tempBuilding = null;
-                tempObj = null;
+                tempObj.SetActive(false);
                 SetActiveBuilding(false);
             }
         }
