@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52f942ca9511f354a8efbf325740f4ab, type: 3}
+  m_Name: Sand Weighted Random Tile
+  m_EditorClassIdentifier: 
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Transform:
+    e00: 1
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 1
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 1
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 1
+  m_InstancedGameObject: {fileID: 0}
+  m_Flags: 1
+  m_ColliderType: 1
+  Sprites:
+  - Sprite: {fileID: 7113324156597569929, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 2000
+  - Sprite: {fileID: -6593171611950803329, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 200
+  - Sprite: {fileID: 678171447486122978, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 20
+  - Sprite: {fileID: -7213642119751196823, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 70
+  - Sprite: {fileID: 8168072033892740292, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 60
+  - Sprite: {fileID: 6411872452250989576, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 80
+  - Sprite: {fileID: 6191214835739053092, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 30
+  - Sprite: {fileID: -9141056928920782442, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 20
+  - Sprite: {fileID: -3812125854599912161, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 10
+  - Sprite: {fileID: 5458234745481024547, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 10
+  - Sprite: {fileID: 6659500330798745967, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 5
+  - Sprite: {fileID: 6751494474123141599, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 10
+  - Sprite: {fileID: 2566774506985356252, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 10
+  - Sprite: {fileID: -8183398062115860250, guid: 9598e7ba1023b5045b64b75e780e14dd, type: 3}
+    Weight: 10

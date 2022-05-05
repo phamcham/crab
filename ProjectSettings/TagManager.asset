@@ -41,3 +41,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Minimap icon
+    uniqueID: 879012505
+    locked: 0
+  - name: Terrain
+    uniqueID: 3030568669
+    locked: 0
+  - name: Selector
+    uniqueID: 80398199
+    locked: 0
+  - name: Entity
+    uniqueID: 2877419043
+    locked: 0
+  - name: World UI
+    uniqueID: 2508650803
+    locked: 0
