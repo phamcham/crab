@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using PhamCham.Extension;
 using UnityEngine;
 
-[RequireComponent(typeof(Unit))]
+[RequireComponent(typeof(Unit), typeof(UnitTaskManager))]
 public class UnitMovement : MonoBehaviour {
     public Unit BaseUnit { get; private set; }
     public Vector2 TargetPosition { get; private set; }
@@ -12,7 +12,7 @@ public class UnitMovement : MonoBehaviour {
     private Vector2[] followingFullPath;
     private int targetIndex;
     private const float requestInterval = 0.5f;
-    private float time = 0;
+    private float curRequestNewPathTime = 0;
     private bool isPathFound = false;
     //private Vector2Int prevIndex = new Vector2Int(int.MaxValue, int.MinValue);
     public PathResultType PathResultType { get; private set; }
@@ -21,17 +21,27 @@ public class UnitMovement : MonoBehaviour {
     private float moveRandomWhenIdleTime = 10f;
     float curMoveRandomWhenIdle = 0;
     float curMoveRandomDistance = 3;
+    private UnitTaskManager taskManager;
     private void Awake() {
         BaseUnit = GetComponent<Unit>();
         anim = GetComponent<Animation>();
+        taskManager = GetComponent<UnitTaskManager>();
     }
-    private void Update() {
-        if (time <= 0) {
-            TryMove();
-        }
-        time -= Time.deltaTime;
 
-        if (!startMoving) {
+    private void Update() {
+        RequestNewPathAndMoveInterval();
+        MoveRandomInterval();
+    }
+
+    private void RequestNewPathAndMoveInterval() {
+        if (curRequestNewPathTime <= 0) {
+            RequestNewPathAndMove();
+        }
+        curRequestNewPathTime -= Time.deltaTime;
+    }
+
+    private void MoveRandomInterval() {
+        if (!startMoving && taskManager.IsIdle()) {
             if (curMoveRandomWhenIdle >= moveRandomWhenIdleTime) {
                 Vector2 next = transform.position + Random.onUnitSphere * curMoveRandomDistance;
                 AStarPathRequestManager.RequestPath(new PathRequest(transform.position, next, (fullPath, simplifyPath, type) => {
@@ -52,7 +62,7 @@ public class UnitMovement : MonoBehaviour {
         }
     }
 
-    private void TryMove() {
+    private void RequestNewPathAndMove() {
         if (!isPathFound && startMoving && PathResultType != PathResultType.IsCompleted) {
             // TODO: after long interval, check current path to new request path,
             // use new request path when cost big enough
@@ -81,14 +91,14 @@ public class UnitMovement : MonoBehaviour {
             else{
                 // keep prev path
                 //print("keep prev path");
-                time = requestInterval;
+                curRequestNewPathTime = requestInterval;
                 isPathFound = false;
             }
         }
     }
 
     public void OnPathFound(Vector2[] fullPath, Vector2[] simplifyPath, PathResultType pathStatus) {
-        time = requestInterval;
+        curRequestNewPathTime = requestInterval;
         isPathFound = false;
         PathResultType = pathStatus;
         prevTargetPosition = TargetPosition;
@@ -115,7 +125,7 @@ public class UnitMovement : MonoBehaviour {
             followingFullPath = null;
             // khong tim thay duong thi delay lau hon bth 1 chut
             // cause: thuong neu k tim thay duong thi sau do cung khong thay duong
-            time = requestInterval;
+            curRequestNewPathTime = requestInterval;
         }
     }
 

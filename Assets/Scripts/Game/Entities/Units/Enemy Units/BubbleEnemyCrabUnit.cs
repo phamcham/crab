@@ -11,9 +11,14 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
     private HeadquarterBuilding headquarter;
     private float fixedOrbit;
     private bool stopToShoot;
+    FlashOnImpactEffect impactEffect;
     protected override void OnAwake() {
         movement = GetComponent<UnitMovement>();
         shootable = GetComponent<EnemyUnitShootable>();
+
+        if (!base.spriteRenderer.TryGetComponent(out impactEffect)) {
+            impactEffect = base.spriteRenderer.gameObject.AddComponent<FlashOnImpactEffect>();
+        }
     }
 
     protected override void OnStart() {
@@ -78,6 +83,7 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
         healthBar.SetSize(1.0f * curHeath / maxHeath);
         healthBar.Show();
 
+        impactEffect.Impact();
         if (curHeath == 0) {
             // die for you
             Destroy(gameObject);

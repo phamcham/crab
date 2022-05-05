@@ -39903,42 +39903,11 @@ MonoBehaviour:
   m_Spacing: {x: 10, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
---- !u!1 &1494865622 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7669213118536750976, guid: cf0eaf52641ae2544bb07be8ac54b6a4, type: 3}
-  m_PrefabInstance: {fileID: 7669213119461179734}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1494865623 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7669213118536750977, guid: cf0eaf52641ae2544bb07be8ac54b6a4, type: 3}
   m_PrefabInstance: {fileID: 7669213119461179734}
   m_PrefabAsset: {fileID: 0}
---- !u!61 &1494865624
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1494865622}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
 --- !u!1 &1519010205
 GameObject:
   m_ObjectHideFlags: 0
@@ -41269,6 +41238,7 @@ GameObject:
   - component: {fileID: 1742272279}
   - component: {fileID: 1742272280}
   - component: {fileID: 1742272274}
+  - component: {fileID: 1742272281}
   m_Layer: 0
   m_Name: Manager (temp) DUNG CHUNGGGG
   m_TagString: Untagged
@@ -41393,6 +41363,18 @@ MonoBehaviour:
   headquarterControlUIPrefab: {fileID: 2742609015239772006, guid: 4dd69545df7dc4f408ef92e98e394601, type: 3}
   lawnSprinklerControlUIPrefabs: {fileID: 1878900967592708891, guid: 890c32f922995464d99b1e342caf197e, type: 3}
   resourceControlUIPrefabs: {fileID: 3341237006243320337, guid: b77fe30f788062844ade2824d3a3738b, type: 3}
+--- !u!114 &1742272281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742272273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b109a4c08180de14d8f469caa8b9f4a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1742272282
 RectTransform:
   m_ObjectHideFlags: 0
@@ -43302,6 +43284,10 @@ PrefabInstance:
     - target: {fileID: 322948125875484602, guid: b77fe30f788062844ade2824d3a3738b, type: 3}
       propertyPath: m_SizeDelta.x
       value: -45
+      objectReference: {fileID: 0}
+    - target: {fileID: 322948126490309874, guid: b77fe30f788062844ade2824d3a3738b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 55
       objectReference: {fileID: 0}
     - target: {fileID: 322948127161491391, guid: b77fe30f788062844ade2824d3a3738b, type: 3}
       propertyPath: m_AnchorMax.y

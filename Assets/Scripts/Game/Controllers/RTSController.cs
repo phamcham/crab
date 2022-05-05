@@ -16,6 +16,11 @@ public class RTSController : MonoBehaviour {
     Vector3 startSelectionBoxPosition;
     Vector3 startMoveCameraPosition;
     bool isSelectingBox = false;
+    bool multiSelect = true;
+    List<PlayerUnit> selectedPlayerUnits = new List<PlayerUnit>();
+    PlayerUnit selectedUnit = null;
+    Building selectedBuilding = null;
+    Resource selectedResource = null;
     private void Awake() {
         Cursor.lockState = CursorLockMode.Confined;
     }
@@ -38,8 +43,12 @@ public class RTSController : MonoBehaviour {
             StartDraggingSelectionBox();
         }
         if (isSelectingBox){
-            if (Input.GetMouseButton(0)){
+            if (Input.GetMouseButton(0)) {
                 DraggingSelectionBox();
+                if (!Input.GetKey(KeyCode.LeftControl)) {
+                    // neu k giu control tu dau den cuoi thi khong multiselect
+                    multiSelect = false;
+                }
             }
             if (Input.GetMouseButtonUp(0)){
                 DeselectPrevDraggingSelectionBox();
@@ -67,18 +76,16 @@ public class RTSController : MonoBehaviour {
         selectionBoxObj.transform.localScale = upperRight - lowerLeft;
     }
     private void DeselectPrevDraggingSelectionBox() {
-        isSelectingBox = false;
-        selectionBoxObj.SetActive(false);
-
         foreach (ISelectable prev in selectables){
             if (prev != null && !prev.Equals(null)) {
                 prev.OnDeselected();
                 prev.OnShowControlUI(false);
             }
         }
-        selectables.Clear();
     }
     private void SelecteDraggingSelectionBox(Vector2 pointA, Vector2 pointB) {
+        if (!multiSelect) selectables.Clear();
+        
         Collider2D[] collider2Ds = Vector2.Distance(pointA, pointB) < 1
                                 ? new Collider2D[] { Physics2D.OverlapArea(pointA, pointB) }
                                 : Physics2D.OverlapAreaAll(pointA, pointB);
@@ -86,10 +93,12 @@ public class RTSController : MonoBehaviour {
         if (collider2Ds != null && collider2Ds.Length > 0) {
             // TODO: kiem tra neu bam vao 1 phat thi mo control ui, neu k mo multiselect
             // Check all units selected
-            List<PlayerUnit> selectedPlayerUnits = new List<PlayerUnit>();
-            PlayerUnit selectedUnit = null;
-            Building selectedBuilding = null;
-            Resource selectedResource = null;
+            if (!multiSelect) {
+                selectedPlayerUnits = new List<PlayerUnit>();
+                selectedUnit = null;
+                selectedBuilding = null;
+                selectedResource = null;
+            }
             foreach (Collider2D collider in collider2Ds) {
                 if (collider == null || collider.Equals(null)) continue;
                 if (collider.TryGetComponent(out ISelectable selectable)) {
@@ -110,7 +119,7 @@ public class RTSController : MonoBehaviour {
                 }
             }
 
-            if (selectedPlayerUnits.Count > 0) {
+            if (selectedPlayerUnits.Count > 1) {
                 // chon nhieu unit thi k show ui control
                 foreach (ISelectable unit in selectedPlayerUnits) {
                     unit.OnSelected();
@@ -127,10 +136,15 @@ public class RTSController : MonoBehaviour {
                 if (selectable != null && !selectable.Equals(null)) {
                     selectable.OnSelected();
                     selectable.OnShowControlUI(true);
+                    //print("show ui");
                     selectables.Add(selectable);
                 }
             }
         }
+        // reset
+        multiSelect = true;
+        isSelectingBox = false;
+        selectionBoxObj.SetActive(false);
     }
     void GiveOrdersControl(){
         if (!isSelectingBox && Input.GetMouseButtonDown(1)){
@@ -157,7 +171,7 @@ public class RTSController : MonoBehaviour {
         arrowMoveObj.transform.position = position + Vector2.up;
         arrowMoveObj.transform.DOMoveY(position.y, 0.5f)
             .SetEase(Ease.OutBack)
-            .OnComplete(() => DOVirtual.DelayedCall(3f, () => arrowMoveObj.SetActive(false)))
+            //.OnComplete(() => DOVirtual.DelayedCall(3f, () => arrowMoveObj.SetActive(false)).Play())
             .Play();
     }
     void ZoomCameraControl(){

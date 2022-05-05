@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using PhamCham.Extension;
 using UnityEngine;
 
+[RequireComponent(typeof(UnitTaskManager), typeof(UnitMovement))]
 public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     // ====== task properties =========
     public enum TaskGatheringState {
@@ -29,7 +31,8 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     private UnitMovement movement;
     private BuildingStorage storage;
     private Dictionary<TaskGatheringState, Action> steps = new Dictionary<TaskGatheringState, Action>();
-    private IUnitTask[] allTasks;
+
+    Tween continueGatheringIfIdleTween;
     // ======== methods ============
     public void SetResourceType(ResourceType type){
         currentTargetType = type;
@@ -56,14 +59,13 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
         return tiles?.PCItemRandom();
     }
     public void EndDoTask() {
+        if (!IsTaskRunning) return;
         IsTaskRunning = false;
     }
 
     public void StartDoTask() {
+        if (IsTaskRunning) return;
         // stop all tasks before do this task
-        foreach (IUnitTask task in allTasks) {
-            task.EndDoTask();
-        }
         //enabled = true;
         IsTaskRunning = true;
         initStep = true;
@@ -72,7 +74,6 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     private void Awake() {
         BaseUnit = GetComponent<Unit>();
         movement = GetComponent<UnitMovement>();
-        allTasks = GetComponents<IUnitTask>();
     }
     private void Start() {
         steps.Add(TaskGatheringState.MoveToResource, MoveToResourceAction);
@@ -103,7 +104,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
         if (currentTargetResource != null) {
             //print(movement.PathResultType);
             float distance = Vector2.Distance(transform.position, currentTargetResource.transform.position);
-            if (distance < 0.1f && movement.PathResultType == PathResultType.IsCompleted) {
+            if (distance < 1f && movement.PathResultType == PathResultType.IsCompleted) {
                 SetState(TaskGatheringState.PickupResource);
             }
         }
@@ -146,7 +147,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
         }
         if (storage) {
             float distance = Vector2.Distance(storage.transform.position, transform.position);
-            if (distance <= 0.1f && movement.PathResultType == PathResultType.IsCompleted){
+            if (distance <= 1f && movement.PathResultType == PathResultType.IsCompleted){
                 SetState(TaskGatheringState.DropoffResource);
             }
         }
@@ -163,4 +164,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
         }
     }
 
+    private void OnDestroy() {
+        continueGatheringIfIdleTween.Kill();
+    }
 }

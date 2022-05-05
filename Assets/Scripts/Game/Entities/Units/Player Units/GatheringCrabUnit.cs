@@ -8,16 +8,22 @@ public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder
     
     [Header("Crab settings")]
     [SerializeField] HealthBar healthBar;
-    [SerializeField] Transform spriteTrans;
     [SerializeField] GameObject selectorObj;
     UnitMovement movement;
     UnitTaskGathering taskGathering;
     UnitTaskCloseQuartersCombat taskCombat;
     UIE_CrabUnitControl uiControl;
+    UnitTaskManager taskManager;
+    FlashOnImpactEffect impactEffect;
     protected override void OnAwake() {
         movement = GetComponent<UnitMovement>();
         taskGathering = GetComponent<UnitTaskGathering>();
         taskCombat = GetComponent<UnitTaskCloseQuartersCombat>();
+        taskManager = GetComponent<UnitTaskManager>();
+
+        if (!base.spriteRenderer.TryGetComponent(out impactEffect)) {
+            impactEffect = base.spriteRenderer.gameObject.AddComponent<FlashOnImpactEffect>();
+        }
     }
     protected override void OnStart() {
         uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_CrabUnitControl>(this);
@@ -61,14 +67,14 @@ public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder
 
         healthBar.SetSize(1.0f * curHeath / maxHeath);
 
+        impactEffect.Impact();
         if (curHeath == 0) {
             Destroy(gameObject);
         }
     }
 
     public void OnTakeOrderAtPosition(Vector2 position) {
-        taskGathering.EndDoTask();
-        taskCombat.EndDoTask();
+        taskManager.StopAllTasks();
 
         RaycastHit2D[] hits = Physics2D.RaycastAll(position, Vector3.forward);
         foreach (RaycastHit2D hit in hits) {

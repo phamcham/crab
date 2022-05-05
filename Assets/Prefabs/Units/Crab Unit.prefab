@@ -205,6 +205,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4804171250748823423}
   - component: {fileID: 5010240708056244632}
+  - component: {fileID: 1404863484}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -277,6 +278,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+--- !u!114 &1404863484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7819384777869112846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c6bd21af7ae3e7478ba74bd0f4a0866, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8589906722304778303
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,11 +413,12 @@ GameObject:
   m_Component:
   - component: {fileID: 8589906723737199420}
   - component: {fileID: 8589906723737199393}
+  - component: {fileID: 1911248696}
+  - component: {fileID: 8589906723737199395}
   - component: {fileID: 8589906723737199399}
   - component: {fileID: 2325717220950185751}
-  - component: {fileID: 8589906723737199395}
   - component: {fileID: 1911248697}
-  - component: {fileID: 1911248696}
+  - component: {fileID: 996008583744187500}
   m_Layer: 0
   m_Name: Crab Unit
   m_TagString: Untagged
@@ -448,6 +462,48 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!111 &1911248696
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8589906723737199421}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 1278ff292f9536e439fc0e3a3addaea3, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 1278ff292f9536e439fc0e3a3addaea3, type: 2}
+  - {fileID: 7400000, guid: ab20c2cec43900748a39bc90b4245846, type: 2}
+  - {fileID: 7400000, guid: 18f27225a8b47d741a4ca8423b935a68, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_CullingType: 0
+--- !u!114 &8589906723737199395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8589906723737199421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4ca9fa1851c354dbd098ed926a630b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  properties:
+    unitName: Gathering Crab
+    maxHealthPoint: 40
+    moveSpeed: 4
+    damage: 10
+    area:
+      m_Position: {x: 0, y: 0, z: 0}
+      m_Size: {x: 1, y: 1, z: 1}
+    curHealthPoint: 0
+  spriteRenderer: {fileID: 5010240708056244632}
+  healthBar: {fileID: 5690266740865683978}
+  selectorObj: {fileID: 8589906723748690840}
 --- !u!114 &8589906723737199399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -473,31 +529,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holdingObjectSpriteRenderer: {fileID: 8589906723204274511}
---- !u!114 &8589906723737199395
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8589906723737199421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c4ca9fa1851c354dbd098ed926a630b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  properties:
-    unitName: Gathering Crab
-    maxHealthPoint: 40
-    moveSpeed: 4
-    damage: 10
-    area:
-      m_Position: {x: 0, y: 0, z: 0}
-      m_Size: {x: 1, y: 1, z: 1}
-    curHealthPoint: 0
-  spriteRenderer: {fileID: 5010240708056244632}
-  healthBar: {fileID: 5690266740865683978}
-  spriteTrans: {fileID: 8589906722304778301}
-  selectorObj: {fileID: 8589906723748690840}
 --- !u!114 &1911248697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -513,24 +544,18 @@ MonoBehaviour:
   catchRadius: 10
   attackRadius: 1
   reloadingTime: 1.5
---- !u!111 &1911248696
-Animation:
+--- !u!114 &996008583744187500
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8589906723737199421}
   m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 1278ff292f9536e439fc0e3a3addaea3, type: 2}
-  m_Animations:
-  - {fileID: 7400000, guid: 1278ff292f9536e439fc0e3a3addaea3, type: 2}
-  - {fileID: 7400000, guid: ab20c2cec43900748a39bc90b4245846, type: 2}
-  - {fileID: 7400000, guid: 18f27225a8b47d741a4ca8423b935a68, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 0
-  m_AnimatePhysics: 0
-  m_CullingType: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c65f183f3b181246b357b3ece2d256e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8589906723748690840
 GameObject:
   m_ObjectHideFlags: 0

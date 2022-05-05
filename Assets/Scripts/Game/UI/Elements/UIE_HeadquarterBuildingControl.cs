@@ -23,7 +23,8 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
     bool isContinue = true;
     HeadquarterBuilding building;
     bool enoughCapacity = true;
-    private void Start() {
+    protected override void Start() {
+        base.Start();
         continuePauseButton.onClick.AddListener(() => {
             if (isContinue) {
                 continuePauseButtonRender.sprite = continueSprite;

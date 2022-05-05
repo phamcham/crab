@@ -13,6 +13,7 @@ public class UIE_ResourceControl : UIE_UIControl {
     [SerializeField] Image resourceImg;
     [SerializeField] TMPro.TextMeshProUGUI amountText;
     [SerializeField] TMPro.TextMeshProUGUI gatheringTimeText;
+    [SerializeField] HealthBarUI progressBarUI;
 
     Resource resource;
     public void SetResource(Resource resource) {
@@ -25,5 +26,6 @@ public class UIE_ResourceControl : UIE_UIControl {
         amountText.SetText("{0}", resource.properties.amount);
         gatheringTimeText.SetText("{0}", resource.properties.gatheringTime);
 
+        progressBarUI.SetSize(1.0f - resource.properties.currentGatheringTime / resource.properties.gatheringTime);
     }
 }

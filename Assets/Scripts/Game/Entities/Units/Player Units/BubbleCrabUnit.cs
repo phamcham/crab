@@ -10,12 +10,19 @@ public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
     UnitMovement movement;
     UnitTaskShooting shootable;
     UIE_BubbleCrabUnitControl uiControl;
+    UnitTaskManager taskManager;
+    FlashOnImpactEffect impactEffect;
 
     protected override void OnAwake() {
         //properties = new UnitProperties(Team.DefaultPlayer, 100, 10, 6);
         //unitTasks = GetComponents<UnitTask>();
         movement = GetComponent<UnitMovement>();
         shootable = GetComponent<UnitTaskShooting>();
+        taskManager = GetComponent<UnitTaskManager>();
+
+        if (!base.spriteRenderer.TryGetComponent(out impactEffect)) {
+            impactEffect = base.spriteRenderer.gameObject.AddComponent<FlashOnImpactEffect>();
+        }
     }
     protected override void OnStart() {
         uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_BubbleCrabUnitControl>(this);
@@ -60,18 +67,21 @@ public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
 
         healthBar.SetSize(1.0f * curHeath / maxHeath);
 
+        impactEffect.Impact();
         if (curHeath == 0) {
             Destroy(gameObject);
         }
     }
 
     public void OnTakeOrderAtPosition(Vector2 position) {
-        shootable.EndDoTask();
+        taskManager.StopAllTasks();
 
         RaycastHit2D[] hits = Physics2D.RaycastAll(position, Vector3.forward);
         foreach (RaycastHit2D hit in hits) {
             if (hit.collider.TryGetComponent(out EnemyUnit enemyUnit)) {
                 shootable.SetFollowEnemy(enemyUnit);
+                //shootable.StartDoTask();
+                print("kill :" + enemyUnit.name);
                 return;
             }
         }

@@ -1,21 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public abstract class UIE_UIControl : MonoBehaviour {
-    float updateInterval = 0.2f;
-    float curUpdateUIInterval;
-    protected void OnEnable() {
-        curUpdateUIInterval = 0;
-    }
-    protected void Update() {
-        if (curUpdateUIInterval <= 0) {
-            curUpdateUIInterval = updateInterval;
-            UpdateIntervalOnUI();
-        }
-        else {
-            curUpdateUIInterval -= Time.deltaTime;
-        }
+    private Tween updateIntervalOnUITween;
+    protected virtual void Start() {
+        UpdateIntervalOnUI();
+        updateIntervalOnUITween = DOVirtual.DelayedCall(0.2f, UpdateIntervalOnUI).SetLoops(-1).Play();
     }
     protected abstract void UpdateIntervalOnUI();
     public void Show() {
@@ -25,5 +17,7 @@ public abstract class UIE_UIControl : MonoBehaviour {
     public void Hide() {
         gameObject.SetActive(false);
     }
-
+    private void OnDestroy() {
+        updateIntervalOnUITween.Kill();
+    }
 }

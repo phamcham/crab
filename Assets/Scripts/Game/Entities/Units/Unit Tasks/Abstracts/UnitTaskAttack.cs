@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
@@ -10,14 +11,15 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
         DoNothing
     }
     public bool IsTaskRunning { get; private set; } = false;
+    //public bool IsTaskRunning => throw new NotImplementedException();
     // ====== public =========
     public PlayerUnit BaseUnit { get; private set; }
+
     public int catchRadius;
     public int attackRadius;
     public float reloadingTime;
     // ======= private ============
     private float curReloadingTime = 0;
-    private float checkTime = 0;
     private bool isInRange = false;
     private bool initStep = false;
     private AttackState currentState = AttackState.DoNothing;
@@ -26,14 +28,11 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
     private EnemyUnit followToDieEnemy;
     //private Animation anim;
     private Dictionary<AttackState, Action> steps = new Dictionary<AttackState, Action>();
-    private IUnitTask[] allTasks;
-    // ======= const ===========
-    const float checkInterval = 2f;
     // ====== method =======
+    Tween scanEnemiesTween;
     protected void Awake() {
         BaseUnit = GetComponent<PlayerUnit>();
         movement = GetComponent<UnitMovement>();
-        allTasks = GetComponents<IUnitTask>();
 
         OnAwake();
     }
@@ -41,12 +40,16 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
     protected void Start() {
         steps.Add(AttackState.MoveToEnemy, MoveToEnemyAction);
         steps.Add(AttackState.Attack, AttackAction);
+
+        scanEnemiesTween = DOVirtual.DelayedCall(2f, ScanEnemies).SetLoops(-1).Play();
     }
     private void MoveToEnemyAction() {
         if (initStep) {
             initStep = false;
 
         }
+
+        //print("move : " + (targetEnemy ? "ok" : "null"));
 
         if (targetEnemy) {
             // follow enemy
@@ -66,9 +69,6 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
                 movement.MoveToPosition(targetEnemy.transform.position);
             }
         }
-        else { 
-            EndDoTask();
-        }
     }
 
     private void AttackAction() {
@@ -76,14 +76,15 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
             initStep = false;
         }
 
+        //print("attack : " + (targetEnemy ? "ok" : "null"));
         if (targetEnemy) {
             float distance = Vector2.Distance(transform.position, targetEnemy.transform.position);
             if (distance > attackRadius) {
                 SetState(AttackState.MoveToEnemy);
             }
             else {
-                print("danh di");
                 if (curReloadingTime <= 0) {
+                    //print("danh di: " + Time.realtimeSinceStartup + ", " + curReloadingTime);
                     curReloadingTime = reloadingTime;
                     // attack
                     //anim.Play("crab attack");
@@ -92,17 +93,12 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
                 }
             }
         }
-        else {
-            EndDoTask();
-        }
     }
 
     // attack theo cach cua tung child
     protected abstract void OnAttack(EnemyUnit enemyUnit);
 
     private void Update() {
-        // always find nearest, even task is not started
-        CheckEnemyAround();
 
         if (IsTaskRunning) {
             if (steps.TryGetValue(currentState, out Action action)){
@@ -114,21 +110,13 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
         curReloadingTime = Mathf.Max(0, curReloadingTime - Time.deltaTime);
     }
 
-    void CheckEnemyAround() {
+    private void ScanEnemies() {
+        // always find nearest, even task is not started
         if (followToDieEnemy) {
             targetEnemy = followToDieEnemy;
-            return;
-        }
-        
-        targetEnemy = null;
-        // get nearest enemy
-        float checkDistance = float.MaxValue;
-        if (checkTime > 0) {
-            checkTime -= Time.deltaTime;
         }
         else {
-            checkTime = checkInterval;
-            // check enemy
+            float checkDistance = float.MaxValue;
             List<EnemyUnit> enemies = GetEnemies(catchRadius);
             if (enemies.Count > 0) {
                 foreach (EnemyUnit enemy in enemies) {
@@ -140,12 +128,12 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
                 }
             }
         }
-
         // phat hien ra ke dich
-        if (targetEnemy && !IsTaskRunning) {
-            // TODO: dung het task
-            // ...
+        if (targetEnemy) {
             StartDoTask();
+        }
+        else {
+            EndDoTask();
         }
     }
 
@@ -177,18 +165,22 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
     }
 
     public void StartDoTask() {
-        // stop all tasks before do this task
-        foreach (IUnitTask task in allTasks) {
-            task.EndDoTask();
-        }
+        if (IsTaskRunning) return;
+        
+        //print("found enemey");
 
         IsTaskRunning = true;
         SetState(AttackState.MoveToEnemy);
     }
 
     public void EndDoTask() {
+        if (!IsTaskRunning) return;
         IsTaskRunning = false;
         targetEnemy = null;
         followToDieEnemy = null;
+    }
+
+    private void OnDestroy() {
+        scanEnemiesTween.Kill();
     }
 }
