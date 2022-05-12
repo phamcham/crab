@@ -23,7 +23,7 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
     private bool isInRange = false;
     private bool initStep = false;
     private AttackState currentState = AttackState.DoNothing;
-    private UnitMovement movement;
+    private UnitNavMovement movement;
     private EnemyUnit targetEnemy;
     private EnemyUnit followToDieEnemy;
     //private Animation anim;
@@ -32,7 +32,7 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
     Tween scanEnemiesTween;
     protected void Awake() {
         BaseUnit = GetComponent<PlayerUnit>();
-        movement = GetComponent<UnitMovement>();
+        movement = GetComponent<UnitNavMovement>();
 
         OnAwake();
     }
@@ -66,7 +66,7 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
                 // ke dich ngoai tam ban
                 isInRange = false;
                 // duoi theo nooooo
-                movement.MoveToPosition(targetEnemy.transform.position);
+                movement.Move(targetEnemy.transform.position);
             }
         }
     }

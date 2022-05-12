@@ -6,11 +6,14 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class RTSController : MonoBehaviour {
+    [Space, Header("Selection Box")]
     [SerializeField] GameObject selectionBoxObj;
     [SerializeField] GameObject arrowMoveObj;
     [SerializeField] Tilemap tilemapGround;
+    [Space, Header("Camera move edge"), Space]
     public bool controlMoveCameraByEdgeScreen = false;
     public float moveCamSpeed;
+    float curDelayMoveCamTime = 0;
     List<ISelectable> selectables = new List<ISelectable>();
     //private bool isMultiSelect;
     Vector3 startSelectionBoxPosition;
@@ -21,12 +24,10 @@ public class RTSController : MonoBehaviour {
     PlayerUnit selectedUnit = null;
     Building selectedBuilding = null;
     Resource selectedResource = null;
-    private void Awake() {
-        Cursor.lockState = CursorLockMode.Confined;
-    }
+
     private void Start() {
         selectionBoxObj.SetActive(false);
-        arrowMoveObj.SetActive(false);    
+        arrowMoveObj.SetActive(false);
     }
     private void Update() {
         if (!GameController.current.IsGameplayPaused) {
@@ -36,6 +37,9 @@ public class RTSController : MonoBehaviour {
             MoveCameraControl();
             ZoomCameraControl();
         }
+
+        // setting cursor
+        Cursor.visible = false;
     }
 
     void SelectionBoxControl(){
@@ -191,8 +195,15 @@ public class RTSController : MonoBehaviour {
             if (Input.GetMouseButton(2)){
                 Vector3 currentMousePosition = InputExtension.MouseWorldPoint();
                 Vector3 delta = startMoveCameraPosition - currentMousePosition;
-                delta.z = 0;
-                Camera.main.transform.position += delta;
+                
+                Vector3 newCamPos = Camera.main.transform.position + delta;
+
+                newCamPos.x = Mathf.Clamp(newCamPos.x, tilemapGround.cellBounds.xMin, tilemapGround.cellBounds.xMax);
+                newCamPos.y = Mathf.Clamp(newCamPos.y, tilemapGround.cellBounds.yMin, tilemapGround.cellBounds.yMax); 
+
+                Camera.main.transform.position = newCamPos;
+
+                GameCursor.SetCursorSpriteOnFrame(GameCursor.CursorState.Move);
             }
             if (Input.GetMouseButtonUp(2)){
             }
@@ -201,18 +212,61 @@ public class RTSController : MonoBehaviour {
         if (controlMoveCameraByEdgeScreen) {
             const int boundary = 10;
             int horizontal = 0;
-            if (Input.mousePosition.x <= boundary) horizontal = -1;
-            if (Input.mousePosition.x + boundary >= Screen.width) horizontal = 1;
+            if (Input.mousePosition.x <= boundary) {
+                horizontal = -1;
+                GameCursor.SetCursorSpriteOnFrame(GameCursor.CursorState.Left);
+            }
+            if (Input.mousePosition.x + boundary >= Screen.width) {
+                horizontal = 1;
+                GameCursor.SetCursorSpriteOnFrame(GameCursor.CursorState.Right);
+            }
             
             int vertical = 0;
-            if (Input.mousePosition.y <= boundary) vertical = -1;
-            if (Input.mousePosition.y + boundary >= Screen.height) vertical = 1;
-            
+            if (Input.mousePosition.y <= boundary) {
+                vertical = -1;
+                if (horizontal == -1) {
+                    GameCursor.SetCursorSpriteOnFrame(GameCursor.CursorState.DownLeft);
+                }
+                else if (horizontal == 1) {
+                    GameCursor.SetCursorSpriteOnFrame(GameCursor.CursorState.DownRight);
+                }
+                else {
+                    GameCursor.SetCursorSpriteOnFrame(GameCursor.CursorState.Down);
+                }
+            }
+            if (Input.mousePosition.y + boundary >= Screen.height) {
+                vertical = 1;
+                if (horizontal == -1) {
+                    GameCursor.SetCursorSpriteOnFrame(GameCursor.CursorState.UpLeft);
+                }
+                else if (horizontal == 1) {
+                    GameCursor.SetCursorSpriteOnFrame(GameCursor.CursorState.UpRight);
+                }
+                else {
+                    GameCursor.SetCursorSpriteOnFrame(GameCursor.CursorState.Up);
+                }
+            }
+
+            const float delayMoveCamTime = 0.1f;
             if (horizontal != 0 || vertical != 0) {
-                Vector2 move = new Vector2(horizontal, vertical).normalized;
-                Vector3 delta = move * Time.deltaTime * moveCamSpeed;
-                delta.z = 0;
-                Camera.main.transform.position += delta;
+                if (curDelayMoveCamTime >= delayMoveCamTime) {
+                    Vector2 move = new Vector2(horizontal, vertical).normalized;
+                    Vector3 delta = move * Time.deltaTime * moveCamSpeed;
+                    delta.z = 0;
+
+                    Vector3 newCamPos = Camera.main.transform.position + delta;
+
+                    newCamPos.x = Mathf.Clamp(newCamPos.x, tilemapGround.cellBounds.xMin, tilemapGround.cellBounds.xMax);
+                    newCamPos.y = Mathf.Clamp(newCamPos.y, tilemapGround.cellBounds.yMin, tilemapGround.cellBounds.yMax); 
+
+                    Camera.main.transform.position = newCamPos;
+                }
+                else {
+                    curDelayMoveCamTime += Time.deltaTime;
+                }
+            }
+            else {
+                curDelayMoveCamTime = 0;
             }
         }
         

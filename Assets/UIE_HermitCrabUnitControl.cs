@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class UIE_CrabUnitControl : UIE_UIControl {
+public class UIE_HermitCrabUnitControl : UIE_UIControl {
     [Header("Avatar settings")]
     [SerializeField] TMPro.TextMeshProUGUI titleText;
     [SerializeField] Image avatar;
@@ -14,8 +14,8 @@ public class UIE_CrabUnitControl : UIE_UIControl {
     [Space, Header("Control settings")]
     [SerializeField] TMPro.TextMeshProUGUI speedText;
     [SerializeField] TMPro.TextMeshProUGUI damageText;
-    GatheringCrabUnit unit;
-    public void SetUnit(GatheringCrabUnit unit) {
+    HermitCrabUnit unit;
+    public void SetUnit(HermitCrabUnit unit) {
         this.unit = unit;
     }
 

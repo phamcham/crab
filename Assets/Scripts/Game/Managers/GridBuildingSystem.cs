@@ -7,6 +7,7 @@ using UnityEngine.Tilemaps;
 public class GridBuildingSystem : MonoBehaviour {
     public static GridBuildingSystem current {get; private set;}
 
+    //[SerializeField] Transform holder;
     public GridLayout gridLayout;
     [SerializeField] Tilemap groundTilemap;
     //[SerializeField] TileBase walkableTile;
@@ -18,7 +19,6 @@ public class GridBuildingSystem : MonoBehaviour {
 
     private Vector3Int prevPos;
     private BoundsInt prevArea;
-    Transform holder;
     
     // call neu co thay doi o map
     public void UpdateMainTilemap(){
@@ -44,7 +44,7 @@ public class GridBuildingSystem : MonoBehaviour {
         if (tempBuilding) {
             return;
         }
-        tempBuilding = Instantiate(building.gameObject, holder).GetComponent<Building>();
+        tempBuilding = Instantiate(building.gameObject, transform).GetComponent<Building>();
 
         SpriteRenderer tempRender;
         if (!tempObj) {
@@ -73,6 +73,7 @@ public class GridBuildingSystem : MonoBehaviour {
         ClearArea();
 
         BoundsInt buildingArea = CalculateAreaFromWorldPosition(tempBuilding.properties.area, tempBuilding.transform.position);
+        //print("check: " + buildingArea);
         tempBuilding.properties.area.position = buildingArea.position;
 
         TileBase[] baseArray = GetTilesBlock(buildingArea, mainTilemap);
@@ -96,28 +97,35 @@ public class GridBuildingSystem : MonoBehaviour {
         SetTileBlock(area, TileType.Empty, tempTilemap);
         SetTileBlock(area, TileType.Green, mainTilemap);
 
-        for (int i = 0; i < area.size.x; i++){
-            for (int j = 0; j < area.size.y; j++){
-                Vector2Int curPosition = new Vector2Int(i, j);
-                Vector2Int cellIndex = AStarGrid.current.PositionToIndex(curPosition + (Vector2Int)area.position);
-                //Debug.Log(cellIndex);
-                AStarGrid.current.AddTempObstacle(cellIndex);
-                AStarGrid.current.UpdateGridNode(cellIndex);
-            }
-        }
+        // for (int i = 0; i < area.size.x; i++){
+        //     for (int j = 0; j < area.size.y; j++){
+        //         Vector2Int curPosition = new Vector2Int(i, j);
+        //         Vector2Int cellIndex = AStarGrid.current.PositionToIndex(curPosition + (Vector2Int)area.position);
+        //         //Debug.Log(cellIndex);
+        //         AStarGrid.current.AddTempObstacle(cellIndex);
+        //         AStarGrid.current.UpdateGridNode(cellIndex);
+        //     }
+        // }
     }
     public void ClearArea(BoundsInt area) {
         SetTileBlock(area, TileType.White, mainTilemap);
 
-        for (int i = 0; i < area.size.x; i++){
-            for (int j = 0; j < area.size.y; j++){
-                Vector2Int curPosition = new Vector2Int(i, j);
-                Vector2Int cellIndex = AStarGrid.current.PositionToIndex(curPosition + (Vector2Int)area.position);
-                //Debug.Log(cellIndex);
-                AStarGrid.current.DeleteTempObstacle(cellIndex);
-                AStarGrid.current.UpdateGridNode(cellIndex);
-            }
-        }
+        // for (int i = 0; i < area.size.x; i++){
+        //     for (int j = 0; j < area.size.y; j++){
+        //         Vector2Int curPosition = new Vector2Int(i, j);
+        //         Vector2Int cellIndex = AStarGrid.current.PositionToIndex(curPosition + (Vector2Int)area.position);
+        //         //Debug.Log(cellIndex);
+        //         AStarGrid.current.DeleteTempObstacle(cellIndex);
+        //         AStarGrid.current.UpdateGridNode(cellIndex);
+        //     }
+        // }
+    }
+    public Vector2Int WorldToGridPosition(Vector2 worldPosition) {
+        Vector2 gridBottomLeftPosition = (Vector2Int)groundTilemap.cellBounds.min;
+        return (Vector2Int)groundTilemap.WorldToCell((Vector2)worldPosition - gridBottomLeftPosition);
+    }
+    public Vector2 GridToWorldPosition(Vector2Int gridPosition) {
+        return groundTilemap.CellToWorld((Vector3Int)gridPosition);
     }
     public bool IsBuilding(TileBase tile){
         print("Check: " + (tile == tileBases[TileType.Green]));
@@ -134,11 +142,7 @@ public class GridBuildingSystem : MonoBehaviour {
     }
     private void Awake() {
         current = this;
-
-        holder = new GameObject("Building Holder").transform;
-        holder.position = Vector3.zero;
-    }
-    private void Start() {
+        
         string tilePath = @"Tiles/";
         tileBases.Add(TileType.Empty, null);
         tileBases.Add(TileType.White, Resources.Load<TileBase>(tilePath + "white"));
@@ -147,6 +151,9 @@ public class GridBuildingSystem : MonoBehaviour {
 
         UpdateMainTilemap();
         SetActiveTilemapBuilding(false);
+    }
+    private void Start() {
+        
     }
 
     private void Update() {

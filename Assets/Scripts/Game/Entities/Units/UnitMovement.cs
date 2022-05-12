@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using PhamCham.Extension;
 using UnityEngine;
 
-[RequireComponent(typeof(Unit), typeof(UnitTaskManager))]
+
 public class UnitMovement : MonoBehaviour {
+    /*
     public Unit BaseUnit { get; private set; }
     public Vector2 TargetPosition { get; private set; }
     private Vector2 prevTargetPosition = new Vector2(int.MaxValue, int.MinValue);
@@ -217,4 +218,5 @@ public class UnitMovement : MonoBehaviour {
             callback?.Invoke(hasPath); 
         }));
     }
+    */
 }

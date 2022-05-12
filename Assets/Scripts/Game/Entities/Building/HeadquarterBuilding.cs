@@ -9,8 +9,6 @@ public class HeadquarterBuilding : Building, IDamagable, ISelectable {
     BuildingStorage storage;
     private float time;
     private bool isStartSpawned;
-    private List<Vector2Int> circles = new List<Vector2Int>();
-    private Vector2Int center;
     private int circleIndex;
     bool isPrevSpawnSuccess = true;
     bool isContinue = true;
@@ -30,14 +28,10 @@ public class HeadquarterBuilding : Building, IDamagable, ISelectable {
         healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         healthBar.Hide();
     }
-    public override void OnBuildingPlaced(){
+    public override void OnBuildingPlaced() {
         GameController.current.HeadquarterStartGameplay(this);
+        UnitManager.current.ChangeHouseCapacity(ownProperties.houseCapacity);
         isStartSpawned = true;
-        center = AStarGrid.current.WorldPositionToGridPosition(transform.position);
-        circles = new List<Vector2Int>();
-        circles.AddRange(BresenhamsCircle.CircleBres(center, 2));
-        circles.AddRange(BresenhamsCircle.CircleBres(center, 3));
-        circles = new List<Vector2Int>(new HashSet<Vector2Int>(circles));
         time = ownProperties.productionInterval;
         storage.CanStoraged = true;
 
@@ -59,24 +53,16 @@ public class HeadquarterBuilding : Building, IDamagable, ISelectable {
     private bool SpawnNewCrab(){
         // TODO: kiem tra co de phai con cua nao khong????
 
-        for (int i = 1; i < circles.Count; i++){
-            int nextIndex = (i + circleIndex) % circles.Count;
-            Vector2Int nextPosition = circles[nextIndex];
-            AStarNode node = AStarGrid.current.NodeFromGridPoint(nextPosition);
-            if (node == null) continue;
-
-            bool isWalkable = node.walkable;
-            Vector3 wpos = node.worldPosition;
-            // TODO: kiem tra co con cua nao dang dung o do khong
-            bool hasUnit = HasUnitInPosition(wpos, 0.4f);
-            if (isWalkable && !hasUnit) {
+        for (int i = 0; i < 30; i++) {
+            Vector2 randomPosition = (Vector2)transform.position + Random.Range(3, 6) * new Vector2(Random.Range(-10f, 10f), Random.Range(-10f, 10f)).normalized;
+            bool isWalkable = NavMeshMap.current.IsWalkable(randomPosition);
+            if (isWalkable) {
                 Unit unit = UnitManager.current.Create<GatheringCrabUnit>();
-                unit.transform.position = transform.position;
-                if (unit.TryGetComponent(out UnitMovement movement)){
-                    movement.MoveToPosition(wpos);
-                    //unit.transform.position = wpos;
+                unit.transform.position = randomPosition;
+                if (unit.TryGetComponent(out UnitNavMovement movement)){
+                    //movement.Move(randomPosition);
                 }
-                circleIndex = nextIndex;
+
                 return true;
             }
         }
@@ -99,18 +85,6 @@ public class HeadquarterBuilding : Building, IDamagable, ISelectable {
         }
         return false;
     }
-    private void OnDrawGizmos() {
-        if (circles != null) {
-            Color color = Color.white;
-            color.a = 0.3f;
-            Gizmos.color = color;
-            foreach (var pos in circles){
-                AStarNode node = AStarGrid.current.NodeFromGridPoint(pos);
-                Vector3 wpos = node.worldPosition;
-                Gizmos.DrawCube(wpos, Vector3.one);
-            }
-        }
-    }
     private void Update() {
         if (isContinue && isStartSpawned){
             if (time <= 0){
@@ -132,7 +106,9 @@ public class HeadquarterBuilding : Building, IDamagable, ISelectable {
                     if (!isPrevSpawnSuccess) {
                         // TODO: thong bao khong the spawn vi het cho de spawn roi
                     }
-                    time = ownProperties.productionInterval;
+                    else {
+                        time = ownProperties.productionInterval;
+                    }
                 }
             }
             else {
@@ -161,6 +137,7 @@ public class HeadquarterBuilding : Building, IDamagable, ISelectable {
 
     protected override void OnDestroyBuilding() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
+        UnitManager.current.ChangeHouseCapacity(-ownProperties.houseCapacity);
     }
 
     public void OnGiveOrder(Vector2 position) {
@@ -177,5 +154,6 @@ public class HeadquarterBuilding : Building, IDamagable, ISelectable {
         public int productionInterval;
         [HideInInspector]
         public int curProductionPercent;
+        public int houseCapacity;
     }
 }

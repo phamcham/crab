@@ -19,10 +19,10 @@ public class GameController : MonoBehaviour {
     }
 
     void InitGame() {
-        ResourceManager.current.CollectResource(ResourceType.Coconut, 10);
-        ResourceManager.current.CollectResource(ResourceType.Conch, 10);
-        ResourceManager.current.CollectResource(ResourceType.Grass, 10);
-        ResourceManager.current.CollectResource(ResourceType.Starfish, 10);
+        ResourceManager.current.DeltaResource(ResourceType.Coconut, 1000);
+        ResourceManager.current.DeltaResource(ResourceType.Conch, 1000);
+        ResourceManager.current.DeltaResource(ResourceType.Grass, 1000);
+        ResourceManager.current.DeltaResource(ResourceType.Starfish, 1000);
     }
 
     public void HeadquarterStartGameplay(HeadquarterBuilding headquarter){

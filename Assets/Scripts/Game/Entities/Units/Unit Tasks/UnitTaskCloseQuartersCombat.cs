@@ -9,6 +9,7 @@ public class UnitTaskCloseQuartersCombat : UnitTaskAttack {
         anim = GetComponent<Animation>();
     }
     protected override void OnAttack(EnemyUnit enemyUnit) {
+        anim.Stop();
         anim.Play("crab attack");
         enemyUnit.GetComponent<IDamagable>()?.TakeDamage(BaseUnit.properties.damage);
     }

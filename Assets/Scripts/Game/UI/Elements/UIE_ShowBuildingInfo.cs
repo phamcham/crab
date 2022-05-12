@@ -20,12 +20,14 @@ public class UIE_ShowBuildingInfo : MonoBehaviour
         descriptionUpdateText?.Invoke(description);
 
         foreach (UIE_ResourceRequirement uie in requirements.Values){
+            //Debug.Log("aaa : " + uie.name);
             uie.gameObject.SetActive(false);
         }
         foreach (ResourceRequirement req in resourceRequirements){
             if (!requirements.TryGetValue(req.type, out UIE_ResourceRequirement ui)){
                 ui = Instantiate(uieRequiredResourcePrefab.gameObject, requirementTrans).GetComponent<UIE_ResourceRequirement>();
                 requirements.Add(req.type, ui);
+                //print(req.type + " " + req.amount);
             }
             ui.gameObject.SetActive(true);
             ui.Setup(req);

@@ -5,9 +5,8 @@ using UnityEngine;
 public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
     [Header("Crab settings")]
     [SerializeField] HealthBar healthBar;
-    [SerializeField] Transform spriteTrans;
     [SerializeField] GameObject selectorObj;
-    UnitMovement movement;
+    UnitNavMovement movement;
     UnitTaskShooting shootable;
     UIE_BubbleCrabUnitControl uiControl;
     UnitTaskManager taskManager;
@@ -16,7 +15,7 @@ public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
     protected override void OnAwake() {
         //properties = new UnitProperties(Team.DefaultPlayer, 100, 10, 6);
         //unitTasks = GetComponents<UnitTask>();
-        movement = GetComponent<UnitMovement>();
+        movement = GetComponent<UnitNavMovement>();
         shootable = GetComponent<UnitTaskShooting>();
         taskManager = GetComponent<UnitTaskManager>();
 
@@ -81,10 +80,10 @@ public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
             if (hit.collider.TryGetComponent(out EnemyUnit enemyUnit)) {
                 shootable.SetFollowEnemy(enemyUnit);
                 //shootable.StartDoTask();
-                print("kill :" + enemyUnit.name);
+                //print("kill :" + enemyUnit.name);
                 return;
             }
         }
-        movement.MoveToPosition(position);
+        movement.Move(position);
     }
 }

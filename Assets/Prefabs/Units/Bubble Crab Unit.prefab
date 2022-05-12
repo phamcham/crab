@@ -205,10 +205,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2863253434817014881}
   - component: {fileID: 2863253434817014908}
-  - component: {fileID: 2863253434817014906}
   - component: {fileID: 2863253434817014883}
   - component: {fileID: 802208272}
   - component: {fileID: 8717990143270080318}
+  - component: {fileID: 1319157722}
+  - component: {fileID: 1319157721}
+  - component: {fileID: 1319157720}
   m_Layer: 0
   m_Name: Bubble Crab Unit
   m_TagString: Untagged
@@ -251,18 +253,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &2863253434817014906
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863253434817014880}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09c94ccf9cc019d4f892da4965e04762, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2863253434817014883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -293,16 +283,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   properties:
     unitName: Bubble Crab
-    maxHealthPoint: 40
+    maxHealthPoint: 200
     moveSpeed: 3
-    damage: 5
+    damage: 30
     area:
       m_Position: {x: 0, y: 0, z: 0}
       m_Size: {x: 1, y: 1, z: 1}
     curHealthPoint: 0
   spriteRenderer: {fileID: 9214029227545598463}
   healthBar: {fileID: 2863253434673255451}
-  spriteTrans: {fileID: 2863253435459858272}
   selectorObj: {fileID: 2863253434829681861}
 --- !u!111 &8717990143270080318
 Animation:
@@ -321,6 +310,52 @@ Animation:
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!195 &1319157722
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863253434817014880}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 2
+  m_StoppingDistance: 1
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1
+  m_BaseOffset: 0.5
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 3
+--- !u!114 &1319157721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863253434817014880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c65f183f3b181246b357b3ece2d256e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1319157720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863253434817014880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a314e14fae3663148a80d706069001dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2863253434829681861
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,7 +428,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 2b5deb88fd87d804daa64bda9439577c, type: 3}
-  m_Color: {r: 0.51637065, g: 1, b: 0.504717, a: 1}
+  m_Color: {r: 0.023529414, g: 1, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

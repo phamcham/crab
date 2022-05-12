@@ -10,7 +10,6 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
     [SerializeField] Image avatar;
     [SerializeField] TMPro.TextMeshProUGUI healthPointText;
     [SerializeField] HealthBarUI healthBarUI;
-    [SerializeField] TMPro.TextMeshProUGUI defendPointText;
     [SerializeField] TMPro.TextMeshProUGUI productionTimeText;
     [SerializeField] TMPro.TextMeshProUGUI percentText;
     [SerializeField] HealthBarUI spawnCrabProcessBarUI;
@@ -54,7 +53,6 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
         healthBarUI.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         
         // control
-        defendPointText.SetText("{0}", properties.defendPoint);
         productionTimeText.SetText("{0}", ownProperties.productionInterval);
         if (enoughCapacity) percentText.SetText("{0}%", ownProperties.curProductionPercent);
         spawnCrabProcessBarUI.SetSize(1.0f * ownProperties.curProductionPercent / 100);

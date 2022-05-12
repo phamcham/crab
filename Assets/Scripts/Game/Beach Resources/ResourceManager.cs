@@ -14,12 +14,8 @@ public class ResourceManager : MonoBehaviour
     Dictionary<ResourceType, Resource> dictResourcePrefabs = new Dictionary<ResourceType, Resource>();
     Dictionary<ResourceType, List<Resource>> dictResources = new Dictionary<ResourceType, List<Resource>>();
     Dictionary<ResourceType, int> resourceStorage = new Dictionary<ResourceType, int>();
-    Transform holder;
     private void Awake() {
         current = this;
-        
-        holder = new GameObject("Resource Holder").transform;
-        holder.position = Vector3.zero;
         
         InitializeResourceDataDict();
     }
@@ -53,7 +49,7 @@ public class ResourceManager : MonoBehaviour
             { ResourceType.Coconut, new List<Vector2Int>() }
         };
         foreach (ResourceType type in resourcePositions.Keys){
-            for (int i = 0; i < 5; i++){
+            for (int i = 0; i < 9; i++){
                 if (stack.Count > 0) {
                     Vector2Int pos = stack.Pop();
                     resourcePositions[type].Add(pos);
@@ -87,7 +83,7 @@ public class ResourceManager : MonoBehaviour
     public List<ResourceType> GetResourceTypes(){
         return new List<ResourceType>(dictResources.Keys);
     }
-    public void CollectResource(ResourceType type, int add){
+    public void DeltaResource(ResourceType type, int add){
         resourceStorage[type] += add;
         uiResource.UpdateResourceStoringUI(type, resourceStorage[type]);
         uiBuilding.UpdateCreateBuildingUI();
@@ -96,6 +92,6 @@ public class ResourceManager : MonoBehaviour
         return resourceStorage[type];
     }
     public Resource Create(ResourceType type) {
-        return Instantiate(dictResourcePrefabs[type], holder);
+        return Instantiate(dictResourcePrefabs[type], transform);
     }
 }

@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class UnitManager : MonoBehaviour {
     public static UnitManager current { get; private set; }
-    [SerializeField] GatheringCrabUnit crabUnitPrefab;
+    [SerializeField] GatheringCrabUnit gatheringCrabUnitPrefab;
+    [SerializeField] BubbleCrabUnit bubbleCrabUnitPrefab;
+    [SerializeField] HermitCrabUnit hermitCrabUnitPrefab;
     // cua storing nhung dung chung de hien thi unit
     [SerializeField] Transform storingHolder;
     [SerializeField] UIE_NumberOfThings uie_numberOfThingsPrefab;
@@ -15,16 +17,14 @@ public class UnitManager : MonoBehaviour {
     List<Unit> units = new List<Unit>();
     [HideInInspector] public int houseCapacity;
     [HideInInspector] public int unitCount => units.Count;
-    Transform unitHolder;
     private void Awake() {
         current = this;
-
-        unitHolder = new GameObject("Unit Holder").transform;
-        unitHolder.transform.position = Vector3.zero;
     }
     private void Start() {
         dictUnitPrefabs = new Dictionary<Type, Unit>() {
-            { typeof(GatheringCrabUnit), crabUnitPrefab }
+            { typeof(GatheringCrabUnit), gatheringCrabUnitPrefab },
+            { typeof(BubbleCrabUnit), bubbleCrabUnitPrefab },
+            { typeof(HermitCrabUnit), hermitCrabUnitPrefab }
         };
         uie_numberOfCrabs = Instantiate(uie_numberOfThingsPrefab.gameObject, storingHolder).GetComponent<UIE_NumberOfThings>();
         uie_houseCapacity = Instantiate(uie_numberOfThingsPrefab.gameObject, storingHolder).GetComponent<UIE_NumberOfThings>();
@@ -32,7 +32,7 @@ public class UnitManager : MonoBehaviour {
         UpdateHouseCapacityUI();
     }
     public T Create<T>() where T : Unit {
-        T obj = Instantiate(dictUnitPrefabs[typeof(T)].gameObject, unitHolder).GetComponent<T>();
+        T obj = Instantiate(dictUnitPrefabs[typeof(T)].gameObject, transform).GetComponent<T>();
         
         return obj;
     }
@@ -54,7 +54,7 @@ public class UnitManager : MonoBehaviour {
         UpdateHouseCapacityUI();
     }
     private void UpdateUnitAmountUI() {
-        if (crabUnitPrefab && uie_numberOfCrabs) {
+        if (uie_numberOfCrabs) {
             uie_numberOfCrabs.Setup(crabIcon, units.Count);
         }
     }

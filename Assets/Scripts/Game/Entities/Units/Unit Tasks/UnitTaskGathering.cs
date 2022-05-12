@@ -6,7 +6,6 @@ using DG.Tweening;
 using PhamCham.Extension;
 using UnityEngine;
 
-[RequireComponent(typeof(UnitTaskManager), typeof(UnitMovement))]
 public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     // ====== task properties =========
     public enum TaskGatheringState {
@@ -28,10 +27,10 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     private ResourceType currentResourceIsHolding = ResourceType.None;
     private ResourceType currentTargetType;
     private Resource currentTargetResource;
-    private UnitMovement movement;
+    private UnitNavMovement movement;
     private BuildingStorage storage;
+    private Animation anim;
     private Dictionary<TaskGatheringState, Action> steps = new Dictionary<TaskGatheringState, Action>();
-
     Tween continueGatheringIfIdleTween;
     // ======== methods ============
     public void SetResourceType(ResourceType type){
@@ -73,7 +72,8 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
 
     private void Awake() {
         BaseUnit = GetComponent<Unit>();
-        movement = GetComponent<UnitMovement>();
+        movement = GetComponent<UnitNavMovement>();
+        anim = GetComponent<Animation>();
     }
     private void Start() {
         steps.Add(TaskGatheringState.MoveToResource, MoveToResourceAction);
@@ -98,13 +98,16 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
                 currentTargetResource = GetRandomResource();
             }
             if (currentTargetResource){
-                movement.MoveToPosition(currentTargetResource.transform.position);
+                movement.Move(currentTargetResource.transform.position);
             }
         }
         if (currentTargetResource != null) {
             //print(movement.PathResultType);
             float distance = Vector2.Distance(transform.position, currentTargetResource.transform.position);
-            if (distance < 1f && movement.PathResultType == PathResultType.IsCompleted) {
+            // if (distance < 1f && movement.PathResultType == PathResultType.IsCompleted) {
+            //     SetState(TaskGatheringState.PickupResource);
+            // }
+            if (movement.IsReachedDestination()) {
                 SetState(TaskGatheringState.PickupResource);
             }
         }
@@ -116,6 +119,8 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     private void PickupResourceAction() {
         if (initStep){
             initStep = false;
+            anim.Stop();
+            anim.Play("crab gathering");
         }
 
         if (currentTargetResource != null) {
@@ -128,10 +133,12 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
                 holdingObjectSpriteRenderer.sprite = currentTargetResource.GetSprite();
 
                 SetState(TaskGatheringState.MoveToStorage);
+                anim.Stop();
             }
         }
         else {
             SetState(TaskGatheringState.MoveToResource);
+            anim.Stop();
         }
     }
     private void MoveToStorageAction() {
@@ -142,12 +149,15 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
             }
             if (storage){
                 initStep = false;
-                movement.MoveToPosition(storage.transform.position);
+                movement.Move(storage.transform.position);
             }
         }
         if (storage) {
             float distance = Vector2.Distance(storage.transform.position, transform.position);
-            if (distance <= 1f && movement.PathResultType == PathResultType.IsCompleted){
+            // if (distance <= 1f && movement.PathResultType == PathResultType.IsCompleted){
+            //     SetState(TaskGatheringState.DropoffResource);
+            // }
+            if (movement.IsReachedDestination()) {
                 SetState(TaskGatheringState.DropoffResource);
             }
         }
@@ -160,7 +170,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
         holdingObjectSpriteRenderer.gameObject.SetActive(false);
         SetState(TaskGatheringState.MoveToResource);
         if (currentResourceIsHolding != ResourceType.None){
-            ResourceManager.current.CollectResource(currentResourceIsHolding, 1);
+            ResourceManager.current.DeltaResource(currentResourceIsHolding, 1);
         }
     }
 

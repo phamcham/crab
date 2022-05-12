@@ -300,6 +300,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6009488903720093255, guid: 78b9d25dce25f034aa396d6e281c98a3, type: 3}
+      propertyPath: spRender
+      value: 
+      objectReference: {fileID: 3532441664775468400}
+    - target: {fileID: 6009488903720093255, guid: 78b9d25dce25f034aa396d6e281c98a3, type: 3}
+      propertyPath: fillColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6009488903720093255, guid: 78b9d25dce25f034aa396d6e281c98a3, type: 3}
+      propertyPath: fillColor.g
+      value: 0.7803922
+      objectReference: {fileID: 0}
+    - target: {fileID: 6009488903720093255, guid: 78b9d25dce25f034aa396d6e281c98a3, type: 3}
+      propertyPath: fillColor.r
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 78b9d25dce25f034aa396d6e281c98a3, type: 3}
 --- !u!4 &502235004601410792 stripped
@@ -318,3 +334,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87dff960256730a4daba029a72ac66a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!212 &3532441664775468400 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7248669736501827549, guid: 78b9d25dce25f034aa396d6e281c98a3, type: 3}
+  m_PrefabInstance: {fileID: 6169283061523145389}
+  m_PrefabAsset: {fileID: 0}

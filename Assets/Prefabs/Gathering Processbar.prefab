@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bar: {fileID: 7248669735175660796}
+  spRender: {fileID: 7248669736501827549}
+  fillColor: {r: 1, g: 0.7803922, b: 0, a: 1}
 --- !u!1 &7248669735175660797
 GameObject:
   m_ObjectHideFlags: 0

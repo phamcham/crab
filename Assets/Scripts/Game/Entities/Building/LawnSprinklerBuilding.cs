@@ -15,6 +15,16 @@ public class LawnSprinklerBuilding : Building, IDamagable, ISelectable {
     float curReloadingTime = 0;
     EnemyUnit targetEnemy;
     UIE_LawnSprinklerBuildingControl uiControl;
+    private void Start() {
+        uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_LawnSprinklerBuildingControl>(this);
+        uiControl.SetBuilding(this);
+        uiControl.Hide();
+
+        selectorObj.SetActive(false);
+
+        healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
+        healthBar.Hide();
+    }
     public override void OnBuildingPlaced() {
         isStartShooting = true;
     }
@@ -74,17 +84,6 @@ public class LawnSprinklerBuilding : Building, IDamagable, ISelectable {
             }
         }
         return list;
-    }
-    
-    private void Start() {
-        uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_LawnSprinklerBuildingControl>(this);
-        uiControl.SetBuilding(this);
-        uiControl.Hide();
-
-        selectorObj.SetActive(false);
-
-        healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
-        healthBar.Hide();
     }
 
     public void OnSelected() {

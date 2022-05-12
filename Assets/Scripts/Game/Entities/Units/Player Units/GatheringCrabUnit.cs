@@ -9,14 +9,14 @@ public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder
     [Header("Crab settings")]
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
-    UnitMovement movement;
+    UnitNavMovement movement;
     UnitTaskGathering taskGathering;
     UnitTaskCloseQuartersCombat taskCombat;
-    UIE_CrabUnitControl uiControl;
+    UIE_GatheringCrabUnitControl uiControl;
     UnitTaskManager taskManager;
     FlashOnImpactEffect impactEffect;
     protected override void OnAwake() {
-        movement = GetComponent<UnitMovement>();
+        movement = GetComponent<UnitNavMovement>();
         taskGathering = GetComponent<UnitTaskGathering>();
         taskCombat = GetComponent<UnitTaskCloseQuartersCombat>();
         taskManager = GetComponent<UnitTaskManager>();
@@ -26,7 +26,7 @@ public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder
         }
     }
     protected override void OnStart() {
-        uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_CrabUnitControl>(this);
+        uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_GatheringCrabUnitControl>(this);
         uiControl.SetUnit(this);
         uiControl.Hide();
 
@@ -99,6 +99,32 @@ public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder
                 return;
             }
         }
-        movement.MoveToPosition(position);
+        movement.Move(position);
+    }
+
+    public void HermitUpgrade() {
+        int conch = ResourceManager.current.GetAmount(ResourceType.Conch);
+        if (conch > 0) {
+            HermitCrabUnit hermit = UnitManager.current.Create<HermitCrabUnit>();
+            CopyTransform(transform, hermit.transform);
+            ResourceManager.current.DeltaResource(ResourceType.Conch, -1);
+            Destroy(gameObject);
+        }
+    }
+
+    public void BubbleUpgrade() {
+        int coconut = ResourceManager.current.GetAmount(ResourceType.Coconut);
+        if (coconut > 0) {
+            BubbleCrabUnit bubble = UnitManager.current.Create<BubbleCrabUnit>();
+            CopyTransform(transform, bubble.transform);
+            ResourceManager.current.DeltaResource(ResourceType.Coconut, -1);
+            Destroy(gameObject);
+        }
+    }
+
+    private void CopyTransform(Transform source, Transform destination) {
+        destination.position = source.position;
+        destination.rotation = source.rotation;
+        destination.localScale = source.localScale;
     }
 }

@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
     [SerializeField] private HealthBar healthBar;
-    private UnitMovement movement;
+    [SerializeField] bool targetHeadquarter;
+    private UnitNavMovement movement;
     private EnemyUnitShootable shootable;
     const float checkInterval = 2f;
     private float curCheck = 0;
-    private HeadquarterBuilding headquarter;
+    private Entity target;
     private float fixedOrbit;
     private bool stopToShoot;
     FlashOnImpactEffect impactEffect;
     protected override void OnAwake() {
-        movement = GetComponent<UnitMovement>();
+        movement = GetComponent<UnitNavMovement>();
         shootable = GetComponent<EnemyUnitShootable>();
 
         if (!base.spriteRenderer.TryGetComponent(out impactEffect)) {
@@ -29,20 +30,21 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
     }
 
     private void Update() {
-        if (!headquarter) {
+        if (target == null) {
             if (curCheck < checkInterval) {
                 curCheck += Time.deltaTime;
             }
             else {
                 curCheck = 0;
-                headquarter = GameController.current.GetHeadquarterBuilding();
+                if (targetHeadquarter) target = GameController.current.GetHeadquarterBuilding();
+                else target = GetNearestUnit(GetUnitDamagables(shootable.attackRadius * 1.5f));
             }
         }
         else {
-            float distance = Vector2.Distance(transform.position, headquarter.transform.position);
+            float distance = Vector2.Distance(transform.position, target.transform.position);
             if (distance >= fixedOrbit) {
                 stopToShoot = false;
-                movement.MoveToPosition(headquarter.transform.position);
+                movement.Move(target.transform.position);
             }
             else {
                 if (!stopToShoot) {
@@ -68,6 +70,19 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
         return list;
     }
 
+    private Unit GetNearestUnit(List<Unit> list) {
+        float minDistance = float.MaxValue;
+        Unit res = null;
+        foreach (Unit unit in list) {
+            float distance = Vector2.Distance(transform.position, unit.transform.position);
+            if (!res || distance < minDistance) {
+                minDistance = distance;
+                res = unit;
+            }
+        }
+        return res;
+    }
+
     protected override void OnUnitDestroy() {
         // TODO: hieu ung pha huy
     }
@@ -88,5 +103,9 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
             // die for you
             Destroy(gameObject);
         }
+    }
+
+    public void SetTarget(bool isHeadquarter) {
+        targetHeadquarter = isHeadquarter;
     }
 }

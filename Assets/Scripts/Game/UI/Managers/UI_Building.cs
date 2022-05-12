@@ -8,21 +8,13 @@ public class UI_Building : MonoBehaviour {
     [SerializeField] private Transform buildingButtonsHolder;
     [SerializeField] UIE_CreateBuilding uieCreateBuildingPrefab;
     [SerializeField] UIE_ShowBuildingInfo uieShowBuildingInfo;
-    Stack<GameObject> space = new Stack<GameObject>();
     Stack<GameObject> deactiveSpace = new Stack<GameObject>();
     List<UIE_CreateBuilding> createBuildings = new List<UIE_CreateBuilding>();
 
     private void Awake() {
         buildingButtonsHolder.PCDestroyChildren();
-
-        for (int i = 0; i < 5 * 2; i++) {
-            GameObject spacerObj = new GameObject("spacer");
-            spacerObj.AddComponent<RectTransform>();
-            spacerObj.AddComponent<Image>().color = new Color(0.764151f, 0.7197218f, 0.4721876f);
-            spacerObj.transform.SetParent(buildingButtonsHolder);
-            space.Push(spacerObj);
-        }
-        
+    }
+    private void Start() {
         uieShowBuildingInfo.gameObject.SetActive(false);
     }
     public void AddBuildingUI(Building building){
@@ -40,13 +32,7 @@ public class UI_Building : MonoBehaviour {
         });
         creater.transform.SetAsFirstSibling();
         createBuildings.Add(creater);
-        
-        if (space.Count > 0){
-            //Destroy(space.Dequeue());
-            GameObject obj = space.Pop();
-            obj.SetActive(false);
-            deactiveSpace.Push(obj);
-        }
+    
     }
 
     public void AddOnceHeadquarterBuildingUI(HeadquarterBuilding headquarter) {
@@ -68,7 +54,6 @@ public class UI_Building : MonoBehaviour {
             GameObject obj = deactiveSpace.Pop();
             obj.SetActive(true);
             obj.transform.SetAsLastSibling();
-            space.Push(obj);
         }
     }
 

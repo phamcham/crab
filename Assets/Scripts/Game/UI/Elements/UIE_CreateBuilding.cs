@@ -6,14 +6,13 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UIE_CreateBuilding : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+    [SerializeField] Image image;
     private Button button;
-    private Image image;
     private Building building;
     private Action onHover;
     private Action onExit;
     private void Awake() {
         button = GetComponent<Button>();
-        image = GetComponent<Image>();
     }
     public void Setup(Building building, Action onHover, Action onExit){
         this.building = building;
@@ -21,6 +20,7 @@ public class UIE_CreateBuilding : MonoBehaviour, IPointerEnterHandler, IPointerE
         this.onExit = onExit;
 
         image.sprite = this.building.GetSprite();
+        image.GetComponent<AspectRatioFitter>().aspectRatio = image.sprite.rect.width / image.sprite.rect.height;
 
         button.onClick.RemoveListener(OnClick);
         button.onClick.AddListener(OnClick);

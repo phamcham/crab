@@ -241,3 +241,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bar: {fileID: 6038716791572423701}
+  spRender: {fileID: 6038716790245791540}
+  fillColor: {r: 0.023529414, g: 1, b: 0, a: 1}
