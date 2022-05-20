@@ -79,8 +79,7 @@ public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder
         RaycastHit2D[] hits = Physics2D.RaycastAll(position, Vector3.forward);
         foreach (RaycastHit2D hit in hits) {
             // ===== Bam vao building
-            if (hit.collider.TryGetComponent(out BuildingStorage storage)) {
-                taskGathering.SetBuildingStorage(storage);
+            if (hit.collider.TryGetComponent(out HeadquarterBuilding storage)) {
                 taskGathering.SetState(UnitTaskGathering.TaskGatheringState.MoveToStorage);
                 taskGathering.StartDoTask();
                 return;
@@ -99,27 +98,7 @@ public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder
                 return;
             }
         }
-        movement.Move(position);
-    }
-
-    public void HermitUpgrade() {
-        int conch = ResourceManager.current.GetAmount(ResourceType.Conch);
-        if (conch > 0) {
-            HermitCrabUnit hermit = UnitManager.current.Create<HermitCrabUnit>();
-            CopyTransform(transform, hermit.transform);
-            ResourceManager.current.DeltaResource(ResourceType.Conch, -1);
-            Destroy(gameObject);
-        }
-    }
-
-    public void BubbleUpgrade() {
-        int coconut = ResourceManager.current.GetAmount(ResourceType.Coconut);
-        if (coconut > 0) {
-            BubbleCrabUnit bubble = UnitManager.current.Create<BubbleCrabUnit>();
-            CopyTransform(transform, bubble.transform);
-            ResourceManager.current.DeltaResource(ResourceType.Coconut, -1);
-            Destroy(gameObject);
-        }
+        movement.MoveToPosition(position);
     }
 
     private void CopyTransform(Transform source, Transform destination) {

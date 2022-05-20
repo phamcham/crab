@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1776512737}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.2, z: 0}
+  m_LocalPosition: {x: 0, y: 2, z: 0}
   m_LocalScale: {x: 2.5, y: 0.2, z: 1}
   m_Children:
   - {fileID: 6985249687562683736}
@@ -78,11 +78,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   properties:
-    maxHealthPoint: 100
+    buildingName: Headquarter Enemy
+    description: This is enemy hehe
+    maxHealthPoint: 4000
     curHealthPoint: 0
     area:
       m_Position: {x: 0, y: 0, z: 0}
       m_Size: {x: 2, y: 2, z: 1}
+    resourceRequirements: []
+  spriteRenderer: {fileID: 7669213118579372722}
   bubbleEnemyCrabUnitPrefab: {fileID: 421815817, guid: 0b99da517c15fd24da7f7981ee81efcf, type: 3}
   healthBarEnemy: {fileID: 6985249687562683738}
 --- !u!61 &1494865624

@@ -7,7 +7,7 @@ public abstract class UIE_UIControl : MonoBehaviour {
     private Tween updateIntervalOnUITween;
     protected virtual void Start() {
         UpdateIntervalOnUI();
-        updateIntervalOnUITween = DOVirtual.DelayedCall(0.2f, UpdateIntervalOnUI).SetLoops(-1).Play();
+        updateIntervalOnUITween = DOVirtual.DelayedCall(0.1f, UpdateIntervalOnUI).SetLoops(-1).Play();
     }
     protected abstract void UpdateIntervalOnUI();
     public void Show() {

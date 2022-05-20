@@ -10,35 +10,22 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
     [SerializeField] Image avatar;
     [SerializeField] TMPro.TextMeshProUGUI healthPointText;
     [SerializeField] HealthBarUI healthBarUI;
-    [SerializeField] TMPro.TextMeshProUGUI productionTimeText;
-    [SerializeField] TMPro.TextMeshProUGUI percentText;
-    [SerializeField] HealthBarUI spawnCrabProcessBarUI;
-    [SerializeField] Color enoughBarColor;
-    [SerializeField] Color notEnoughBarColor;
-    [SerializeField] Button continuePauseButton;
-    [SerializeField] Image continuePauseButtonRender;
-    [SerializeField] Sprite continueSprite;
-    [SerializeField] Sprite pauseSprite;
-    bool isContinue = true;
+    [Header("Buttons")]
+    [SerializeField] Button spawnGatheringCrabButton;
+    [SerializeField] TMPro.TextMeshProUGUI spawnGatheringCrabPercentText;
+    [SerializeField] HealthBarUI spawnGatheringCrabProgressBar;
+    [SerializeField] Button spawnBubbleCrabButton;
+    [SerializeField] TMPro.TextMeshProUGUI spawnBubbleCrabPercentText;
+    [SerializeField] HealthBarUI spawnBubbleCrabProgressBar;
+    [SerializeField] Button spawnHermitCrabButton;
+    [SerializeField] TMPro.TextMeshProUGUI spawnHermitCrabPercentText;
+    [SerializeField] HealthBarUI spawnHermitProgressBar;
     HeadquarterBuilding building;
-    bool enoughCapacity = true;
     protected override void Start() {
         base.Start();
-        continuePauseButton.onClick.AddListener(() => {
-            if (isContinue) {
-                continuePauseButtonRender.sprite = continueSprite;
-                building.PauseProduction();
-                isContinue = false;
-            }
-            else {
-                continuePauseButtonRender.sprite = pauseSprite;
-                building.ContinueProduction();
-                isContinue = true;
-            }
-            Debug.Log("setcon: " + isContinue);
-        });
-        continuePauseButtonRender.sprite = pauseSprite;
-        building.ContinueProduction();
+        spawnGatheringCrabButton.onClick.AddListener(() => building.AddProductionQueue<GatheringCrabUnit>());
+        spawnBubbleCrabButton.onClick.AddListener(() => building.AddProductionQueue<BubbleCrabUnit>());
+        spawnHermitCrabButton.onClick.AddListener(() => building.AddProductionQueue<HermitCrabUnit>());
     }
     public void SetBuilding(HeadquarterBuilding building) {
         this.building = building;
@@ -53,18 +40,33 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
         healthBarUI.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         
         // control
-        productionTimeText.SetText("{0}", ownProperties.productionInterval);
-        if (enoughCapacity) percentText.SetText("{0}%", ownProperties.curProductionPercent);
-        spawnCrabProcessBarUI.SetSize(1.0f * ownProperties.curProductionPercent / 100);
+        UpdateCrabButtonUI(0, spawnGatheringCrabPercentText, spawnGatheringCrabProgressBar);
+        UpdateCrabButtonUI(0, spawnBubbleCrabPercentText, spawnBubbleCrabProgressBar);
+        UpdateCrabButtonUI(0, spawnHermitCrabPercentText, spawnHermitProgressBar);
+
+        float percentNormalize = ownProperties.curProductionTime / ownProperties.productionInterval;
+        if (building.ownProperties.curUnitProductionName == nameof(GatheringCrabUnit)) {
+            UpdateCrabButtonUI(percentNormalize, spawnGatheringCrabPercentText, spawnGatheringCrabProgressBar);
+        }
+        if (building.ownProperties.curUnitProductionName == nameof(BubbleCrabUnit)) {
+            UpdateCrabButtonUI(percentNormalize, spawnBubbleCrabPercentText, spawnBubbleCrabProgressBar);
+        }
+        if (building.ownProperties.curUnitProductionName == nameof(HermitCrabUnit)) {
+            UpdateCrabButtonUI(percentNormalize, spawnHermitCrabPercentText, spawnHermitProgressBar);
+        }
+        //print(building.ownProperties.curUnitProductionName);
     }
-    public void EnoughCapacityForCrab(bool enough) {
-        enoughCapacity = enough;
-        if (enough) {
-            spawnCrabProcessBarUI.SetColor(enoughBarColor);
+
+    private void UpdateCrabButtonUI(float percentNormalize, TMPro.TextMeshProUGUI percentText, HealthBarUI progressBar) {
+        if (percentNormalize > 0) {
+            percentText.gameObject.SetActive(true);
+            percentText.SetText((int) (100 * percentNormalize) + "%");
+            progressBar.gameObject.SetActive(true);
+            progressBar.SetSize(percentNormalize);
         }
         else {
-            percentText.SetText("khong du nha roi");
-            spawnCrabProcessBarUI.SetColor(notEnoughBarColor);
+            percentText.gameObject.SetActive(false);
+            progressBar.gameObject.SetActive(false);
         }
     }
 }

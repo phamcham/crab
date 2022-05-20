@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitTaskCloseQuartersCombat : UnitTaskAttack {
-    private Animation anim;
+    private AnimationManager anim;
+    private const string CRAB_ATTACK = "crab attack";
     protected override void OnAwake() {
-        anim = GetComponent<Animation>();
+        anim = GetComponent<AnimationManager>();
     }
-    protected override void OnAttack(EnemyUnit enemyUnit) {
-        anim.Stop();
-        anim.Play("crab attack");
-        enemyUnit.GetComponent<IDamagable>()?.TakeDamage(BaseUnit.properties.damage);
+    protected override void OnAttack(Entity enemy) {
+        anim.Play(CRAB_ATTACK);
+        SlashEffect effect = SlashEffectManager.GetObjectPooled();
+        effect.transform.position = transform.position;
+        enemy.GetComponent<IDamagable>()?.TakeDamage(BaseUnit.properties.damage);
     }
-
 }

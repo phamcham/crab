@@ -3,17 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LawnSprinklerBuilding : Building, IDamagable, ISelectable {
+public class LawnSprinklerBuilding : PlayerBuilding, IDamagable, ISelectable {
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
     [SerializeField] Transform source; // nong sung
-    public override Team Team => Team.DefaultPlayer;
     public OwnProperties ownProperties;
     bool isStartShooting = false;
     const float checkInterval = 1f;
     float checkTime = 0;
     float curReloadingTime = 0;
-    EnemyUnit targetEnemy;
+    Entity targetEnemy;
     UIE_LawnSprinklerBuildingControl uiControl;
     private void Start() {
         uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_LawnSprinklerBuildingControl>(this);
@@ -39,10 +38,10 @@ public class LawnSprinklerBuilding : Building, IDamagable, ISelectable {
                 else {
                     checkTime = 0;
                     // check enemy
-                    List<EnemyUnit> enemies = GetEnemies();
+                    List<Entity> enemies = GetEnemies();
                     if (enemies.Count > 0) {
                         float minDistance = float.MaxValue;
-                        foreach (EnemyUnit enemy in enemies) {
+                        foreach (Entity enemy in enemies) {
                             float distance = Vector2.Distance(enemy.transform.position, transform.position);
                             if (!targetEnemy || distance < minDistance) {
                                 targetEnemy = enemy;
@@ -59,7 +58,7 @@ public class LawnSprinklerBuilding : Building, IDamagable, ISelectable {
                         curReloadingTime = 0;
                         // shoot
                         Vector2 direction = (targetEnemy.transform.position - source.transform.position).normalized;
-                        Bullet bullet = BulletManager.GetBulletPooled();
+                        Bullet bullet = BulletManager.GetObjectPooled();
                         bullet.transform.position = source.transform.position;
                         float lifeTime = 1.0f * ownProperties.attackRadius / ownProperties.bulletSpeed;
                         bullet.Shoot(new BulletProperties(Team, ownProperties.bulletSpeed, ownProperties.damage, direction), lifeTime);
@@ -72,13 +71,13 @@ public class LawnSprinklerBuilding : Building, IDamagable, ISelectable {
             curReloadingTime += Time.deltaTime;
         }
     }
-    private List<EnemyUnit> GetEnemies() {
-        List<EnemyUnit> list = new List<EnemyUnit>();
+    private List<Entity> GetEnemies() {
+        List<Entity> list = new List<Entity>();
         Collider2D[] collider2Ds = Physics2D.OverlapCircleAll(transform.position, ownProperties.attackRadius);
         foreach (Collider2D collider in collider2Ds) {
-            if (collider.TryGetComponent(out EnemyUnit damagable)) {
+            if (collider.TryGetComponent(out Entity entity) && entity.TryGetComponent(out IDamagable damagable)) {
                 if (damagable.Team != Team) {
-                    list.Add(damagable);
+                    list.Add(entity);
                     break;
                 }
             }

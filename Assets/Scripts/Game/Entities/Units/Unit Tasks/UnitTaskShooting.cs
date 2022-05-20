@@ -10,10 +10,10 @@ public class UnitTaskShooting : UnitTaskAttack {
         //anim = GetComponent<Animation>();
     }
 
-    protected override void OnAttack(EnemyUnit enemyUnit) {
+    protected override void OnAttack(Entity enemy) {
         // shoot
-        Vector2 direction = (enemyUnit.transform.position - transform.position).normalized;
-        Bullet bullet = BulletManager.GetBulletPooled();
+        Vector2 direction = (enemy.transform.position - transform.position).normalized;
+        Bullet bullet = BulletManager.GetObjectPooled();
         bullet.transform.position = transform.position;
         float lifeTime = 1.0f * attackRadius / bulletSpeed;
         bullet.Shoot(new BulletProperties(BaseUnit.Team, bulletSpeed, BaseUnit.properties.damage, direction), lifeTime);

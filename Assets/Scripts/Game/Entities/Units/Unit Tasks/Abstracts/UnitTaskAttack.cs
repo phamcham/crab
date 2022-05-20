@@ -24,8 +24,9 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
     private bool initStep = false;
     private AttackState currentState = AttackState.DoNothing;
     private UnitNavMovement movement;
-    private EnemyUnit targetEnemy;
-    private EnemyUnit followToDieEnemy;
+    private Entity targetEnemy;
+    private Entity followToDieEnemy;
+    private UnitTaskManager taskManager;
     //private Animation anim;
     private Dictionary<AttackState, Action> steps = new Dictionary<AttackState, Action>();
     // ====== method =======
@@ -33,6 +34,7 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
     protected void Awake() {
         BaseUnit = GetComponent<PlayerUnit>();
         movement = GetComponent<UnitNavMovement>();
+        taskManager = GetComponent<UnitTaskManager>();
 
         OnAwake();
     }
@@ -51,7 +53,7 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
 
         //print("move : " + (targetEnemy ? "ok" : "null"));
 
-        if (targetEnemy) {
+        if (targetEnemy != null) {
             // follow enemy
             float distance = Vector2.Distance(transform.position, targetEnemy.transform.position);
 
@@ -66,7 +68,7 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
                 // ke dich ngoai tam ban
                 isInRange = false;
                 // duoi theo nooooo
-                movement.Move(targetEnemy.transform.position);
+                movement.MoveToPosition(targetEnemy.transform.position);
             }
         }
     }
@@ -77,7 +79,7 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
         }
 
         //print("attack : " + (targetEnemy ? "ok" : "null"));
-        if (targetEnemy) {
+        if (targetEnemy && targetEnemy.gameObject) {
             float distance = Vector2.Distance(transform.position, targetEnemy.transform.position);
             if (distance > attackRadius) {
                 SetState(AttackState.MoveToEnemy);
@@ -96,7 +98,7 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
     }
 
     // attack theo cach cua tung child
-    protected abstract void OnAttack(EnemyUnit enemyUnit);
+    protected abstract void OnAttack(Entity enemy);
 
     private void Update() {
 
@@ -116,16 +118,14 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
             targetEnemy = followToDieEnemy;
         }
         else {
-            float checkDistance = float.MaxValue;
-            List<EnemyUnit> enemies = GetEnemies(catchRadius);
-            if (enemies.Count > 0) {
-                foreach (EnemyUnit enemy in enemies) {
-                    float distance = Vector2.Distance(enemy.transform.position, transform.position);
-                    if (!targetEnemy || distance < checkDistance) {
-                        targetEnemy = enemy;
-                        checkDistance = distance;
-                    }
-                }
+            // uu tien ke dich, sau do den cong trinh
+            EnemyUnit enemy = GetNearestEnemyUnit();
+            if (enemy) {
+                targetEnemy = enemy;
+            }
+            else {
+                EnemyBuilding building = GetNearestEnemyBuilding();
+                targetEnemy = building;
             }
         }
         // phat hien ra ke dich
@@ -137,16 +137,56 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
         }
     }
 
-    // duoi theo ke dich den chet
+    private EnemyUnit GetNearestEnemyUnit() {
+        List<EnemyUnit> list = GetEnemyUnits(catchRadius);
+        float minDistance = float.MaxValue;
+        EnemyUnit ans = null;
+        foreach (EnemyUnit unit in list) {
+            float curDistance = Vector2.Distance(transform.position, unit.transform.position);
+            if (ans == null || curDistance < minDistance) {
+                ans = unit;
+                minDistance = curDistance;
+            }
+        }
+        return ans;
+    }
 
-    private List<EnemyUnit> GetEnemies(float radius) {
+    private EnemyBuilding GetNearestEnemyBuilding() {
+        List<EnemyBuilding> list = GetEnemyBuildings(catchRadius);
+        float minDistance = float.MaxValue;
+        EnemyBuilding ans = null;
+        foreach (EnemyBuilding unit in list) {
+            float curDistance = Vector2.Distance(transform.position, unit.transform.position);
+            if (ans == null || curDistance < minDistance) {
+                ans = unit;
+                minDistance = curDistance;
+            }
+        }
+        return ans;
+    }
+
+    private List<EnemyUnit> GetEnemyUnits(float radius) {
         List<EnemyUnit> list = new List<EnemyUnit>();
         Collider2D[] collider2Ds = Physics2D.OverlapCircleAll(transform.position, radius);
         foreach (Collider2D collider in collider2Ds) {
             if (collider.TryGetComponent(out EnemyUnit enemyUnit) && enemyUnit.TryGetComponent(out IDamagable damagable)) {
                 if (enemyUnit.Team != BaseUnit.Team) {
                     list.Add(enemyUnit);
-                    break;
+                    //break;
+                }
+            }
+        }
+        return list;
+    }
+
+    private List<EnemyBuilding> GetEnemyBuildings(float radius) {
+        List<EnemyBuilding> list = new List<EnemyBuilding>();
+        Collider2D[] collider2Ds = Physics2D.OverlapCircleAll(transform.position, radius);
+        foreach (Collider2D collider in collider2Ds) {
+            if (collider.TryGetComponent(out EnemyBuilding enemyBuilding) && enemyBuilding.TryGetComponent(out IDamagable damagable)) {
+                if (enemyBuilding.Team != BaseUnit.Team) {
+                    list.Add(enemyBuilding);
+                    //break;
                 }
             }
         }
@@ -167,7 +207,8 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
     public void StartDoTask() {
         if (IsTaskRunning) return;
         
-        //print("found enemey");
+        // stop all tasks before do this task
+        taskManager.StopAllTasks();
 
         IsTaskRunning = true;
         SetState(AttackState.MoveToEnemy);

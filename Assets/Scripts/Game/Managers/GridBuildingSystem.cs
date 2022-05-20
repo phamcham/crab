@@ -174,8 +174,8 @@ public class GridBuildingSystem : MonoBehaviour {
                 FollowBuilding();
             }
             
-            if (Input.GetMouseButtonDown(0)){
-                if (tempBuilding.CanBePlaced()){
+            if (Input.GetMouseButtonDown(0)) {
+                if (tempBuilding.CanBePlaced()) {
                     tempBuilding.gameObject.SetActive(true);
                     tempObj.SetActive(false);
                     tempBuilding.Place();
@@ -183,7 +183,7 @@ public class GridBuildingSystem : MonoBehaviour {
                     SetActiveTilemapBuilding(false);
                 }
             }
-            else if (Input.GetMouseButtonDown(1) || GameController.current.IsGameplayPaused){
+            else if (Input.GetMouseButtonDown(1) || GameController.current.IsGameplayPaused) {
                 ClearArea();
                 Destroy(tempBuilding.gameObject);
                 tempBuilding = null;
@@ -194,10 +194,10 @@ public class GridBuildingSystem : MonoBehaviour {
         
     }
 
-    public bool CanTakeArea(BoundsInt area){
+    public bool CanTakeArea(BoundsInt area) {
         TileBase[] baseArray = GetTilesBlock(area, mainTilemap);
         foreach (TileBase b in baseArray){
-            if (b != tileBases[TileType.White]){
+            if (b != tileBases[TileType.White]) {
                 return false;
             }
         }
@@ -205,7 +205,7 @@ public class GridBuildingSystem : MonoBehaviour {
     }
 
 
-    private static TileBase[] GetTilesBlock(BoundsInt area, Tilemap tilemap){
+    private static TileBase[] GetTilesBlock(BoundsInt area, Tilemap tilemap) {
         int size = area.size.x * area.size.y * area.size.z;
         TileBase[] array = new TileBase[size];
         int counter = 0;
@@ -216,7 +216,7 @@ public class GridBuildingSystem : MonoBehaviour {
         }
         return array;
     }
-    private static void SetTileBlock(BoundsInt area, TileType type, Tilemap tilemap){
+    private static void SetTileBlock(BoundsInt area, TileType type, Tilemap tilemap) {
         int size = area.size.x * area.size.y * area.size.z;
         TileBase[] tileArray = new TileBase[size];
         FillTiles(tileArray, type);

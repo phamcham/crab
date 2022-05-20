@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public abstract class Building : Entity {    
+public abstract class Building : Entity {
     public BuildingProperties properties;
     [SerializeField] SpriteRenderer spriteRenderer;
     public bool IsPlaced { get;private set; }
     bool isApplicationQuit = false;
     BoundsInt gridArea;
     public abstract void OnBuildingPlaced();
-    public bool CanBePlaced(){
+    public bool CanBePlaced() {
         gridArea = GridBuildingSystem.current.CalculateAreaFromWorldPosition(properties.area, transform.position);
+
+        print(gridArea);
 
         if (GridBuildingSystem.current.CanTakeArea(gridArea)){
             return true;
@@ -44,6 +46,7 @@ public abstract class Building : Entity {
     protected void OnDestroy() {
         if (!isApplicationQuit) {
             GridBuildingSystem.current.ClearArea(gridArea);
+            NavMeshMap.current.UpdateNavMesh();
             OnDestroyBuilding();
         }
     }

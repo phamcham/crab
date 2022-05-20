@@ -84,6 +84,6 @@ public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
                 return;
             }
         }
-        movement.Move(position);
+        movement.MoveToPosition(position);
     }
 }

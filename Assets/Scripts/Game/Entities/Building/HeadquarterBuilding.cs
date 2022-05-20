@@ -1,23 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
-public class HeadquarterBuilding : Building, IDamagable, ISelectable {
+public class HeadquarterBuilding : PlayerBuilding, IDamagable, ISelectable {
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
     public OwnProperties ownProperties;
-    BuildingStorage storage;
-    private float time;
-    private bool isStartSpawned;
-    private int circleIndex;
-    bool isPrevSpawnSuccess = true;
-    bool isContinue = true;
-    bool enoughHouseForCrabs = false;
-    public override Team Team => Team.DefaultPlayer;
     UIE_HeadquarterBuildingControl uiControl;
-    private void Awake() {
-        storage = GetComponent<BuildingStorage>();
-    }
+    Queue<(Unit unit, string type)> productionUnits = new Queue<(Unit, string)>();
+
     private void Start() {
         uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_HeadquarterBuildingControl>(this);
         uiControl.SetBuilding(this);
@@ -31,16 +23,6 @@ public class HeadquarterBuilding : Building, IDamagable, ISelectable {
     public override void OnBuildingPlaced() {
         GameController.current.HeadquarterStartGameplay(this);
         UnitManager.current.ChangeHouseCapacity(ownProperties.houseCapacity);
-        isStartSpawned = true;
-        time = ownProperties.productionInterval;
-        storage.CanStoraged = true;
-
-        if (UnitManager.current.unitCount >= UnitManager.current.houseCapacity) {
-            enoughHouseForCrabs = true;
-        }
-        else {
-            enoughHouseForCrabs = false;
-        }
     }
     public void OnSelected() {
         selectorObj.SetActive(true);
@@ -50,74 +32,42 @@ public class HeadquarterBuilding : Building, IDamagable, ISelectable {
         selectorObj.SetActive(false);
         healthBar.Hide();
     }
-    private bool SpawnNewCrab(){
-        // TODO: kiem tra co de phai con cua nao khong????
 
+    private void Update() {
+        if (productionUnits.Count > 0) {
+            ownProperties.curProductionTime += Time.deltaTime;
+            ownProperties.curUnitProductionName = productionUnits.Peek().type;
+
+            if (ownProperties.curProductionTime >= ownProperties.productionInterval) {
+                // place unit
+                Unit unit = productionUnits.Dequeue().unit;
+                unit.gameObject.SetActive(true);
+                ownProperties.curProductionTime = 0;
+            }
+        }
+    }
+
+    public void AddProductionQueue<T>() where T : PlayerUnit {
+        print("add " + typeof(T).Name);
+        if (UnitManager.current.unitCount + productionUnits.Count >= UnitManager.current.houseCapacity) {
+            // du nha roi khong spawn nua
+            return;
+        }
+
+        Unit unit = UnitManager.current.Create<T>();
+        unit.gameObject.SetActive(false);
         for (int i = 0; i < 30; i++) {
-            Vector2 randomPosition = (Vector2)transform.position + Random.Range(3, 6) * new Vector2(Random.Range(-10f, 10f), Random.Range(-10f, 10f)).normalized;
+            Vector2 randomPosition = (Vector2)transform.position + Random.Range(3f, 6f) * new Vector2(Random.Range(-10f, 10f), Random.Range(-10f, 10f)).normalized;
             bool isWalkable = NavMeshMap.current.IsWalkable(randomPosition);
             if (isWalkable) {
-                Unit unit = UnitManager.current.Create<GatheringCrabUnit>();
                 unit.transform.position = randomPosition;
                 if (unit.TryGetComponent(out UnitNavMovement movement)){
                     //movement.Move(randomPosition);
                 }
-
-                return true;
+                break;
             }
         }
-        return false;
-    }
-    public void PauseProduction() {
-        isContinue = false;
-    }
-    public void ContinueProduction() {
-        isContinue = true;
-    }
-    private bool HasUnitInPosition(Vector2 position, float size) {
-        Collider2D[] cols = Physics2D.OverlapBoxAll(position, Vector2.one * size, 0);
-        //Debug.Log(cols.Length);
-        foreach (Collider2D col in cols) {
-            //Debug.Log(col.name);
-            if (col.TryGetComponent(out Unit unit)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    private void Update() {
-        if (isContinue && isStartSpawned){
-            if (time <= 0){
-                if (UnitManager.current.unitCount >= UnitManager.current.houseCapacity) {
-                    if (enoughHouseForCrabs) {
-                        // thong bao k du nha
-                        enoughHouseForCrabs = false;
-                        UIE_HeadquarterBuildingControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_HeadquarterBuildingControl>(this);
-                        uie.EnoughCapacityForCrab(false);
-                    }
-                }
-                else {
-                    if (!enoughHouseForCrabs) {
-                        enoughHouseForCrabs = true;
-                        UIE_HeadquarterBuildingControl uie = SelectionOneUIControlManager.current.GetUIControl<UIE_HeadquarterBuildingControl>(this);
-                        uie.EnoughCapacityForCrab(true);
-                    }
-                    isPrevSpawnSuccess = SpawnNewCrab();
-                    if (!isPrevSpawnSuccess) {
-                        // TODO: thong bao khong the spawn vi het cho de spawn roi
-                    }
-                    else {
-                        time = ownProperties.productionInterval;
-                    }
-                }
-            }
-            else {
-                if (isPrevSpawnSuccess){
-                    ownProperties.curProductionPercent = 100 - Mathf.RoundToInt(100 * time / ownProperties.productionInterval);
-                }
-                time -= Time.deltaTime;
-            }
-        }
+        productionUnits.Enqueue((unit, typeof(T).Name));
     }
 
     public void TakeDamage(int damage) {
@@ -151,9 +101,14 @@ public class HeadquarterBuilding : Building, IDamagable, ISelectable {
 
     [System.Serializable]
     public struct OwnProperties {
+        // gathering crab
         public int productionInterval;
+        // moi lan chi duoc spawn 1 crab duy nhat
         [HideInInspector]
-        public int curProductionPercent;
+        public float curProductionTime;
+        [HideInInspector]
+        public string curUnitProductionName;
+        // capacity
         public int houseCapacity;
     }
 }

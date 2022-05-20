@@ -43,7 +43,7 @@ public class EnemyUnitShootable : MonoBehaviour {
             //Debug.Log(direction);
             curReloadingTime = reloadingTime;
             if (direction != Vector2.zero) {
-                Bullet bullet = BulletManager.GetBulletPooled();
+                Bullet bullet = BulletManager.GetObjectPooled();
                 bullet.transform.position = transform.position;
                 float lifeTime = 1.0f * attackRadius / bulletSpeed;
                 bullet.Shoot(new BulletProperties(BaseEnemyUnit.Team, bulletSpeed, BaseEnemyUnit.properties.damage, direction), lifeTime);

@@ -2,5 +2,5 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletManager : ObjectPooling<Bullet> {
+public class SlashEffectManager : ObjectPooling<SlashEffect> {
 }

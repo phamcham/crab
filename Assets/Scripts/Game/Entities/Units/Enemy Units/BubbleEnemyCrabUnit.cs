@@ -44,7 +44,7 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
             float distance = Vector2.Distance(transform.position, target.transform.position);
             if (distance >= fixedOrbit) {
                 stopToShoot = false;
-                movement.Move(target.transform.position);
+                movement.MoveToPosition(target.transform.position);
             }
             else {
                 if (!stopToShoot) {

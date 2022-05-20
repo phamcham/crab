@@ -2,11 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SandWallBuilding : Building, ISelectable, IDamagable
+public class SandWallBuilding : PlayerBuilding, ISelectable, IDamagable
 {
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
-    public override Team Team => Team.DefaultPlayer;
     UIE_SandWallBuildingControl uiControl;
 
     public override void OnBuildingPlaced() {

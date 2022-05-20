@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HouseBuilding : Building, IDamagable, ISelectable {
+public class HouseBuilding : PlayerBuilding, IDamagable, ISelectable {
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
     public OwnProperties ownProperties;

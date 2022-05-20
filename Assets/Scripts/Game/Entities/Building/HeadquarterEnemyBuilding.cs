@@ -2,19 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HeadquarterEnemyBuilding : Entity, IDamagable {
-    public override Team Team => Team.DefaultEnemy;
-    [SerializeField] EnemyBuildingProperties properties;
+public class HeadquarterEnemyBuilding : EnemyBuilding, IDamagable {
     [SerializeField] BubbleEnemyCrabUnit bubbleEnemyCrabUnitPrefab;
     [SerializeField] HealthBar healthBarEnemy;
     private void Start() {
-        properties.area = GridBuildingSystem.current.CalculateAreaFromWorldPosition(properties.area, transform.position);
-        GridBuildingSystem.current.TakeArea(properties.area);
-
+        properties.curHealthPoint = properties.maxHealthPoint;
         healthBarEnemy.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         healthBarEnemy.Hide();
-    }
 
+        if (CanBePlaced()) {
+            Place();
+        }
+    }
     [ContextMenu("Spawn enemies")]
     private void SpawnEnemies() {
         int n = Random.Range(3, 5);
@@ -40,6 +39,12 @@ public class HeadquarterEnemyBuilding : Entity, IDamagable {
             Destroy(gameObject);
         }
     }
+
+    public override void OnBuildingPlaced() {
+        
+    }
+
+    protected override void OnDestroyBuilding() { }
 }
 
 [System.Serializable]

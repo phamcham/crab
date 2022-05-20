@@ -36,7 +36,7 @@ public class ResourceManager : MonoBehaviour
         List<Vector2Int> availablePositions = new List<Vector2Int>();
         foreach (Vector2Int pos in tilemapGround.cellBounds.allPositionsWithin){
             TileBase tile = tilemapGround.GetTile((Vector3Int)pos);
-            if (tile != null){
+            if (tile != null) {
                 availablePositions.Add(pos);
             }
         }
@@ -49,7 +49,7 @@ public class ResourceManager : MonoBehaviour
             { ResourceType.Coconut, new List<Vector2Int>() }
         };
         foreach (ResourceType type in resourcePositions.Keys){
-            for (int i = 0; i < 9; i++){
+            for (int i = 0; i < 4; i++){
                 if (stack.Count > 0) {
                     Vector2Int pos = stack.Pop();
                     resourcePositions[type].Add(pos);
@@ -60,18 +60,32 @@ public class ResourceManager : MonoBehaviour
         // TODO: hard code
         var resList = new List<ResourceType>() {ResourceType.Starfish, ResourceType.Grass, ResourceType.Conch, ResourceType.Coconut};
 
+        HashSet<Vector2> set = new HashSet<Vector2>();
         foreach (ResourceType type in resList) {
-            List<Vector2Int> pos = resourcePositions[type];
+            List<Vector2Int> listPos = resourcePositions[type];
             dictResources.Add(type, new List<Resource>());
-            foreach (Vector2Int ele in pos){
+            foreach (Vector2Int pos in listPos) {
                 // TODO: hard code
-                Resource resource = Create(type);
-                resource.SetAmount(Random.Range(20, 40));
-                resource.transform.position = (Vector2)ele + new Vector2(0.5f, 0.5f);
-                dictResources[type].Add(resource);
+                if (set.Contains(pos)) {
+                    continue;
+                }
+                int n = Random.Range(4, 7);
+                for (int i = 0; i < n; i++) {
+                    Vector2Int randomPos = Vector2Int.RoundToInt(pos + Random.insideUnitCircle * 3);
+
+                    TileBase tile = tilemapGround.GetTile((Vector3Int)randomPos);
+                    if (tile != null) {
+                        Resource resource = Create(type);
+                        resource.SetAmount(Random.Range(20, 40));
+                        resource.transform.position = randomPos + new Vector2(0.5f, 0.5f);
+                        dictResources[type].Add(resource);
+                        set.Add(randomPos);
+                    }
+                }
             }
         }
     }
+    
     public Sprite GetResourceSprite(ResourceType type){
         return dictResourcePrefabs[type].GetSprite();
     }

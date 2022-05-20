@@ -28,8 +28,9 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     private ResourceType currentTargetType;
     private Resource currentTargetResource;
     private UnitNavMovement movement;
-    private BuildingStorage storage;
-    private Animation anim;
+    private AnimationManager anim;
+    private const string CRAB_GATHERING = "crab gathering";
+    private UnitTaskManager taskManager;
     private Dictionary<TaskGatheringState, Action> steps = new Dictionary<TaskGatheringState, Action>();
     Tween continueGatheringIfIdleTween;
     // ======== methods ============
@@ -40,17 +41,9 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
         currentTargetResource = resource ?? GetRandomResource();
         currentTargetType = currentTargetResource.properties.type;
     }
-    public void SetBuildingStorage(BuildingStorage storage){
-        this.storage = storage ?? GetRandomBuildingStorage();
-    }
     public void SetState(TaskGatheringState startState){
         currentState = startState;
         initStep = true;
-    }
-    private BuildingStorage GetRandomBuildingStorage(){
-        List<BuildingStorage> storages = FindObjectsOfType<BuildingStorage>()?.ToList();
-        storages = storages.Where(s => s.CanStoraged).ToList();
-        return storages?.PCItemRandom();
     }
     private Resource GetRandomResource(){
         List<ResourceType> curTypes = ResourceManager.current.GetResourceTypes();
@@ -65,7 +58,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     public void StartDoTask() {
         if (IsTaskRunning) return;
         // stop all tasks before do this task
-        //enabled = true;
+        taskManager.StopAllTasks();
         IsTaskRunning = true;
         initStep = true;
     }
@@ -73,7 +66,8 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     private void Awake() {
         BaseUnit = GetComponent<Unit>();
         movement = GetComponent<UnitNavMovement>();
-        anim = GetComponent<Animation>();
+        anim = GetComponent<AnimationManager>();
+        taskManager = GetComponent<UnitTaskManager>();
     }
     private void Start() {
         steps.Add(TaskGatheringState.MoveToResource, MoveToResourceAction);
@@ -98,7 +92,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
                 currentTargetResource = GetRandomResource();
             }
             if (currentTargetResource){
-                movement.Move(currentTargetResource.transform.position);
+                movement.MoveToPosition(currentTargetResource.transform.position);
             }
         }
         if (currentTargetResource != null) {
@@ -119,8 +113,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     private void PickupResourceAction() {
         if (initStep){
             initStep = false;
-            anim.Stop();
-            anim.Play("crab gathering");
+            anim.Play(CRAB_GATHERING);
         }
 
         if (currentTargetResource != null) {
@@ -133,27 +126,25 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
                 holdingObjectSpriteRenderer.sprite = currentTargetResource.GetSprite();
 
                 SetState(TaskGatheringState.MoveToStorage);
-                anim.Stop();
+                //anim.Play(CRAB_IDLE);
             }
         }
         else {
             SetState(TaskGatheringState.MoveToResource);
-            anim.Stop();
+            //anim.Play(CRAB_IDLE);
         }
     }
     private void MoveToStorageAction() {
+        HeadquarterBuilding headquarter = GameController.current.GetHeadquarterBuilding();
         if (initStep){
             // TODO: find shortest storage
-            if (!storage){
-                storage = GetRandomBuildingStorage();
-            }
-            if (storage){
+            if (headquarter){
                 initStep = false;
-                movement.Move(storage.transform.position);
+                movement.MoveToPosition(headquarter.transform.position);
             }
         }
-        if (storage) {
-            float distance = Vector2.Distance(storage.transform.position, transform.position);
+        if (headquarter) {
+            //float distance = Vector2.Distance(headquarter.transform.position, transform.position);
             // if (distance <= 1f && movement.PathResultType == PathResultType.IsCompleted){
             //     SetState(TaskGatheringState.DropoffResource);
             // }

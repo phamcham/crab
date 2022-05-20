@@ -255,7 +255,6 @@ GameObject:
   - component: {fileID: 4557125660147175341}
   - component: {fileID: 227944265}
   - component: {fileID: 4557125660147175340}
-  - component: {fileID: 1256213141291779191}
   - component: {fileID: 723891999}
   m_Layer: 0
   m_Name: Headquarter Building
@@ -339,21 +338,10 @@ MonoBehaviour:
   healthBar: {fileID: 1625727261139533876}
   selectorObj: {fileID: 2525206812351456555}
   ownProperties:
-    productionInterval: 5
-    curProductionPercent: 0
+    productionInterval: 1
+    curProductionTime: 0
+    curUnitProductionName: 
     houseCapacity: 3
---- !u!114 &1256213141291779191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4557125660147175342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 804365117890a1a47a405a7ed50e344e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &723891999
 MonoBehaviour:
   m_ObjectHideFlags: 0
