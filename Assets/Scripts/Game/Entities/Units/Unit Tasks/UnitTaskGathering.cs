@@ -6,7 +6,7 @@ using DG.Tweening;
 using PhamCham.Extension;
 using UnityEngine;
 
-public class UnitTaskGathering : MonoBehaviour, IUnitTask {
+public class UnitTaskGathering : MonoBehaviour, IUnitTask, ISaveObject<TaskGatheringSaveData> {
     // ====== task properties =========
     public enum TaskGatheringState {
         MoveToResource,
@@ -135,7 +135,7 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
         }
     }
     private void MoveToStorageAction() {
-        HeadquarterBuilding headquarter = GameController.current.GetHeadquarterBuilding();
+        HeadquarterBuilding headquarter = BuildingManager.current.GetHeadquarterBuilding();
         if (initStep){
             // TODO: find shortest storage
             if (headquarter){
@@ -168,4 +168,17 @@ public class UnitTaskGathering : MonoBehaviour, IUnitTask {
     private void OnDestroy() {
         continueGatheringIfIdleTween.Kill();
     }
+
+    public TaskGatheringSaveData GetSaveObjectData() {
+        return new TaskGatheringSaveData() {
+            isRunning = IsTaskRunning,
+            gatheringState = currentState
+        };
+    }
+}
+
+[System.Serializable]
+public struct TaskGatheringSaveData {
+    public bool isRunning;
+    public UnitTaskGathering.TaskGatheringState gatheringState;
 }

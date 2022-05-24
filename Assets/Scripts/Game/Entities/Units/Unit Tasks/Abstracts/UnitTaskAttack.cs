@@ -14,15 +14,14 @@ public abstract class UnitTaskAttack : MonoBehaviour, IUnitTask {
     //public bool IsTaskRunning => throw new NotImplementedException();
     // ====== public =========
     public PlayerUnit BaseUnit { get; private set; }
-
     public int catchRadius;
     public int attackRadius;
     public float reloadingTime;
     // ======= private ============
     private float curReloadingTime = 0;
-    private bool isInRange = false;
+    protected bool isInRange = false;
     private bool initStep = false;
-    private AttackState currentState = AttackState.DoNothing;
+    protected AttackState currentState = AttackState.DoNothing;
     private UnitNavMovement movement;
     private Entity targetEnemy;
     private Entity followToDieEnemy;

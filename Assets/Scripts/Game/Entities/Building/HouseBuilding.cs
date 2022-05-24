@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HouseBuilding : PlayerBuilding, IDamagable, ISelectable {
+public class HouseBuilding : PlayerBuilding, IDamagable, ISelectable, ISaveObject<HouseBuildingSaveData> {
+    public override BuildingType type => BuildingType.House;
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
     public OwnProperties ownProperties;
     public override Team Team => Team.DefaultPlayer;
+
     UIE_HouseBuildingControl uiControl;
 
     private void Start() {
@@ -31,6 +33,7 @@ public class HouseBuilding : PlayerBuilding, IDamagable, ISelectable {
 
     public override void OnBuildingPlaced() {
         UnitManager.current.ChangeHouseCapacity(ownProperties.capacity);
+        BuildingManager.current.HouseBuildings.Add(this);
     }
 
     public void TakeDamage(int damage) {
@@ -51,6 +54,7 @@ public class HouseBuilding : PlayerBuilding, IDamagable, ISelectable {
     protected override void OnDestroyBuilding() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
         UnitManager.current.ChangeHouseCapacity(-ownProperties.capacity);
+        BuildingManager.current.HouseBuildings.Remove(this);
     }
 
     public void OnGiveOrder(Vector2 position) {
@@ -61,8 +65,23 @@ public class HouseBuilding : PlayerBuilding, IDamagable, ISelectable {
         else uiControl.Hide();
     }
 
+    public HouseBuildingSaveData GetSaveObjectData() {
+        return new HouseBuildingSaveData() {
+            building = new BuildingSaveData() {
+                maxHealthPoint = properties.maxHealthPoint,
+                curHealthPoint = properties.curHealthPoint,
+                position = new SaveSystemExtension.Vector2(transform.position)
+            }
+        };
+    }
+
     [System.Serializable]
     public struct OwnProperties {
         public int capacity;
     }
+}
+
+[System.Serializable]
+public struct HouseBuildingSaveData {
+    public BuildingSaveData building;
 }

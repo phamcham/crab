@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HeadquarterEnemyBuilding : EnemyBuilding, IDamagable {
+public class HeadquarterEnemyBuilding : EnemyBuilding, IDamagable, ISaveObject<EnemyHeadquarterBuildingSaveData> {
+    public override BuildingType type => BuildingType.Headquarter;
     [SerializeField] BubbleEnemyCrabUnit bubbleEnemyCrabUnitPrefab;
     [SerializeField] HealthBar healthBarEnemy;
     private void Start() {
@@ -22,6 +23,12 @@ public class HeadquarterEnemyBuilding : EnemyBuilding, IDamagable {
             position.z = 0;
             BubbleEnemyCrabUnit crab = Instantiate(bubbleEnemyCrabUnitPrefab, position, Quaternion.identity);
             crab.SetTarget(Random.value > 0.2f);
+        }
+    }
+
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.P)) {
+            SpawnEnemies();
         }
     }
 
@@ -45,6 +52,16 @@ public class HeadquarterEnemyBuilding : EnemyBuilding, IDamagable {
     }
 
     protected override void OnDestroyBuilding() { }
+
+    public EnemyHeadquarterBuildingSaveData GetSaveObjectData() {
+        return new EnemyHeadquarterBuildingSaveData() {
+            building = new BuildingSaveData() {
+                maxHealthPoint = properties.maxHealthPoint,
+                curHealthPoint = properties.curHealthPoint,
+                position = new SaveSystemExtension.Vector2(transform.position)
+            }
+        };
+    }
 }
 
 [System.Serializable]
@@ -53,4 +70,9 @@ public struct EnemyBuildingProperties {
     [HideInInspector]
     public int curHealthPoint;
     public BoundsInt area;
+}
+
+[System.Serializable]
+public struct EnemyHeadquarterBuildingSaveData {
+    public BuildingSaveData building;
 }

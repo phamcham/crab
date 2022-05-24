@@ -10,14 +10,14 @@ public class ObjectPooling<ObjectType> : MonoBehaviour where ObjectType : MonoBe
     }
     protected Stack<ObjectType> pooling = new Stack<ObjectType>();
     public static ObjectType GetObjectPooled() {
-        print("GetObjectPooled: " + instance.pooling.Count);
+        //print("GetObjectPooled: " + instance.pooling.Count);
         ObjectType obj = instance.pooling.Count > 0 ? instance.pooling.Pop() :
                 Instantiate(instance.prefab.gameObject, instance.transform).GetComponent<ObjectType>();
         obj.gameObject.SetActive(true);
         return obj;
     }
     public static void ReturnBulletPooled(ObjectType obj) {
-        print("ReturnBulletPooled: " + instance.pooling.Count);
+        //print("ReturnBulletPooled: " + instance.pooling.Count);
         obj.gameObject.SetActive(false);
         instance.pooling.Push(obj);
     }

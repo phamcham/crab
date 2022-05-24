@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
+public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder, ISaveObject<GatheringCrabUnitSaveData> {
+    public override UnitType type => UnitType.Gathering;
     
     [Header("Crab settings")]
     [SerializeField] HealthBar healthBar;
@@ -35,6 +36,8 @@ public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder
         healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         healthBar.Hide();
         //print("false roi ma");
+        UnitManager.current.GatheringCrabUnits.Add(this);
+        UnitManager.current.UpdateUnitAmountUI();
     }
 
     // event unitselectable
@@ -55,6 +58,8 @@ public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder
 
     protected override void OnUnitDestroy() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
+        UnitManager.current.GatheringCrabUnits.Remove(this);
+        UnitManager.current.UpdateUnitAmountUI();
     }
 
     public void TakeDamage(int damage){
@@ -101,9 +106,26 @@ public class GatheringCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder
         movement.MoveToPosition(position);
     }
 
-    private void CopyTransform(Transform source, Transform destination) {
-        destination.position = source.position;
-        destination.rotation = source.rotation;
-        destination.localScale = source.localScale;
+    public GatheringCrabUnitSaveData GetSaveObjectData() {
+        return new GatheringCrabUnitSaveData() {
+            unit = new UnitSaveData() {
+                maxHealthPoint = properties.maxHealthPoint,
+                curHealthPoint = properties.curHealthPoint,
+                moveSpeed = properties.moveSpeed,
+                damage = properties.damage,
+                position = new SaveSystemExtension.Vector2(transform.position)                
+            },
+            gathering = this.taskGathering.GetSaveObjectData(),
+            closeQuartersCombat = this.taskCombat.GetSaveObjectData(),
+            movement = this.movement.GetSaveObjectData()
+        };
     }
+}
+
+[System.Serializable]
+public struct GatheringCrabUnitSaveData {
+    public UnitSaveData unit;
+    public TaskGatheringSaveData gathering;
+    public TaskCloseQuartersCombatSaveData closeQuartersCombat;
+    public MovementSaveData movement;
 }

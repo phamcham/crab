@@ -23,9 +23,9 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
     HeadquarterBuilding building;
     protected override void Start() {
         base.Start();
-        spawnGatheringCrabButton.onClick.AddListener(() => building.AddProductionQueue<GatheringCrabUnit>());
-        spawnBubbleCrabButton.onClick.AddListener(() => building.AddProductionQueue<BubbleCrabUnit>());
-        spawnHermitCrabButton.onClick.AddListener(() => building.AddProductionQueue<HermitCrabUnit>());
+        spawnGatheringCrabButton.onClick.AddListener(() => building.AddProductionQueue(UnitType.Gathering));
+        spawnBubbleCrabButton.onClick.AddListener(() => building.AddProductionQueue(UnitType.Bubble));
+        spawnHermitCrabButton.onClick.AddListener(() => building.AddProductionQueue(UnitType.Hermit));
     }
     public void SetBuilding(HeadquarterBuilding building) {
         this.building = building;
@@ -45,13 +45,13 @@ public class UIE_HeadquarterBuildingControl : UIE_UIControl {
         UpdateCrabButtonUI(0, spawnHermitCrabPercentText, spawnHermitProgressBar);
 
         float percentNormalize = ownProperties.curProductionTime / ownProperties.productionInterval;
-        if (building.ownProperties.curUnitProductionName == nameof(GatheringCrabUnit)) {
+        if (building.ownProperties.curUnitType == UnitType.Gathering) {
             UpdateCrabButtonUI(percentNormalize, spawnGatheringCrabPercentText, spawnGatheringCrabProgressBar);
         }
-        if (building.ownProperties.curUnitProductionName == nameof(BubbleCrabUnit)) {
+        if (building.ownProperties.curUnitType == UnitType.Bubble) {
             UpdateCrabButtonUI(percentNormalize, spawnBubbleCrabPercentText, spawnBubbleCrabProgressBar);
         }
-        if (building.ownProperties.curUnitProductionName == nameof(HermitCrabUnit)) {
+        if (building.ownProperties.curUnitType == UnitType.Hermit) {
             UpdateCrabButtonUI(percentNormalize, spawnHermitCrabPercentText, spawnHermitProgressBar);
         }
         //print(building.ownProperties.curUnitProductionName);

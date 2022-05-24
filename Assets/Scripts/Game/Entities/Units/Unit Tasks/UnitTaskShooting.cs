@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitTaskShooting : UnitTaskAttack {
+public class UnitTaskShooting : UnitTaskAttack, ISaveObject<TaskShootingSaveData> {
     public int bulletSpeed;
     //private Animation anim;
     protected override void OnAwake() {
@@ -23,4 +23,25 @@ public class UnitTaskShooting : UnitTaskAttack {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRadius);
     }
+
+    public TaskShootingSaveData GetSaveObjectData() {
+        return new TaskShootingSaveData() {
+            isRunning = IsTaskRunning,
+            attackState = base.currentState,
+            catchRadius = base.catchRadius,
+            attackRadius = base.attackRadius,
+            reloadingTime = base.reloadingTime,
+            isInRange = base.isInRange
+        };
+    }
+}
+
+[System.Serializable]
+public struct TaskShootingSaveData {
+    public bool isRunning;
+    public UnitTaskAttack.AttackState attackState;
+    public int catchRadius;
+    public int attackRadius;
+    public float reloadingTime;
+    public bool isInRange;
 }

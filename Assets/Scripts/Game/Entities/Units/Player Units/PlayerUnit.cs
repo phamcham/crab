@@ -10,7 +10,7 @@ public abstract class PlayerUnit : Unit {
     }
     protected abstract void OnAwake();
     protected void Start(){
-        UnitManager.current.AddUnit(this);
+        //UnitManager.current.AddUnit(this);
         OnStart();
     }
     protected abstract void OnStart();
@@ -18,7 +18,7 @@ public abstract class PlayerUnit : Unit {
         return spriteRenderer.sprite;
     }
     protected void OnDestroy() {
-        UnitManager.current.RemoveUnit(this);
+        //UnitManager.current.RemoveUnit(this);
         OnUnitDestroy();
     }
     protected abstract void OnUnitDestroy();

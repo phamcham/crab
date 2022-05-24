@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
+public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable, ISaveObject<BubbleEnemyCrabUnitSaveData> {
+    public override UnitType type => UnitType.Bubble;
     [SerializeField] private HealthBar healthBar;
     [SerializeField] bool targetHeadquarter;
     private UnitNavMovement movement;
@@ -13,6 +14,8 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
     private float fixedOrbit;
     private bool stopToShoot;
     FlashOnImpactEffect impactEffect;
+
+
     protected override void OnAwake() {
         movement = GetComponent<UnitNavMovement>();
         shootable = GetComponent<EnemyUnitShootable>();
@@ -36,7 +39,7 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
             }
             else {
                 curCheck = 0;
-                if (targetHeadquarter) target = GameController.current.GetHeadquarterBuilding();
+                if (targetHeadquarter) target = BuildingManager.current.GetHeadquarterBuilding();
                 else target = GetNearestUnit(GetUnitDamagables(shootable.attackRadius * 1.5f));
             }
         }
@@ -108,4 +111,21 @@ public class BubbleEnemyCrabUnit : EnemyUnit, IDamagable {
     public void SetTarget(bool isHeadquarter) {
         targetHeadquarter = isHeadquarter;
     }
+
+    public BubbleEnemyCrabUnitSaveData GetSaveObjectData() {
+        return new BubbleEnemyCrabUnitSaveData() {
+            unit = new UnitSaveData() {
+                maxHealthPoint = properties.maxHealthPoint,
+                curHealthPoint = properties.curHealthPoint,
+                moveSpeed = properties.moveSpeed,
+                damage = properties.damage,
+                position = new SaveSystemExtension.Vector2(transform.position)
+            }
+        };
+    }
+}
+
+[System.Serializable]
+public struct BubbleEnemyCrabUnitSaveData {
+    public UnitSaveData unit;
 }

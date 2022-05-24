@@ -7,18 +7,22 @@ using UnityEngine.UI;
 
 public class UIE_CreateBuilding : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
     [SerializeField] Image image;
+    [SerializeField] TMPro.TextMeshProUGUI shortKeyText;
     private Button button;
     private Building building;
     private Action onHover;
     private Action onExit;
+    private KeyCode shortkey;
     private void Awake() {
         button = GetComponent<Button>();
     }
-    public void Setup(Building building, Action onHover, Action onExit){
+    public void Setup(Building building, Action onHover, Action onExit, KeyCode shortkey){
         this.building = building;
         this.onHover = onHover;
         this.onExit = onExit;
+        this.shortkey = shortkey;
 
+        shortKeyText.text = shortkey.ToString();
         image.sprite = this.building.GetSprite();
         image.GetComponent<AspectRatioFitter>().aspectRatio = image.sprite.rect.width / image.sprite.rect.height;
 
@@ -45,6 +49,12 @@ public class UIE_CreateBuilding : MonoBehaviour, IPointerEnterHandler, IPointerE
     }
     void OnClick(){
         GridBuildingSystem.current.InitializeWithBuilding(building);
+    }
+
+    private void Update() {
+        if (Input.GetKeyDown(shortkey)) {
+            OnClick();
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData) {

@@ -6,6 +6,7 @@ using UnityEngine;
 
 public abstract class Building : Entity {
     public BuildingProperties properties;
+    public abstract BuildingType type { get; }
     [SerializeField] SpriteRenderer spriteRenderer;
     public bool IsPlaced { get;private set; }
     bool isApplicationQuit = false;
@@ -62,11 +63,16 @@ public abstract class Building : Entity {
 [System.Serializable]
 public struct BuildingProperties {
     public string buildingName;
-    [TextArea(3, 5)]
-    public string description;
+    [TextArea(3, 5)] public string description;
     public int maxHealthPoint;
-    [HideInInspector]
-    public int curHealthPoint;
     public BoundsInt area;
     public List<ResourceRequirement> resourceRequirements;
+    [HideInInspector] public int curHealthPoint;
+}
+
+[System.Serializable]
+public struct BuildingSaveData {
+    public int maxHealthPoint;
+    public int curHealthPoint;
+    public SaveSystemExtension.Vector2 position;
 }

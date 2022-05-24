@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
+public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder, ISaveObject<BubbleCrabUnitSaveData> {
+    public override UnitType type => UnitType.Bubble;
     [Header("Crab settings")]
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
@@ -11,6 +12,7 @@ public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
     UIE_BubbleCrabUnitControl uiControl;
     UnitTaskManager taskManager;
     FlashOnImpactEffect impactEffect;
+
 
     protected override void OnAwake() {
         //properties = new UnitProperties(Team.DefaultPlayer, 100, 10, 6);
@@ -33,6 +35,8 @@ public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
         healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         healthBar.Hide();
         //print("false roi ma");
+        UnitManager.current.BubbleCrabUnits.Add(this);
+        UnitManager.current.UpdateUnitAmountUI();
     }
 
     // event unitselectable
@@ -54,6 +58,8 @@ public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
 
     protected override void OnUnitDestroy() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
+        UnitManager.current.BubbleCrabUnits.Remove(this);
+        UnitManager.current.UpdateUnitAmountUI();
     }
 
     public void TakeDamage(int damage){
@@ -86,4 +92,25 @@ public class BubbleCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
         }
         movement.MoveToPosition(position);
     }
+
+    public BubbleCrabUnitSaveData GetSaveObjectData() {
+        return new BubbleCrabUnitSaveData() {
+            unit = new UnitSaveData() {
+                maxHealthPoint = properties.maxHealthPoint,
+                curHealthPoint = properties.curHealthPoint,
+                moveSpeed = properties.moveSpeed,
+                damage = properties.damage,
+                position = new SaveSystemExtension.Vector2(transform.position)
+            },
+            shooting = shootable.GetSaveObjectData(),
+            movement = movement.GetSaveObjectData()
+        };
+    }
+}
+
+[System.Serializable]
+public struct BubbleCrabUnitSaveData {
+    public UnitSaveData unit;
+    public TaskShootingSaveData shooting;
+    public MovementSaveData movement;
 }

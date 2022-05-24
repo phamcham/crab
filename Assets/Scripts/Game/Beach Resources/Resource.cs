@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Resource : Entity, ISelectable {
+public class Resource : Entity, ISelectable, ISaveObject<ResourceSaveData> {
     public override Team Team => Team.DefaultPlayer;
     public ResourceProperties properties;
     [SerializeField] GameObject selectorObj;
@@ -80,6 +80,16 @@ public class Resource : Entity, ISelectable {
     private void OnDestroy() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
     }
+
+    public ResourceSaveData GetSaveObjectData() {
+        return new ResourceSaveData() {
+            type = properties.type,
+            gatheringTime = properties.gatheringTime,
+            currentGatheringTime = properties.currentGatheringTime,
+            amount = properties.amount,
+            position = new SaveSystemExtension.Vector2(transform.position)
+        };
+    }
 }
 
 [System.Serializable]
@@ -89,4 +99,13 @@ public struct ResourceProperties {
     public float gatheringTime;
     [HideInInspector] public float currentGatheringTime; // if currentGatheringTime = 0 then gratherer can pick it up immediately 
     [HideInInspector] public int amount;
+}
+
+[System.Serializable]
+public struct ResourceSaveData {
+    public ResourceType type;
+    public float gatheringTime;
+    public float currentGatheringTime;
+    public int amount;
+    public SaveSystemExtension.Vector2 position;
 }

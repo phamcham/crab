@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(Unit), typeof(UnitTaskManager))]
-public class UnitNavMovement : MonoBehaviour {
+public class UnitNavMovement : MonoBehaviour, ISaveObject<MovementSaveData> {
     public Unit BaseUnit { get; private set; }
     public Vector2 TargetPosition { get; private set; }
     public Building TargetBuilding { get; private set; }
@@ -103,4 +103,17 @@ public class UnitNavMovement : MonoBehaviour {
         var driftPos = position + (Vector2)(agentDrift * Random.insideUnitCircle.normalized);
         navMeshAgent.SetDestination(TargetPosition = driftPos);
     }
+
+    public MovementSaveData GetSaveObjectData() {
+        return new MovementSaveData() {
+            isMoving = !isStopped,
+            destination = new SaveSystemExtension.Vector2(TargetPosition)
+        };
+    }
+}
+
+[System.Serializable]
+public struct MovementSaveData {
+    public bool isMoving;
+    public SaveSystemExtension.Vector2 destination;
 }

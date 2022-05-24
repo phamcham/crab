@@ -97,6 +97,17 @@ public class ResourceManager : MonoBehaviour
     public List<ResourceType> GetResourceTypes(){
         return new List<ResourceType>(dictResources.Keys);
     }
+    public List<Resource> GetAllResources() {
+        List<Resource> resources = new List<Resource>();
+        
+        List<ResourceType> resourceTypes = ResourceManager.current.GetResourceTypes();
+        foreach (ResourceType type in resourceTypes) {
+            foreach (Resource resource in ResourceManager.current.GetResources(type)) {
+                resources.Add(resource);
+            }
+        }
+        return resources;
+    }
     public void DeltaResource(ResourceType type, int add){
         resourceStorage[type] += add;
         uiResource.UpdateResourceStoringUI(type, resourceStorage[type]);

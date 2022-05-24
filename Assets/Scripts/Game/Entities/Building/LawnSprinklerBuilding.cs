@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LawnSprinklerBuilding : PlayerBuilding, IDamagable, ISelectable {
+public class LawnSprinklerBuilding : PlayerBuilding, IDamagable, ISelectable, ISaveObject<LawnSpinklerBuildingSaveData> {
+    public override BuildingType type => BuildingType.LawnSpinkler;
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
     [SerializeField] Transform source; // nong sung
@@ -14,6 +15,8 @@ public class LawnSprinklerBuilding : PlayerBuilding, IDamagable, ISelectable {
     float curReloadingTime = 0;
     Entity targetEnemy;
     UIE_LawnSprinklerBuildingControl uiControl;
+
+
     private void Start() {
         uiControl = SelectionOneUIControlManager.current.GetUIControl<UIE_LawnSprinklerBuildingControl>(this);
         uiControl.SetBuilding(this);
@@ -26,6 +29,7 @@ public class LawnSprinklerBuilding : PlayerBuilding, IDamagable, ISelectable {
     }
     public override void OnBuildingPlaced() {
         isStartShooting = true;
+        BuildingManager.current.LawnSprinklerBuildings.Add(this);
     }
 
     private void Update() {
@@ -113,6 +117,7 @@ public class LawnSprinklerBuilding : PlayerBuilding, IDamagable, ISelectable {
 
     protected override void OnDestroyBuilding() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
+        BuildingManager.current.LawnSprinklerBuildings.Remove(this);
     }
 
     public void OnGiveOrder(Vector2 position) {
@@ -123,6 +128,16 @@ public class LawnSprinklerBuilding : PlayerBuilding, IDamagable, ISelectable {
         else uiControl.Hide();
     }
 
+    public LawnSpinklerBuildingSaveData GetSaveObjectData() {
+        return new LawnSpinklerBuildingSaveData() {
+            building = new BuildingSaveData() {
+                maxHealthPoint = properties.maxHealthPoint,
+                curHealthPoint = properties.curHealthPoint,
+                position = new SaveSystemExtension.Vector2(transform.position)
+            }
+        };
+    }
+
     [System.Serializable]
     public class OwnProperties {
         public int attackRadius;
@@ -130,4 +145,9 @@ public class LawnSprinklerBuilding : PlayerBuilding, IDamagable, ISelectable {
         public int bulletSpeed;
         public int damage;
     }
+}
+
+[System.Serializable]
+public struct LawnSpinklerBuildingSaveData {
+    public BuildingSaveData building;
 }

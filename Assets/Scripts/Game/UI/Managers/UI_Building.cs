@@ -20,6 +20,8 @@ public class UI_Building : MonoBehaviour {
     public void AddBuildingUI(Building building){
         UIE_CreateBuilding creater = Instantiate(uieCreateBuildingPrefab.gameObject, buildingButtonsHolder)
             .GetComponent<UIE_CreateBuilding>();
+        
+        KeyCode[] shortKey = new KeyCode[3] { KeyCode.E, KeyCode.W, KeyCode.Q };
         creater.Setup(building, () => {
             string name = building.properties.buildingName;
             string description = building.properties.description;
@@ -29,7 +31,9 @@ public class UI_Building : MonoBehaviour {
             uieShowBuildingInfo.gameObject.SetActive(true);
         }, () => {
             uieShowBuildingInfo.gameObject.SetActive(false);
-        });
+        },
+            shortKey[createBuildings.Count]
+        );
         creater.transform.SetAsFirstSibling();
         createBuildings.Add(creater);
     

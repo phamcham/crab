@@ -13,52 +13,54 @@ public class UnitManager : MonoBehaviour {
     [SerializeField] Sprite crabIcon;
     [SerializeField] Sprite houseIcon;
     UIE_NumberOfThings uie_numberOfCrabs, uie_houseCapacity;
-    Dictionary<Type, Unit> dictUnitPrefabs = new Dictionary<Type, Unit>();
-    List<Unit> units = new List<Unit>();
+    Dictionary<UnitType, Unit> dictUnitPrefabs = new Dictionary<UnitType, Unit>();
+    //List<Unit> units = new List<Unit>();
     [HideInInspector] public int houseCapacity;
-    [HideInInspector] public int unitCount => units.Count;
+    public int UnitCount {
+        get {
+            return GatheringCrabUnits.Count + BubbleCrabUnits.Count + HermitCrabUnits.Count;
+        }
+    }
+
+    public List<GatheringCrabUnit> GatheringCrabUnits { get; set; } = new List<GatheringCrabUnit>();
+    public List<BubbleCrabUnit> BubbleCrabUnits { get; set; } = new List<BubbleCrabUnit>();
+    public List<HermitCrabUnit> HermitCrabUnits { get; set; } = new List<HermitCrabUnit>();
     private void Awake() {
         current = this;
     }
     private void Start() {
-        dictUnitPrefabs = new Dictionary<Type, Unit>() {
-            { typeof(GatheringCrabUnit), gatheringCrabUnitPrefab },
-            { typeof(BubbleCrabUnit), bubbleCrabUnitPrefab },
-            { typeof(HermitCrabUnit), hermitCrabUnitPrefab }
+        dictUnitPrefabs = new Dictionary<UnitType, Unit>() {
+            { UnitType.Gathering, gatheringCrabUnitPrefab },
+            { UnitType.Bubble, bubbleCrabUnitPrefab },
+            { UnitType.Hermit, hermitCrabUnitPrefab }
         };
         uie_numberOfCrabs = Instantiate(uie_numberOfThingsPrefab.gameObject, storingHolder).GetComponent<UIE_NumberOfThings>();
         uie_houseCapacity = Instantiate(uie_numberOfThingsPrefab.gameObject, storingHolder).GetComponent<UIE_NumberOfThings>();
         UpdateUnitAmountUI();
         UpdateHouseCapacityUI();
     }
-    public T Create<T>() where T : Unit {
-        T obj = Instantiate(dictUnitPrefabs[typeof(T)].gameObject, transform).GetComponent<T>();
-        
+    public Unit Create(UnitType type) {
+        Unit obj = Instantiate(dictUnitPrefabs[type].gameObject, transform).GetComponent<Unit>();
+        //UpdateUnitAmountUI();
         return obj;
     }
-    public void AddUnit(Unit unit) {
-        if (!units.Contains(unit)) {
-            units.Add(unit);
-        }
-        UpdateUnitAmountUI();
-    }
-    public void RemoveUnit(Unit unit) {
-        if (unit != null) {
-            units.Remove(unit);
-            UpdateUnitAmountUI();
-            
-        }
-    }
+    // public void AddUnit(Unit unit) {
+    //     if (!units.Contains(unit)) {
+    //         units.Add(unit);
+    //     }
+    //     UpdateUnitAmountUI();
+    // }
     public void ChangeHouseCapacity(int add) {
         houseCapacity += add;
         UpdateHouseCapacityUI();
     }
-    private void UpdateUnitAmountUI() {
+    public void UpdateUnitAmountUI() {
         if (uie_numberOfCrabs) {
-            uie_numberOfCrabs.Setup(crabIcon, units.Count);
+            print(UnitCount);
+            uie_numberOfCrabs.Setup(crabIcon, UnitCount);
         }
     }
-    private void UpdateHouseCapacityUI() {
+    public void UpdateHouseCapacityUI() {
         if (uie_houseCapacity) {
             uie_houseCapacity.Setup(houseIcon, houseCapacity);
         }

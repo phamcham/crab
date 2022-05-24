@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HermitCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
+public class HermitCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder, ISaveObject<HermitCrabUnitSaveData> {
+    public override UnitType type => UnitType.Hermit;
     [Header("Crab settings")]
     [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject selectorObj;
@@ -29,6 +30,9 @@ public class HermitCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
 
         healthBar.SetSize(1.0f * properties.curHealthPoint / properties.maxHealthPoint);
         healthBar.Hide();
+
+        UnitManager.current.HermitCrabUnits.Add(this);
+        UnitManager.current.UpdateUnitAmountUI();
     }
     public void OnSelected(){
         selectorObj.SetActive(true);
@@ -63,6 +67,8 @@ public class HermitCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
 
     protected override void OnUnitDestroy() {
         SelectionOneUIControlManager.current.RemoveUIControl(this);
+        UnitManager.current.HermitCrabUnits.Remove(this);
+        UnitManager.current.UpdateUnitAmountUI();
     }
 
     public void OnTakeOrderAtPosition(Vector2 position) {
@@ -78,4 +84,23 @@ public class HermitCrabUnit : PlayerUnit, IDamagable, ISelectable, ITakeOrder {
         }
         movement.MoveToPosition(position);
     }
+
+    public HermitCrabUnitSaveData GetSaveObjectData() {
+        return new HermitCrabUnitSaveData() {
+            unit = new UnitSaveData() {
+                maxHealthPoint = properties.maxHealthPoint,
+                curHealthPoint = properties.curHealthPoint,
+                moveSpeed = properties.moveSpeed,
+                damage = properties.damage,
+                position = new SaveSystemExtension.Vector2(transform.position)                
+            },
+            movement = movement.GetSaveObjectData()
+        };
+    }
+}
+
+[System.Serializable]
+public struct HermitCrabUnitSaveData {
+    public UnitSaveData unit;
+    public MovementSaveData movement;
 }
